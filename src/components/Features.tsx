@@ -1,3 +1,4 @@
+import React from "react";
 import { Check, Star, Award, ShieldCheck } from "lucide-react";
 
 const Features = () => {

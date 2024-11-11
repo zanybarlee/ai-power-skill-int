@@ -20,35 +20,20 @@ export default {
     extend: {
       colors: {
         forest: {
-          DEFAULT: "#0A2F1F",
-          light: "#134132",
+          DEFAULT: "#0A1F2F", // Deeper, more mysterious blue-green
+          light: "#132B41", // Rich navy
         },
         mint: {
-          DEFAULT: "#34D399",
-          light: "#6EE7B7",
+          DEFAULT: "#64FFDA", // Bright ethereal cyan
+          light: "#A5F3FC", // Celestial light blue
         },
+        divine: {
+          DEFAULT: "#FFD700", // Divine gold
+          light: "#FFF4BD", // Soft golden glow
+        }
       },
       fontFamily: {
         sans: ["Inter var", "system-ui", "sans-serif"],
-      },
-      keyframes: {
-        "fade-up": {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
-        },
-        "fade-in": {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-10px)" },
-        },
-      },
-      animation: {
-        "fade-up": "fade-up 0.5s ease-out",
-        "fade-in": "fade-in 0.5s ease-out",
-        float: "float 3s ease-in-out infinite",
       },
     },
   },

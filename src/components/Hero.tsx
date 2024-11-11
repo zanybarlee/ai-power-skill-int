@@ -6,6 +6,9 @@ const Hero = () => {
     <section className="pt-32 pb-20 px-4">
       <div className="container mx-auto grid lg:grid-cols-2 gap-12 items-center">
         <div className="space-y-8 animate-fade-up">
+          <span className="bg-mint/10 text-mint px-4 py-2 rounded-full text-sm font-medium">
+            AI-Powered Recruitment
+          </span>
           <h1 className="text-5xl md:text-7xl font-bold leading-tight">
             Hire top
             <br />
@@ -18,7 +21,10 @@ const Hero = () => {
           </p>
           <div className="flex items-center gap-4">
             <Button className="bg-mint hover:bg-mint-light text-forest font-medium px-8 py-6 text-lg">
-              Explore! <ArrowRight className="ml-2 h-5 w-5" />
+              Get Started <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+              Watch Demo
             </Button>
           </div>
         </div>

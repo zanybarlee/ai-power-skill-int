@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="bg-forest-light py-20 px-4">
+    <footer className="py-20 px-4 border-t border-mint/10">
       <div className="container mx-auto">
         <div className="grid md:grid-cols-4 gap-12">
           <div className="space-y-4">
@@ -36,7 +36,7 @@ const Footer = () => {
             </ul>
           </div>
         </div>
-        <div className="border-t border-white/10 mt-16 pt-8 text-center text-white/60">
+        <div className="border-t border-mint/10 mt-16 pt-8 text-center text-white/60">
           <p>&copy; {new Date().getFullYear()} ByteHire. All rights reserved.</p>
         </div>
       </div>

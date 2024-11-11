@@ -20,16 +20,14 @@ export default {
     extend: {
       colors: {
         forest: {
-          DEFAULT: "#0A1F2F", // Deeper, more mysterious blue-green
-          light: "#132B41", // Rich navy
+          DEFAULT: "#0A1F2F", // Main background color
+          light: "#132B41", // Slightly lighter variant for cards/sections
         },
         mint: {
-          DEFAULT: "#64FFDA", // Bright ethereal cyan
-          light: "#A5F3FC", // Celestial light blue
+          DEFAULT: "#64FFDA", // Primary accent color
         },
         divine: {
-          DEFAULT: "#FFD700", // Divine gold
-          light: "#FFF4BD", // Soft golden glow
+          DEFAULT: "#FFD700", // Secondary accent color
         }
       },
       fontFamily: {

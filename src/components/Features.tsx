@@ -1,12 +1,12 @@
 import React from "react";
-import { Check, Star, Award, ShieldCheck } from "lucide-react";
+import { Star, Award, ShieldCheck } from "lucide-react";
 
 const Features = () => {
   return (
     <section className="py-20 px-4">
       <div className="container mx-auto">
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <h2 className="text-4xl font-bold mb-4 bg-gradient-to-r from-white to-mint-light bg-clip-text text-transparent">
+          <h2 className="text-4xl font-bold mb-4 text-white">
             How it works?
           </h2>
           <p className="text-white/80">Our AI-powered platform simplifies tech recruitment</p>
@@ -31,9 +31,9 @@ const Features = () => {
           ].map((feature, index) => (
             <div 
               key={index} 
-              className="group bg-forest-light p-8 rounded-xl border border-white/10 transition-all duration-300 hover:scale-105 hover:bg-forest-light/80"
+              className="bg-forest-light p-8 rounded-xl border border-mint/10"
             >
-              <div className="w-12 h-12 bg-mint rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+              <div className="w-12 h-12 bg-mint rounded-full flex items-center justify-center mb-6">
                 {React.createElement(feature.icon, { className: "w-6 h-6 text-forest" })}
               </div>
               <h3 className="text-xl font-bold mb-3">{feature.title}</h3>

@@ -29,21 +29,19 @@
 
   body {
     @apply bg-forest text-white antialiased;
-    background-image: 
-      radial-gradient(circle at 50% 0%, rgba(255, 215, 0, 0.15), transparent 70%),
-      radial-gradient(circle at 0% 50%, rgba(100, 255, 218, 0.1), transparent 50%);
+    background-image: radial-gradient(circle at 50% 0%, rgba(100, 255, 218, 0.05), transparent 70%);
     background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
   }
 
   ::selection {
-    @apply bg-divine text-forest;
+    @apply bg-mint text-forest;
   }
 }
 
 .glass-nav {
   background: rgba(10, 31, 47, 0.8);
   backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(255, 215, 0, 0.1);
+  border-bottom: 1px solid rgba(100, 255, 218, 0.1);
 }

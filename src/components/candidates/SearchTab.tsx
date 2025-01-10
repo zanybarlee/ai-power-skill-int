@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { normalizeSkills } from "@/utils/candidateUtils";
+import { CandidateTable } from "./CandidateTable";
 
 interface SearchResult {
   id: string;
@@ -84,34 +85,38 @@ export const SearchTab = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-      <div className="relative md:col-span-2">
-        <Input
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"
-        />
-        <Search className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="relative md:col-span-2">
+          <Input
+            placeholder="Search by name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"
+          />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+        </div>
+
+        <Button 
+          onClick={handleTalentSearch}
+          disabled={isLoading || isSearching}
+          className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
+        >
+          {(isLoading || isSearching) ? (
+            <>
+              <RefreshCw className="h-4 w-4 animate-spin" />
+              Searching...
+            </>
+          ) : (
+            <>
+              <Search className="h-4 w-4" />
+              Search Talent
+            </>
+          )}
+        </Button>
       </div>
 
-      <Button 
-        onClick={handleTalentSearch}
-        disabled={isLoading || isSearching}
-        className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
-      >
-        {(isLoading || isSearching) ? (
-          <>
-            <RefreshCw className="h-4 w-4 animate-spin" />
-            Searching...
-          </>
-        ) : (
-          <>
-            <Search className="h-4 w-4" />
-            Search Talent
-          </>
-        )}
-      </Button>
+      {searchResults && <CandidateTable candidates={searchResults} />}
     </div>
   );
 };

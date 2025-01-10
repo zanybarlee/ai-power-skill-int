@@ -83,7 +83,7 @@ const Candidates = () => {
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Roles</SelectItem>
+                <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
                 <SelectItem value="Backend Developer">Backend Developer</SelectItem>
                 <SelectItem value="Full Stack Developer">Full Stack Developer</SelectItem>
@@ -95,7 +95,7 @@ const Candidates = () => {
                 <SelectValue placeholder="Filter by location" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Locations</SelectItem>
+                <SelectItem value="all">All Locations</SelectItem>
                 <SelectItem value="San Francisco">San Francisco</SelectItem>
                 <SelectItem value="New York">New York</SelectItem>
                 <SelectItem value="Austin">Austin</SelectItem>

@@ -32,31 +32,25 @@ export const SearchTab = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   const searchCandidates = async () => {
-    if (!searchTerm.trim()) {
+    if (!searchTerm) {
       throw new Error("Please enter a search query");
     }
 
-    const sanitizedSearchTerm = searchTerm.trim();
-    console.log("Searching for:", sanitizedSearchTerm);
+    console.log("Searching for:", searchTerm); // Debug log
 
-    try {
-      // Search by name only
-      const { data: nameResults, error: nameError } = await supabase
-        .from('cv_metadata')
-        .select('id, name, experience, location, skills')
-        .ilike('name', `%${sanitizedSearchTerm}%`);
+    const { data, error } = await supabase
+      .from('cv_metadata')
+      .select('id, name, experience, location, skills')
+      .ilike('name', `%${searchTerm}%`)
+      .limit(10);
 
-      if (nameError) {
-        console.error("Name search error:", nameError);
-        throw nameError;
-      }
-
-      console.log("Search results:", nameResults);
-      return nameResults as DatabaseResult[];
-    } catch (error) {
-      console.error("Search error:", error);
+    if (error) {
+      console.error("Supabase error:", error); // Debug log
       throw error;
     }
+
+    console.log("Raw data from Supabase:", data); // Debug log
+    return (data || []) as DatabaseResult[];
   };
 
   const { data: searchResults, refetch, isLoading } = useQuery({
@@ -67,7 +61,7 @@ export const SearchTab = () => {
   });
 
   const handleTalentSearch = async () => {
-    if (!searchTerm.trim()) {
+    if (!searchTerm) {
       toast({
         title: "Error",
         description: "Please enter a search query",
@@ -96,7 +90,7 @@ export const SearchTab = () => {
 
   // Transform database results to match Candidate interface
   const formattedResults: Candidate[] = searchResults?.map((result): Candidate => {
-    console.log("Formatting result:", result);
+    console.log("Formatting result:", result); // Debug log
     return {
       id: result.id,
       name: result.name || 'Unknown',
@@ -108,7 +102,7 @@ export const SearchTab = () => {
     };
   }) || [];
 
-  console.log("Formatted results:", formattedResults);
+  console.log("Formatted results:", formattedResults); // Debug log
 
   return (
     <div className="space-y-6">

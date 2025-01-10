@@ -6,6 +6,7 @@ import { Search, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { normalizeSkills } from "@/utils/candidateUtils";
 
 interface SearchResult {
   id: string;
@@ -43,27 +44,21 @@ export const SearchTab = () => {
       throw error;
     }
 
-    // Transform the data to match the expected format
     return data.map((item): SearchResult => ({
       id: item.id,
       name: item.name || 'Unknown',
       role: roleFilter === 'all' ? 'Not specified' : roleFilter,
       experience: item.experience,
       location: item.location || 'Not specified',
-      // Ensure skills is always an array of strings
-      skills: Array.isArray(item.skills) ? 
-        item.skills.map(skill => String(skill)) : 
-        typeof item.skills === 'object' && item.skills?.skills ? 
-          (item.skills.skills as string[]) : 
-          [],
-      availability: 'Not specified' // This field isn't in cv_metadata, so we're using a default
+      skills: normalizeSkills(item.skills),
+      availability: 'Not specified'
     }));
   };
 
   const { data: searchResults, refetch, isLoading } = useQuery({
     queryKey: ['candidates', searchTerm, roleFilter],
     queryFn: searchCandidates,
-    enabled: false, // Don't run the query automatically
+    enabled: false,
     retry: false,
   });
 

@@ -6,6 +6,7 @@ import { CrawlTab } from "@/components/candidates/CrawlTab";
 import { CandidateTable } from "@/components/candidates/CandidateTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { normalizeSkills } from "@/utils/candidateUtils";
 
 const Candidates = () => {
   // Fetch initial candidates
@@ -25,12 +26,7 @@ const Candidates = () => {
         role: 'Not specified',
         experience: item.experience ? `${item.experience} years` : 'Not specified',
         location: item.location || 'Not specified',
-        // Ensure skills is always an array of strings
-        skills: Array.isArray(item.skills) ? 
-          item.skills.map(skill => String(skill)) : 
-          typeof item.skills === 'object' && item.skills?.skills ? 
-            (item.skills.skills as string[]) : 
-            [],
+        skills: normalizeSkills(item.skills),
         availability: 'Not specified'
       }));
     },

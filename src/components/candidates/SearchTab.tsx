@@ -84,6 +84,12 @@ export const SearchTab = () => {
     }
   };
 
+  // Convert search results to match Candidate interface
+  const formattedResults = searchResults?.map(result => ({
+    ...result,
+    experience: result.experience ? `${result.experience} years` : 'Not specified'
+  }));
+
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -116,7 +122,7 @@ export const SearchTab = () => {
         </Button>
       </div>
 
-      {searchResults && <CandidateTable candidates={searchResults} />}
+      {formattedResults && <CandidateTable candidates={formattedResults} />}
     </div>
   );
 };

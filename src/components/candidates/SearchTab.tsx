@@ -36,6 +36,8 @@ export const SearchTab = () => {
       throw new Error("Please enter a search query");
     }
 
+    console.log("Searching for:", searchTerm); // Debug log
+
     const { data, error } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
@@ -43,9 +45,11 @@ export const SearchTab = () => {
       .limit(10);
 
     if (error) {
+      console.error("Supabase error:", error); // Debug log
       throw error;
     }
 
+    console.log("Raw data from Supabase:", data); // Debug log
     return (data || []) as DatabaseResult[];
   };
 
@@ -85,15 +89,20 @@ export const SearchTab = () => {
   };
 
   // Transform database results to match Candidate interface
-  const formattedResults: Candidate[] = searchResults?.map((result): Candidate => ({
-    id: result.id,
-    name: result.name || 'Unknown',
-    role: 'Not specified',
-    experience: result.experience ? `${result.experience} years` : 'Not specified',
-    location: result.location || 'Not specified',
-    skills: normalizeSkills(result.skills),
-    availability: 'Not specified'
-  })) || [];
+  const formattedResults: Candidate[] = searchResults?.map((result): Candidate => {
+    console.log("Formatting result:", result); // Debug log
+    return {
+      id: result.id,
+      name: result.name || 'Unknown',
+      role: 'Not specified',
+      experience: result.experience ? `${result.experience} years` : 'Not specified',
+      location: result.location || 'Not specified',
+      skills: normalizeSkills(result.skills),
+      availability: 'Not specified'
+    };
+  }) || [];
+
+  console.log("Formatted results:", formattedResults); // Debug log
 
   return (
     <div className="space-y-6">
@@ -127,7 +136,14 @@ export const SearchTab = () => {
         </Button>
       </div>
 
-      {formattedResults.length > 0 && <CandidateTable candidates={formattedResults} />}
+      {formattedResults.length > 0 && (
+        <>
+          <div className="text-white mb-4">
+            Found {formattedResults.length} candidates
+          </div>
+          <CandidateTable candidates={formattedResults} />
+        </>
+      )}
     </div>
   );
 };

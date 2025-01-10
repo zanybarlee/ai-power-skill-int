@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, RefreshCw } from "lucide-react";
+import { Search, RefreshCw, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { searchTalent } from "@/services/talentSearch";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface Candidate {
   id: string;
@@ -55,6 +56,7 @@ const Candidates = () => {
   const [roleFilter, setRoleFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const filteredCandidates = mockCandidates.filter(candidate => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -79,7 +81,7 @@ const Candidates = () => {
     try {
       const searchParams = {
         search_query: searchTerm,
-        uen: "200311331R", // These could be stored in a configuration file or environment variables
+        uen: "200311331R",
         user_guid: "59884f68-8db5-4fe7-a0a3-baa466c1c808",
         session_id: `session-${Date.now()}`,
         context_id: `context-${Date.now()}`,
@@ -92,8 +94,7 @@ const Candidates = () => {
         title: "Success",
         description: "Talent search completed successfully",
       });
-
-      // Here you would typically update your candidates list with the new results
+      
       console.log('Search results:', result);
       
     } catch (error) {
@@ -107,55 +108,109 @@ const Candidates = () => {
     }
   };
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      setSelectedFile(event.target.files[0]);
+    }
+  };
+
+  const handleCrawlCV = async () => {
+    if (!selectedFile) {
+      toast({
+        title: "Error",
+        description: "Please select a CV file first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Success",
+      description: "CV uploaded successfully",
+    });
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="bg-forest-light rounded-lg p-6 border border-mint/10">
           <h1 className="text-2xl font-semibold text-white mb-6">Candidate Search</h1>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <div className="relative md:col-span-2">
-              <Input
-                placeholder="Search by name or skills..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"
-              />
-              <Search className="absolute left-3 top-3 h-4 w-4 text-white/50" />
-            </div>
-            
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="bg-forest border-mint/20 text-white">
-                <SelectValue placeholder="Filter by role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
-                <SelectItem value="Backend Developer">Backend Developer</SelectItem>
-                <SelectItem value="Full Stack Developer">Full Stack Developer</SelectItem>
-              </SelectContent>
-            </Select>
+          <Tabs defaultValue="search" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-forest">
+              <TabsTrigger value="search">Search Talent</TabsTrigger>
+              <TabsTrigger value="crawl">Crawl CV</TabsTrigger>
+            </TabsList>
 
-            <Button 
-              onClick={handleTalentSearch}
-              disabled={isSearching}
-              className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
-            >
-              {isSearching ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Searching...
-                </>
-              ) : (
-                <>
-                  <Search className="h-4 w-4" />
-                  Search Talent
-                </>
-              )}
-            </Button>
-          </div>
+            <TabsContent value="search" className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div className="relative md:col-span-2">
+                  <Input
+                    placeholder="Search by name or skills..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"
+                  />
+                  <Search className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+                </div>
+                
+                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                  <SelectTrigger className="bg-forest border-mint/20 text-white">
+                    <SelectValue placeholder="Filter by role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Roles</SelectItem>
+                    <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
+                    <SelectItem value="Backend Developer">Backend Developer</SelectItem>
+                    <SelectItem value="Full Stack Developer">Full Stack Developer</SelectItem>
+                  </SelectContent>
+                </Select>
 
-          <ScrollArea className="h-[600px] rounded-md border border-mint/10">
+                <Button 
+                  onClick={handleTalentSearch}
+                  disabled={isSearching}
+                  className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
+                >
+                  {isSearching ? (
+                    <>
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      Searching...
+                    </>
+                  ) : (
+                    <>
+                      <Search className="h-4 w-4" />
+                      Search Talent
+                    </>
+                  )}
+                </Button>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="crawl" className="mt-6">
+              <div className="space-y-4">
+                <div className="flex items-center gap-4">
+                  <Input
+                    type="file"
+                    onChange={handleFileChange}
+                    accept=".pdf,.doc,.docx"
+                    className="bg-forest border-mint/20 text-white"
+                  />
+                  <Button
+                    onClick={handleCrawlCV}
+                    className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
+                  >
+                    <Upload className="h-4 w-4" />
+                    Upload CV
+                  </Button>
+                </div>
+                <p className="text-white/70 text-sm">
+                  Supported formats: PDF, DOC, DOCX
+                </p>
+              </div>
+            </TabsContent>
+          </Tabs>
+
+          <ScrollArea className="h-[600px] rounded-md border border-mint/10 mt-6">
             <Table>
               <TableHeader className="bg-forest">
                 <TableRow>

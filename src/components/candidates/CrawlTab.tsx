@@ -1,42 +1,29 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Upload, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { searchTalent } from "@/services/talentSearch";
 
 export const CrawlTab = () => {
   const { toast } = useToast();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files && event.target.files[0]) {
-      setSelectedFile(event.target.files[0]);
-    }
-  };
-
-  const handleCrawlCV = async () => {
-    if (!selectedFile) {
+  const handleSearchTalent = async () => {
+    if (!searchQuery.trim()) {
       toast({
         title: "Error",
-        description: "Please select a CV file first",
+        description: "Please enter a search query",
         variant: "destructive",
       });
       return;
     }
 
-    toast({
-      title: "Success",
-      description: "CV uploaded successfully",
-    });
-  };
-
-  const handleSearchTalent = async () => {
     setIsLoading(true);
     try {
       const params = {
-        search_query: "BIM Modeler",
+        search_query: searchQuery,
         uen: "200311331R",
         user_guid: "59884f68-8db5-4fe7-a0a3-baa466c1c808",
         session_id: "session-" + Date.now(),
@@ -47,13 +34,13 @@ export const CrawlTab = () => {
       const result = await searchTalent(params);
       toast({
         title: "Success",
-        description: "Talent search completed successfully",
+        description: "CV crawl completed successfully",
       });
       console.log('Search results:', result);
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to search for talent",
+        description: "Failed to crawl CV",
         variant: "destructive",
       });
     } finally {
@@ -65,32 +52,21 @@ export const CrawlTab = () => {
     <div className="space-y-4">
       <div className="flex items-center gap-4">
         <Input
-          type="file"
-          onChange={handleFileChange}
-          accept=".pdf,.doc,.docx"
+          type="text"
+          placeholder="Enter search query (e.g., BIM Modeler)"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
           className="bg-forest border-mint/20 text-white"
         />
-        <Button
-          onClick={handleCrawlCV}
-          className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
-        >
-          <Upload className="h-4 w-4" />
-          Upload CV
-        </Button>
-      </div>
-      <div className="flex items-center gap-4">
         <Button
           onClick={handleSearchTalent}
           disabled={isLoading}
           className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
         >
           <Search className="h-4 w-4" />
-          {isLoading ? "Searching..." : "Search Talent"}
+          {isLoading ? "Crawling..." : "Crawl CV"}
         </Button>
       </div>
-      <p className="text-white/70 text-sm">
-        Supported formats: PDF, DOC, DOCX
-      </p>
     </div>
   );
 };

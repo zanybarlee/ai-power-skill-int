@@ -38,19 +38,27 @@ export const SearchTab = () => {
 
     console.log("Searching for:", searchTerm); // Debug log
 
-    const { data, error } = await supabase
+    const { data: nameResults, error: nameError } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
-      .ilike('name', `%${searchTerm}%`)
-      .limit(10);
+      .ilike('name', `%${searchTerm}%`);
 
-    if (error) {
-      console.error("Supabase error:", error); // Debug log
-      throw error;
+    const { data: skillsResults, error: skillsError } = await supabase
+      .from('cv_metadata')
+      .select('id, name, experience, location, skills')
+      .contains('skills', [searchTerm]);
+
+    if (nameError || skillsError) {
+      console.error("Supabase error:", nameError || skillsError); // Debug log
+      throw nameError || skillsError;
     }
 
-    console.log("Raw data from Supabase:", data); // Debug log
-    return (data || []) as DatabaseResult[];
+    // Combine and deduplicate results based on id
+    const combinedResults = [...(nameResults || []), ...(skillsResults || [])];
+    const uniqueResults = Array.from(new Map(combinedResults.map(item => [item.id, item])).values());
+
+    console.log("Combined results:", uniqueResults); // Debug log
+    return uniqueResults as DatabaseResult[];
   };
 
   const { data: searchResults, refetch, isLoading } = useQuery({
@@ -109,7 +117,7 @@ export const SearchTab = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="relative md:col-span-2">
           <Input
-            placeholder="Search by name..."
+            placeholder="Search by name or skill..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"

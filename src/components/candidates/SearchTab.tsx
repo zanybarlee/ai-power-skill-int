@@ -30,7 +30,7 @@ export const SearchTab = () => {
     const { data, error } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
-      .or(`name.ilike.%${searchTerm}%, skills->0.ilike.%${searchTerm}%`)
+      .ilike('name', `%${searchTerm}%`)
       .limit(10);
 
     if (error) {
@@ -87,7 +87,7 @@ export const SearchTab = () => {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div className="relative md:col-span-2">
         <Input
-          placeholder="Search by name or skills..."
+          placeholder="Search by name..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"

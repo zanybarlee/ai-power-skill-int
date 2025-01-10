@@ -44,11 +44,11 @@ export const SearchTab = () => {
       .select('id, name, experience, location, skills')
       .ilike('name', `%${searchTerm}%`);
 
-    // Search in skills JSONB array
+    // Search in skills JSONB array using containsAny
     const { data: skillsResults, error: skillsError } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
-      .contains('skills', [searchTerm]);
+      .or(`skills->0.eq.${searchTerm},skills->1.eq.${searchTerm},skills->2.eq.${searchTerm}`);
 
     if (nameError || skillsError) {
       console.error("Supabase error:", nameError || skillsError); // Debug log

@@ -30,7 +30,7 @@ export const SearchTab = () => {
     const { data, error } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
-      .or(`name.ilike.%${searchTerm}%, skills::text ilike %${searchTerm}%`);
+      .or(`name.ilike.%${searchTerm}%,skills->0.ilike.%${searchTerm}%`);
 
     if (error) {
       throw error;
@@ -39,7 +39,7 @@ export const SearchTab = () => {
     return data.map((item): SearchResult => ({
       id: item.id,
       name: item.name || 'Unknown',
-      role: 'Not specified', // Since we don't have role data
+      role: 'Not specified',
       experience: item.experience,
       location: item.location || 'Not specified',
       skills: normalizeSkills(item.skills),

@@ -1,22 +1,17 @@
-import Navbar from "@/components/Navbar";
-import Hero from "@/components/Hero";
-import Stats from "@/components/Stats";
-import Features from "@/components/Features";
-import MobilePreview from "@/components/MobilePreview";
-import Testimonials from "@/components/Testimonials";
-import Footer from "@/components/Footer";
+import Layout from "@/components/Layout";
 
 const Index = () => {
   return (
-    <main className="min-h-screen">
-      <Navbar />
-      <Hero />
-      <Stats />
-      <Features />
-      <MobilePreview />
-      <Testimonials />
-      <Footer />
-    </main>
+    <Layout>
+      <div className="max-w-7xl mx-auto">
+        <div className="bg-forest-light rounded-lg p-6 border border-mint/10">
+          <h1 className="text-2xl font-semibold text-white mb-4">Welcome to TalentSource</h1>
+          <p className="text-white/80">
+            Start managing your recruitment process efficiently with our platform.
+          </p>
+        </div>
+      </div>
+    </Layout>
   );
 };
 

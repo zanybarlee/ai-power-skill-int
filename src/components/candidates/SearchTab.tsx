@@ -36,31 +36,37 @@ export const SearchTab = () => {
       throw new Error("Please enter a search query");
     }
 
-    console.log("Searching for:", searchTerm); // Debug log
+    // Sanitize the search term
+    const sanitizedSearchTerm = searchTerm.trim();
+    console.log("Searching for:", sanitizedSearchTerm);
 
-    // Search by name
-    const { data: nameResults, error: nameError } = await supabase
-      .from('cv_metadata')
-      .select('id, name, experience, location, skills')
-      .ilike('name', `%${searchTerm}%`);
+    try {
+      // Search by name
+      const { data: nameResults, error: nameError } = await supabase
+        .from('cv_metadata')
+        .select('id, name, experience, location, skills')
+        .ilike('name', `%${sanitizedSearchTerm}%`);
 
-    // Search in skills JSONB array using contains
-    const { data: skillsResults, error: skillsError } = await supabase
-      .from('cv_metadata')
-      .select('id, name, experience, location, skills')
-      .contains('skills', [searchTerm]);
+      if (nameError) throw nameError;
 
-    if (nameError || skillsError) {
-      console.error("Supabase error:", nameError || skillsError); // Debug log
-      throw nameError || skillsError;
+      // Search in skills JSONB array
+      const { data: skillsResults, error: skillsError } = await supabase
+        .from('cv_metadata')
+        .select('id, name, experience, location, skills')
+        .contains('skills', [sanitizedSearchTerm]); // Pass search term as array element
+
+      if (skillsError) throw skillsError;
+
+      // Combine and deduplicate results
+      const combinedResults = [...(nameResults || []), ...(skillsResults || [])];
+      const uniqueResults = Array.from(new Map(combinedResults.map(item => [item.id, item])).values());
+
+      console.log("Combined results:", uniqueResults);
+      return uniqueResults as DatabaseResult[];
+    } catch (error) {
+      console.error("Supabase error:", error);
+      throw error;
     }
-
-    // Combine and deduplicate results based on id
-    const combinedResults = [...(nameResults || []), ...(skillsResults || [])];
-    const uniqueResults = Array.from(new Map(combinedResults.map(item => [item.id, item])).values());
-
-    console.log("Combined results:", uniqueResults); // Debug log
-    return uniqueResults as DatabaseResult[];
   };
 
   const { data: searchResults, refetch, isLoading } = useQuery({
@@ -71,7 +77,7 @@ export const SearchTab = () => {
   });
 
   const handleTalentSearch = async () => {
-    if (!searchTerm) {
+    if (!searchTerm.trim()) {
       toast({
         title: "Error",
         description: "Please enter a search query",
@@ -100,7 +106,7 @@ export const SearchTab = () => {
 
   // Transform database results to match Candidate interface
   const formattedResults: Candidate[] = searchResults?.map((result): Candidate => {
-    console.log("Formatting result:", result); // Debug log
+    console.log("Formatting result:", result);
     return {
       id: result.id,
       name: result.name || 'Unknown',
@@ -112,7 +118,7 @@ export const SearchTab = () => {
     };
   }) || [];
 
-  console.log("Formatted results:", formattedResults); // Debug log
+  console.log("Formatted results:", formattedResults);
 
   return (
     <div className="space-y-6">

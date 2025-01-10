@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { BookmarkX, Mail, Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { queryBestMatch } from "@/services/matchingService";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -48,9 +48,24 @@ const shortlistedCandidates = [
 
 const Shortlists = () => {
   const { toast } = useToast();
-  const [jobDescription, setJobDescription] = useState("");
+  const [jobDescription, setJobDescription] = useState(() => {
+    return localStorage.getItem("jobDescription") || "";
+  });
   const [isMatching, setIsMatching] = useState(false);
-  const [matchingResult, setMatchingResult] = useState<string | null>(null);
+  const [matchingResult, setMatchingResult] = useState<string | null>(() => {
+    return localStorage.getItem("matchingResult");
+  });
+
+  // Save to localStorage whenever values change
+  useEffect(() => {
+    localStorage.setItem("jobDescription", jobDescription);
+  }, [jobDescription]);
+
+  useEffect(() => {
+    if (matchingResult) {
+      localStorage.setItem("matchingResult", matchingResult);
+    }
+  }, [matchingResult]);
 
   const handleRemove = (candidateId: number) => {
     toast({

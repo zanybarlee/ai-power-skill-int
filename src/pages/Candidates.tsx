@@ -45,9 +45,19 @@ const Candidates = () => {
           <h1 className="text-2xl font-semibold text-white mb-6">Candidate Search</h1>
           
           <Tabs defaultValue="crawl" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-forest">
-              <TabsTrigger value="crawl">Crawl CV</TabsTrigger>
-              <TabsTrigger value="search">Search Talent</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 bg-forest-light border border-mint/20 rounded-lg p-1">
+              <TabsTrigger 
+                value="crawl" 
+                className="data-[state=active]:bg-mint data-[state=active]:text-forest data-[state=active]:shadow-none text-mint hover:text-mint/80 px-8 py-2.5"
+              >
+                Crawl CV
+              </TabsTrigger>
+              <TabsTrigger 
+                value="search" 
+                className="data-[state=active]:bg-mint data-[state=active]:text-forest data-[state=active]:shadow-none text-mint hover:text-mint/80 px-8 py-2.5"
+              >
+                Search Talent
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="crawl" className="mt-6">

@@ -46,7 +46,7 @@ const Layout = ({ children }: LayoutProps) => {
       >
         <div className="flex h-16 items-center justify-between px-4 border-b border-mint/10">
           <h1 className={cn("text-mint font-semibold", !isSidebarOpen && "lg:hidden")}>
-            TalentSource
+            Aptiv8 AI Agent for CV
           </h1>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}

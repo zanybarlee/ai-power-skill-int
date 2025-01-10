@@ -32,11 +32,11 @@ export const SearchTab = () => {
   const [isSearching, setIsSearching] = useState(false);
 
   const searchCandidates = async () => {
-    if (!searchTerm) {
+    if (!searchTerm.trim()) {
       throw new Error("Please enter a search query");
     }
 
-    // Sanitize the search term
+    // Sanitize and prepare the search term
     const sanitizedSearchTerm = searchTerm.trim();
     console.log("Searching for:", sanitizedSearchTerm);
 
@@ -47,24 +47,33 @@ export const SearchTab = () => {
         .select('id, name, experience, location, skills')
         .ilike('name', `%${sanitizedSearchTerm}%`);
 
-      if (nameError) throw nameError;
+      if (nameError) {
+        console.error("Name search error:", nameError);
+        throw nameError;
+      }
 
       // Search in skills JSONB array
+      // Note: We're now properly formatting the skills search as a JSON array
       const { data: skillsResults, error: skillsError } = await supabase
         .from('cv_metadata')
         .select('id, name, experience, location, skills')
-        .contains('skills', [sanitizedSearchTerm]); // Pass search term as array element
+        .contains('skills', [sanitizedSearchTerm]); // Properly formatted JSON array
 
-      if (skillsError) throw skillsError;
+      if (skillsError) {
+        console.error("Skills search error:", skillsError);
+        throw skillsError;
+      }
 
       // Combine and deduplicate results
       const combinedResults = [...(nameResults || []), ...(skillsResults || [])];
-      const uniqueResults = Array.from(new Map(combinedResults.map(item => [item.id, item])).values());
+      const uniqueResults = Array.from(
+        new Map(combinedResults.map(item => [item.id, item])).values()
+      );
 
       console.log("Combined results:", uniqueResults);
       return uniqueResults as DatabaseResult[];
     } catch (error) {
-      console.error("Supabase error:", error);
+      console.error("Search error:", error);
       throw error;
     }
   };

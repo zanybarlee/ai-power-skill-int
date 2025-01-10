@@ -43,10 +43,14 @@ export const SearchTab = () => {
       .select('id, name, experience, location, skills')
       .ilike('name', `%${searchTerm}%`);
 
+    // Using containedBy for JSON array search
     const { data: skillsResults, error: skillsError } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
-      .contains('skills', [searchTerm]);
+      .textSearch('skills', searchTerm, {
+        type: 'plain',
+        config: 'english'
+      });
 
     if (nameError || skillsError) {
       console.error("Supabase error:", nameError || skillsError); // Debug log

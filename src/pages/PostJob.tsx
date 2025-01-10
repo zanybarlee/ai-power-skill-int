@@ -1,3 +1,4 @@
+import React from "react";
 import Layout from "@/components/Layout";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -23,7 +24,7 @@ import {
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FileIcon, UploadIcon } from "lucide-react";
+import { FileIcon } from "lucide-react";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ACCEPTED_FILE_TYPES = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
@@ -271,7 +272,7 @@ const PostJob = () => {
               <FormField
                 control={form.control}
                 name="jobDescriptionFile"
-                render={({ field: { onChange, ...field } }) => (
+                render={({ field: { onChange, value, ...field } }) => (
                   <FormItem>
                     <FormLabel className="text-white">Upload Job Description Document</FormLabel>
                     <FormControl>

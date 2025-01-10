@@ -10,10 +10,12 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookmarkX, Mail } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { BookmarkX, Mail, Search } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useState } from "react";
+import { queryBestMatch } from "@/services/matchingService";
+import { Textarea } from "@/components/ui/textarea";
 
-// Mock data for demonstration
 const shortlistedCandidates = [
   {
     id: 1,
@@ -46,6 +48,9 @@ const shortlistedCandidates = [
 
 const Shortlists = () => {
   const { toast } = useToast();
+  const [jobDescription, setJobDescription] = useState("");
+  const [isMatching, setIsMatching] = useState(false);
+  const [matchingResult, setMatchingResult] = useState<string | null>(null);
 
   const handleRemove = (candidateId: number) => {
     toast({
@@ -58,9 +63,78 @@ const Shortlists = () => {
     window.location.href = `mailto:${email}`;
   };
 
+  const handleMatch = async () => {
+    if (!jobDescription.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a job description",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsMatching(true);
+    try {
+      const result = await queryBestMatch(jobDescription);
+      setMatchingResult(result);
+      toast({
+        title: "Match Complete",
+        description: "Best matches have been found based on the job description.",
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to find matches. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsMatching(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
+        <Card className="bg-forest-light border-mint/10">
+          <CardHeader>
+            <CardTitle className="text-2xl font-semibold text-white">
+              Match Candidates
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-mint text-sm">Job Description</label>
+              <Textarea
+                placeholder="Enter job description to find best matches..."
+                className="bg-forest border-mint/20 text-white placeholder:text-white/50"
+                value={jobDescription}
+                onChange={(e) => setJobDescription(e.target.value)}
+              />
+              <Button
+                onClick={handleMatch}
+                disabled={isMatching}
+                className="bg-mint text-forest hover:bg-mint/90"
+              >
+                {isMatching ? (
+                  "Finding Matches..."
+                ) : (
+                  <>
+                    <Search className="w-4 h-4 mr-2" />
+                    Find Best Matches
+                  </>
+                )}
+              </Button>
+            </div>
+            
+            {matchingResult && (
+              <div className="mt-4 p-4 bg-forest rounded-md">
+                <h3 className="text-mint font-medium mb-2">Matching Results</h3>
+                <p className="text-white/90 whitespace-pre-wrap">{matchingResult}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <Card className="bg-forest-light border-mint/10">
           <CardHeader>
             <CardTitle className="text-2xl font-semibold text-white">

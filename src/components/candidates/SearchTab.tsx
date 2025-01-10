@@ -36,12 +36,11 @@ export const SearchTab = () => {
       throw new Error("Please enter a search query");
     }
 
-    // Sanitize and prepare the search term
     const sanitizedSearchTerm = searchTerm.trim();
     console.log("Searching for:", sanitizedSearchTerm);
 
     try {
-      // Search by name
+      // Search by name only
       const { data: nameResults, error: nameError } = await supabase
         .from('cv_metadata')
         .select('id, name, experience, location, skills')
@@ -52,26 +51,8 @@ export const SearchTab = () => {
         throw nameError;
       }
 
-      // Search in skills JSONB array
-      // Note: We're now properly formatting the skills search as a JSON array
-      const { data: skillsResults, error: skillsError } = await supabase
-        .from('cv_metadata')
-        .select('id, name, experience, location, skills')
-        .contains('skills', [sanitizedSearchTerm]); // Properly formatted JSON array
-
-      if (skillsError) {
-        console.error("Skills search error:", skillsError);
-        throw skillsError;
-      }
-
-      // Combine and deduplicate results
-      const combinedResults = [...(nameResults || []), ...(skillsResults || [])];
-      const uniqueResults = Array.from(
-        new Map(combinedResults.map(item => [item.id, item])).values()
-      );
-
-      console.log("Combined results:", uniqueResults);
-      return uniqueResults as DatabaseResult[];
+      console.log("Search results:", nameResults);
+      return nameResults as DatabaseResult[];
     } catch (error) {
       console.error("Search error:", error);
       throw error;
@@ -134,7 +115,7 @@ export const SearchTab = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="relative md:col-span-2">
           <Input
-            placeholder="Search by name or skill..."
+            placeholder="Search by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"

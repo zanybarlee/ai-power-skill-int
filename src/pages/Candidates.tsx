@@ -25,7 +25,12 @@ const Candidates = () => {
         role: 'Not specified',
         experience: item.experience ? `${item.experience} years` : 'Not specified',
         location: item.location || 'Not specified',
-        skills: Array.isArray(item.skills) ? item.skills : [],
+        // Ensure skills is always an array of strings
+        skills: Array.isArray(item.skills) ? 
+          item.skills.map(skill => String(skill)) : 
+          typeof item.skills === 'object' && item.skills?.skills ? 
+            (item.skills.skills as string[]) : 
+            [],
         availability: 'Not specified'
       }));
     },

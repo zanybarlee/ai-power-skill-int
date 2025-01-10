@@ -13,7 +13,7 @@ interface SearchResult {
   role: string;
   experience: number | null;
   location: string | null;
-  skills: string[] | null;
+  skills: string[];
   availability: string;
 }
 
@@ -50,7 +50,12 @@ export const SearchTab = () => {
       role: roleFilter === 'all' ? 'Not specified' : roleFilter,
       experience: item.experience,
       location: item.location || 'Not specified',
-      skills: Array.isArray(item.skills) ? item.skills : [],
+      // Ensure skills is always an array of strings
+      skills: Array.isArray(item.skills) ? 
+        item.skills.map(skill => String(skill)) : 
+        typeof item.skills === 'object' && item.skills?.skills ? 
+          (item.skills.skills as string[]) : 
+          [],
       availability: 'Not specified' // This field isn't in cv_metadata, so we're using a default
     }));
   };

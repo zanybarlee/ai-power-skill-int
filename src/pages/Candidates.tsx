@@ -52,14 +52,14 @@ const mockCandidates: Candidate[] = [
 const Candidates = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
   const [locationFilter, setLocationFilter] = useState("");
   const [isSearching, setIsSearching] = useState(false);
 
   const filteredCandidates = mockCandidates.filter(candidate => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       candidate.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
-    const matchesRole = !roleFilter || candidate.role === roleFilter;
+    const matchesRole = roleFilter === "all" || candidate.role === roleFilter;
     const matchesLocation = !locationFilter || candidate.location.includes(locationFilter);
     
     return matchesSearch && matchesRole && matchesLocation;
@@ -113,7 +113,6 @@ const Candidates = () => {
         <div className="bg-forest-light rounded-lg p-6 border border-mint/10">
           <h1 className="text-2xl font-semibold text-white mb-6">Candidate Search</h1>
           
-          {/* Search and Filters */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div className="relative md:col-span-2">
               <Input
@@ -130,7 +129,7 @@ const Candidates = () => {
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">All Roles</SelectItem>
+                <SelectItem value="all">All Roles</SelectItem>
                 <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
                 <SelectItem value="Backend Developer">Backend Developer</SelectItem>
                 <SelectItem value="Full Stack Developer">Full Stack Developer</SelectItem>
@@ -156,7 +155,6 @@ const Candidates = () => {
             </Button>
           </div>
 
-          {/* Candidates Table */}
           <ScrollArea className="h-[600px] rounded-md border border-mint/10">
             <Table>
               <TableHeader className="bg-forest">

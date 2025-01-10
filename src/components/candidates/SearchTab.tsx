@@ -30,7 +30,7 @@ export const SearchTab = () => {
     const { data, error } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
-      .or(`name.ilike.%${searchTerm}%, skills::text ilike '%${searchTerm}%'`)
+      .or(`name.ilike.%${searchTerm}%, skills.ilike.%${searchTerm}%`)
       .limit(10);
 
     if (error) {

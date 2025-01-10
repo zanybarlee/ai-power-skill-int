@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -21,7 +20,6 @@ interface SearchResult {
 export const SearchTab = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
   const [isSearching, setIsSearching] = useState(false);
 
   const searchCandidates = async () => {
@@ -29,16 +27,10 @@ export const SearchTab = () => {
       throw new Error("Please enter a search query");
     }
 
-    const query = supabase
+    const { data, error } = await supabase
       .from('cv_metadata')
       .select('id, name, experience, location, skills')
       .or(`name.ilike.%${searchTerm}%, skills->>'skills'.ilike.%${searchTerm}%`);
-
-    if (roleFilter !== 'all') {
-      query.eq('role', roleFilter);
-    }
-
-    const { data, error } = await query;
 
     if (error) {
       throw error;
@@ -47,7 +39,7 @@ export const SearchTab = () => {
     return data.map((item): SearchResult => ({
       id: item.id,
       name: item.name || 'Unknown',
-      role: roleFilter === 'all' ? 'Not specified' : roleFilter,
+      role: 'Not specified', // Since we don't have role data
       experience: item.experience,
       location: item.location || 'Not specified',
       skills: normalizeSkills(item.skills),
@@ -56,7 +48,7 @@ export const SearchTab = () => {
   };
 
   const { data: searchResults, refetch, isLoading } = useQuery({
-    queryKey: ['candidates', searchTerm, roleFilter],
+    queryKey: ['candidates', searchTerm],
     queryFn: searchCandidates,
     enabled: false,
     retry: false,
@@ -91,7 +83,7 @@ export const SearchTab = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
       <div className="relative md:col-span-2">
         <Input
           placeholder="Search by name or skills..."
@@ -101,18 +93,6 @@ export const SearchTab = () => {
         />
         <Search className="absolute left-3 top-3 h-4 w-4 text-white/50" />
       </div>
-      
-      <Select value={roleFilter} onValueChange={setRoleFilter}>
-        <SelectTrigger className="bg-forest border-mint/20 text-white">
-          <SelectValue placeholder="Filter by role" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Roles</SelectItem>
-          <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
-          <SelectItem value="Backend Developer">Backend Developer</SelectItem>
-          <SelectItem value="Full Stack Developer">Full Stack Developer</SelectItem>
-        </SelectContent>
-      </Select>
 
       <Button 
         onClick={handleTalentSearch}

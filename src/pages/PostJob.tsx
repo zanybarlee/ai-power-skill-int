@@ -21,7 +21,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FileIcon, UploadIcon } from "lucide-react";
+
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const ACCEPTED_FILE_TYPES = ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
 
 const jobFormSchema = z.object({
   title: z.string().min(2, {
@@ -52,6 +57,15 @@ const jobFormSchema = z.object({
   benefits: z.string().min(20, {
     message: "Benefits must be at least 20 characters.",
   }),
+  jobDescriptionFile: z
+    .instanceof(FileList)
+    .refine((files) => files?.length === 0 || files?.[0]?.size <= MAX_FILE_SIZE, 
+      'Max file size is 5MB')
+    .refine(
+      (files) => files?.length === 0 || ACCEPTED_FILE_TYPES.includes(files?.[0]?.type),
+      'Only .pdf, .doc, and .docx files are accepted'
+    )
+    .optional(),
 });
 
 type JobFormValues = z.infer<typeof jobFormSchema>;
@@ -78,6 +92,8 @@ const PostJob = () => {
     defaultValues,
   });
 
+  const [selectedFile, setSelectedFile] = React.useState<File | null>(null);
+
   function onSubmit(data: JobFormValues) {
     console.log(data);
     toast({
@@ -85,6 +101,29 @@ const PostJob = () => {
       description: "Your job posting has been created and is now live.",
     });
   }
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast({
+          title: "Error",
+          description: "File size must be less than 5MB",
+          variant: "destructive",
+        });
+        return;
+      }
+      if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
+        toast({
+          title: "Error",
+          description: "Only .pdf, .doc, and .docx files are accepted",
+          variant: "destructive",
+        });
+        return;
+      }
+      setSelectedFile(file);
+    }
+  };
 
   return (
     <Layout>
@@ -228,6 +267,42 @@ const PostJob = () => {
                   </div>
                 </div>
               </div>
+
+              <FormField
+                control={form.control}
+                name="jobDescriptionFile"
+                render={({ field: { onChange, ...field } }) => (
+                  <FormItem>
+                    <FormLabel className="text-white">Upload Job Description Document</FormLabel>
+                    <FormControl>
+                      <div className="flex flex-col space-y-4">
+                        <Input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => {
+                            onChange(e.target.files);
+                            handleFileChange(e);
+                          }}
+                          className="bg-forest border-mint/20 file:text-mint file:bg-forest-light"
+                          {...field}
+                        />
+                        {selectedFile && (
+                          <Alert className="bg-forest border-mint/20">
+                            <FileIcon className="h-4 w-4" />
+                            <AlertDescription>
+                              {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)}MB)
+                            </AlertDescription>
+                          </Alert>
+                        )}
+                      </div>
+                    </FormControl>
+                    <FormDescription className="text-white/60">
+                      Upload a PDF, DOC, or DOCX file (max 5MB)
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

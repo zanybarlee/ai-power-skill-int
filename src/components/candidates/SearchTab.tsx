@@ -8,12 +8,20 @@ import { useQuery } from "@tanstack/react-query";
 import { normalizeSkills } from "@/utils/candidateUtils";
 import { CandidateTable } from "./CandidateTable";
 
-interface SearchResult {
+interface DatabaseResult {
   id: string;
   name: string | null;
-  role: string;
   experience: number | null;
   location: string | null;
+  skills: unknown;
+}
+
+interface Candidate {
+  id: string;
+  name: string;
+  role: string;
+  experience: string;
+  location: string;
   skills: string[];
   availability: string;
 }
@@ -38,15 +46,7 @@ export const SearchTab = () => {
       throw error;
     }
 
-    return data.map((item): SearchResult => ({
-      id: item.id,
-      name: item.name || 'Unknown',
-      role: 'Not specified',
-      experience: item.experience,
-      location: item.location || 'Not specified',
-      skills: normalizeSkills(item.skills),
-      availability: 'Not specified'
-    }));
+    return (data || []) as DatabaseResult[];
   };
 
   const { data: searchResults, refetch, isLoading } = useQuery({
@@ -84,11 +84,16 @@ export const SearchTab = () => {
     }
   };
 
-  // Convert search results to match Candidate interface
-  const formattedResults = searchResults?.map(result => ({
-    ...result,
-    experience: result.experience ? `${result.experience} years` : 'Not specified'
-  }));
+  // Transform database results to match Candidate interface
+  const formattedResults: Candidate[] = searchResults?.map((result): Candidate => ({
+    id: result.id,
+    name: result.name || 'Unknown',
+    role: 'Not specified',
+    experience: result.experience ? `${result.experience} years` : 'Not specified',
+    location: result.location || 'Not specified',
+    skills: normalizeSkills(result.skills),
+    availability: 'Not specified'
+  })) || [];
 
   return (
     <div className="space-y-6">
@@ -122,7 +127,7 @@ export const SearchTab = () => {
         </Button>
       </div>
 
-      {formattedResults && <CandidateTable candidates={formattedResults} />}
+      {formattedResults.length > 0 && <CandidateTable candidates={formattedResults} />}
     </div>
   );
 };

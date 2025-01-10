@@ -1,10 +1,13 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Layout from "@/components/Layout";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search } from "lucide-react";
+import { Search, RefreshCw } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { searchTalent } from "@/services/talentSearch";
 
 interface Candidate {
   id: string;
@@ -47,9 +50,11 @@ const mockCandidates: Candidate[] = [
 ];
 
 const Candidates = () => {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [locationFilter, setLocationFilter] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
   const filteredCandidates = mockCandidates.filter(candidate => {
     const matchesSearch = candidate.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -60,6 +65,48 @@ const Candidates = () => {
     return matchesSearch && matchesRole && matchesLocation;
   });
 
+  const handleTalentSearch = async () => {
+    if (!searchTerm) {
+      toast({
+        title: "Error",
+        description: "Please enter a search query",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const searchParams = {
+        search_query: searchTerm,
+        uen: "200311331R", // These could be stored in a configuration file or environment variables
+        user_guid: "59884f68-8db5-4fe7-a0a3-baa466c1c808",
+        session_id: `session-${Date.now()}`,
+        context_id: `context-${Date.now()}`,
+        search_id: `search-${Date.now()}`,
+      };
+
+      const result = await searchTalent(searchParams);
+      
+      toast({
+        title: "Success",
+        description: "Talent search completed successfully",
+      });
+
+      // Here you would typically update your candidates list with the new results
+      console.log('Search results:', result);
+      
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to search for talent",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
@@ -67,8 +114,8 @@ const Candidates = () => {
           <h1 className="text-2xl font-semibold text-white mb-6">Candidate Search</h1>
           
           {/* Search and Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="relative">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div className="relative md:col-span-2">
               <Input
                 placeholder="Search by name or skills..."
                 value={searchTerm}
@@ -83,24 +130,30 @@ const Candidates = () => {
                 <SelectValue placeholder="Filter by role" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
+                <SelectItem value="">All Roles</SelectItem>
                 <SelectItem value="Frontend Developer">Frontend Developer</SelectItem>
                 <SelectItem value="Backend Developer">Backend Developer</SelectItem>
                 <SelectItem value="Full Stack Developer">Full Stack Developer</SelectItem>
               </SelectContent>
             </Select>
 
-            <Select value={locationFilter} onValueChange={setLocationFilter}>
-              <SelectTrigger className="bg-forest border-mint/20 text-white">
-                <SelectValue placeholder="Filter by location" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Locations</SelectItem>
-                <SelectItem value="San Francisco">San Francisco</SelectItem>
-                <SelectItem value="New York">New York</SelectItem>
-                <SelectItem value="Austin">Austin</SelectItem>
-              </SelectContent>
-            </Select>
+            <Button 
+              onClick={handleTalentSearch}
+              disabled={isSearching}
+              className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
+            >
+              {isSearching ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Search className="h-4 w-4" />
+                  Search Talent
+                </>
+              )}
+            </Button>
           </div>
 
           {/* Candidates Table */}

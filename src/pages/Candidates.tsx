@@ -4,39 +4,32 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SearchTab } from "@/components/candidates/SearchTab";
 import { CrawlTab } from "@/components/candidates/CrawlTab";
 import { CandidateTable } from "@/components/candidates/CandidateTable";
-
-const mockCandidates = [
-  {
-    id: "1",
-    name: "John Doe",
-    role: "Frontend Developer",
-    experience: "5 years",
-    location: "San Francisco, CA",
-    skills: ["React", "TypeScript", "Tailwind CSS"],
-    availability: "Immediate"
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    role: "Backend Developer",
-    experience: "3 years",
-    location: "New York, NY",
-    skills: ["Node.js", "Python", "PostgreSQL"],
-    availability: "2 weeks"
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    role: "Full Stack Developer",
-    experience: "7 years",
-    location: "Austin, TX",
-    skills: ["React", "Node.js", "MongoDB"],
-    availability: "1 month"
-  }
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Candidates = () => {
-  const [filteredCandidates] = useState(mockCandidates);
+  // Fetch initial candidates
+  const { data: initialCandidates } = useQuery({
+    queryKey: ['initialCandidates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('cv_metadata')
+        .select('id, name, experience, location, skills')
+        .limit(10);
+
+      if (error) throw error;
+
+      return data.map((item) => ({
+        id: item.id,
+        name: item.name || 'Unknown',
+        role: 'Not specified',
+        experience: item.experience ? `${item.experience} years` : 'Not specified',
+        location: item.location || 'Not specified',
+        skills: Array.isArray(item.skills) ? item.skills : [],
+        availability: 'Not specified'
+      }));
+    },
+  });
 
   return (
     <Layout>
@@ -44,32 +37,32 @@ const Candidates = () => {
         <div className="bg-forest-light rounded-lg p-6 border border-mint/10">
           <h1 className="text-2xl font-semibold text-white mb-6">Candidate Search</h1>
           
-          <Tabs defaultValue="crawl" className="w-full">
+          <Tabs defaultValue="search" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-forest-light border border-mint/20 rounded-lg p-1">
-              <TabsTrigger 
-                value="crawl" 
-                className="data-[state=active]:bg-mint data-[state=active]:text-forest data-[state=active]:shadow-none text-mint hover:text-mint/80 px-8 py-2.5"
-              >
-                Crawl CV
-              </TabsTrigger>
               <TabsTrigger 
                 value="search" 
                 className="data-[state=active]:bg-mint data-[state=active]:text-forest data-[state=active]:shadow-none text-mint hover:text-mint/80 px-8 py-2.5"
               >
                 Search Talent
               </TabsTrigger>
+              <TabsTrigger 
+                value="crawl" 
+                className="data-[state=active]:bg-mint data-[state=active]:text-forest data-[state=active]:shadow-none text-mint hover:text-mint/80 px-8 py-2.5"
+              >
+                Crawl CV
+              </TabsTrigger>
             </TabsList>
-
-            <TabsContent value="crawl" className="mt-6">
-              <CrawlTab />
-            </TabsContent>
 
             <TabsContent value="search" className="mt-6">
               <SearchTab />
             </TabsContent>
+
+            <TabsContent value="crawl" className="mt-6">
+              <CrawlTab />
+            </TabsContent>
           </Tabs>
 
-          <CandidateTable candidates={filteredCandidates} />
+          <CandidateTable candidates={initialCandidates || []} />
         </div>
       </div>
     </Layout>

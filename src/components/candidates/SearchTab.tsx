@@ -4,13 +4,63 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, RefreshCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { searchTalent } from "@/services/talentSearch";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+
+interface SearchResult {
+  id: string;
+  name: string | null;
+  role: string;
+  experience: number | null;
+  location: string | null;
+  skills: string[] | null;
+  availability: string;
+}
 
 export const SearchTab = () => {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
   const [isSearching, setIsSearching] = useState(false);
+
+  const searchCandidates = async () => {
+    if (!searchTerm) {
+      throw new Error("Please enter a search query");
+    }
+
+    const query = supabase
+      .from('cv_metadata')
+      .select('id, name, experience, location, skills')
+      .or(`name.ilike.%${searchTerm}%, skills->>'skills'.ilike.%${searchTerm}%`);
+
+    if (roleFilter !== 'all') {
+      query.eq('role', roleFilter);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw error;
+    }
+
+    // Transform the data to match the expected format
+    return data.map((item): SearchResult => ({
+      id: item.id,
+      name: item.name || 'Unknown',
+      role: roleFilter === 'all' ? 'Not specified' : roleFilter,
+      experience: item.experience,
+      location: item.location || 'Not specified',
+      skills: Array.isArray(item.skills) ? item.skills : [],
+      availability: 'Not specified' // This field isn't in cv_metadata, so we're using a default
+    }));
+  };
+
+  const { data: searchResults, refetch, isLoading } = useQuery({
+    queryKey: ['candidates', searchTerm, roleFilter],
+    queryFn: searchCandidates,
+    enabled: false, // Don't run the query automatically
+    retry: false,
+  });
 
   const handleTalentSearch = async () => {
     if (!searchTerm) {
@@ -24,28 +74,15 @@ export const SearchTab = () => {
 
     setIsSearching(true);
     try {
-      const searchParams = {
-        search_query: searchTerm,
-        uen: "200311331R",
-        user_guid: "59884f68-8db5-4fe7-a0a3-baa466c1c808",
-        session_id: `session-${Date.now()}`,
-        context_id: `context-${Date.now()}`,
-        search_id: `search-${Date.now()}`,
-      };
-
-      const result = await searchTalent(searchParams);
-      
+      await refetch();
       toast({
         title: "Success",
-        description: "Talent search completed successfully",
+        description: "Search completed successfully",
       });
-      
-      console.log('Search results:', result);
-      
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to search for talent",
+        description: error instanceof Error ? error.message : "Failed to search for talent",
         variant: "destructive",
       });
     } finally {
@@ -79,10 +116,10 @@ export const SearchTab = () => {
 
       <Button 
         onClick={handleTalentSearch}
-        disabled={isSearching}
+        disabled={isLoading || isSearching}
         className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
       >
-        {isSearching ? (
+        {(isLoading || isSearching) ? (
           <>
             <RefreshCw className="h-4 w-4 animate-spin" />
             Searching...

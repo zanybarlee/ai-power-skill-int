@@ -9,7 +9,7 @@ interface TalentSearchParams {
 
 export const searchTalent = async (params: TalentSearchParams) => {
   try {
-    const response = await fetch('http://cens.synology.me:9001/search_talent/', {
+    const response = await fetch('http://127.0.0.1:9001/search_talent/', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

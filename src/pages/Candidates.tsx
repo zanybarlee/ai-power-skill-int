@@ -44,18 +44,18 @@ const Candidates = () => {
         <div className="bg-forest-light rounded-lg p-6 border border-mint/10">
           <h1 className="text-2xl font-semibold text-white mb-6">Candidate Search</h1>
           
-          <Tabs defaultValue="search" className="w-full">
+          <Tabs defaultValue="crawl" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-forest">
-              <TabsTrigger value="search">Search Talent</TabsTrigger>
               <TabsTrigger value="crawl">Crawl CV</TabsTrigger>
+              <TabsTrigger value="search">Search Talent</TabsTrigger>
             </TabsList>
-
-            <TabsContent value="search" className="mt-6">
-              <SearchTab />
-            </TabsContent>
 
             <TabsContent value="crawl" className="mt-6">
               <CrawlTab />
+            </TabsContent>
+
+            <TabsContent value="search" className="mt-6">
+              <SearchTab />
             </TabsContent>
           </Tabs>
 

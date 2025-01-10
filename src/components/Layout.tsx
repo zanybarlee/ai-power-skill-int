@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X, Briefcase, Search, Users, Settings } from "lucide-react";
+import { Menu, X, PenSquare, ListTodo, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
 
@@ -13,24 +13,25 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigationItems = [
     {
-      name: "Post Job",
-      icon: Briefcase,
+      name: "Create Post",
+      icon: PenSquare,
       path: "/post-job",
     },
     {
-      name: "Candidate Search",
-      icon: Search,
+      name: "Manage Posts",
+      icon: ListTodo,
       path: "/candidates",
-    },
-    {
-      name: "Shortlists",
-      icon: Users,
-      path: "/shortlists",
     },
     {
       name: "Settings",
       icon: Settings,
       path: "/settings",
+    },
+    {
+      name: "Logout",
+      icon: LogOut,
+      path: "/logout",
+      className: "mt-auto",
     },
   ];
 
@@ -44,18 +45,22 @@ const Layout = ({ children }: LayoutProps) => {
           isSidebarOpen ? "w-64" : "w-0 lg:w-20"
         )}
       >
-        <div className="flex h-16 items-center justify-between px-4 border-b border-mint/10">
-          <h1 className={cn("text-mint font-semibold", !isSidebarOpen && "lg:hidden")}>
-            Aptiv8 AI Agent for CV
+        <div className="flex h-16 items-center px-4 border-b border-mint/10">
+          <h1 className={cn("text-xl font-bold text-white", !isSidebarOpen && "lg:hidden")}>
+            APTIV8
           </h1>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-forest rounded-md text-mint"
+            className="p-2 hover:bg-forest rounded-md text-mint ml-auto"
           >
             {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-        <nav className={cn("p-4 flex flex-col gap-2", !isSidebarOpen && "lg:items-center")}>
+        <nav className={cn(
+          "flex flex-col h-[calc(100vh-4rem)]",
+          "p-4 space-y-2",
+          !isSidebarOpen && "lg:items-center"
+        )}>
           {navigationItems.map((item) => (
             <Link
               key={item.path}
@@ -66,7 +71,8 @@ const Layout = ({ children }: LayoutProps) => {
                 location.pathname === item.path
                   ? "bg-forest text-mint"
                   : "text-white/70",
-                !isSidebarOpen && "lg:justify-center"
+                !isSidebarOpen && "lg:justify-center",
+                item.className
               )}
             >
               <item.icon size={20} />

@@ -19,15 +19,19 @@ export default {
     },
     extend: {
       colors: {
-        forest: {
-          DEFAULT: "#0A1F2F", // Main background color
-          light: "#132B41", // Slightly lighter variant for cards/sections
-        },
-        mint: {
-          DEFAULT: "#64FFDA", // Primary accent color
-        },
-        divine: {
-          DEFAULT: "#FFD700", // Secondary accent color
+        aptiv: {
+          DEFAULT: "#ea384c", // Main brand red
+          light: "#ee5d6d", // Lighter shade of red
+          dark: "#d62238", // Darker shade of red
+          gray: {
+            100: "#F1F1F1",
+            200: "#C8C8C9",
+            300: "#8E9196",
+            400: "#8A898C",
+            500: "#555555",
+            600: "#333333",
+            700: "#222222",
+          }
         }
       },
       fontFamily: {

@@ -47,14 +47,16 @@ const Layout = ({ children }: LayoutProps) => {
       >
         {/* Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-aptiv/10">
-          <h1 
-            className={cn(
-              "text-white font-bold tracking-wider",
-              !isSidebarOpen && "lg:hidden"
-            )}
-          >
-            APTIV8
-          </h1>
+          <div className="flex items-center">
+            <img 
+              src="/lovable-uploads/5d0792c7-11b1-4e59-af76-3c687201c682.png" 
+              alt="Aptiv8 Logo" 
+              className={cn(
+                "h-8 transition-all duration-300",
+                isSidebarOpen ? "w-32" : "w-12 lg:w-12"
+              )}
+            />
+          </div>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
             className="p-2 hover:bg-aptiv-gray-600 rounded-md text-white transition-colors"

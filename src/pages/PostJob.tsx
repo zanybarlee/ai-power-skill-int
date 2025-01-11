@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -18,6 +17,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
+// Update schema to match database requirements - all fields required
 const formSchema = z.object({
   title: z.string().min(2, {
     message: "Job title must be at least 2 characters.",
@@ -56,9 +56,10 @@ const PostJob = () => {
 
   async function onSubmit(values: JobFormValues) {
     try {
+      // Remove the array wrapper since we're inserting a single record
       const { error } = await supabase
         .from('jobs')
-        .insert([values]);
+        .insert(values);
       
       if (error) throw error;
 

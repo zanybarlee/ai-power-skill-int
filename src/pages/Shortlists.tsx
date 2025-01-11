@@ -110,25 +110,27 @@ const Shortlists = () => {
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
-        <Card className="bg-forest-light border-mint/10">
+        <Card className="border border-aptiv/10 bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-white">
+            <CardTitle className="text-2xl font-semibold text-aptiv-gray-700">
               Match Candidates
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <label className="text-mint text-sm">Job Description</label>
+              <label className="text-aptiv-gray-600 text-sm font-medium">
+                Job Description
+              </label>
               <Textarea
                 placeholder="Enter job description to find best matches..."
-                className="bg-forest border-mint/20 text-white placeholder:text-white/50"
+                className="bg-white border-aptiv/20 text-aptiv-gray-700 placeholder:text-aptiv-gray-400"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
               />
               <Button
                 onClick={handleMatch}
                 disabled={isMatching}
-                className="bg-mint text-forest hover:bg-mint/90"
+                className="bg-aptiv text-white hover:bg-aptiv-dark"
               >
                 {isMatching ? (
                   "Finding Matches..."
@@ -142,46 +144,50 @@ const Shortlists = () => {
             </div>
             
             {matchingResult && (
-              <div className="mt-4 p-4 bg-forest rounded-md">
-                <h3 className="text-mint font-medium mb-2">Matching Results</h3>
-                <p className="text-white/90 whitespace-pre-wrap">{matchingResult}</p>
+              <div className="mt-4 p-4 bg-white border border-aptiv/10 rounded-md">
+                <h3 className="text-aptiv font-medium mb-2">Matching Results</h3>
+                <p className="text-aptiv-gray-700 whitespace-pre-wrap">
+                  {matchingResult}
+                </p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        <Card className="bg-forest-light border-mint/10">
+        <Card className="border border-aptiv/10 bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-2xl font-semibold text-white">
+            <CardTitle className="text-2xl font-semibold text-aptiv-gray-700">
               Shortlisted Candidates
             </CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
-                <TableRow className="border-mint/10 hover:bg-forest">
-                  <TableHead className="text-mint">Name</TableHead>
-                  <TableHead className="text-mint">Role</TableHead>
-                  <TableHead className="text-mint">Location</TableHead>
-                  <TableHead className="text-mint">Experience</TableHead>
-                  <TableHead className="text-mint">Skills</TableHead>
-                  <TableHead className="text-mint text-right">Actions</TableHead>
+                <TableRow className="border-aptiv/10">
+                  <TableHead className="text-aptiv-gray-600">Name</TableHead>
+                  <TableHead className="text-aptiv-gray-600">Role</TableHead>
+                  <TableHead className="text-aptiv-gray-600">Location</TableHead>
+                  <TableHead className="text-aptiv-gray-600">Experience</TableHead>
+                  <TableHead className="text-aptiv-gray-600">Skills</TableHead>
+                  <TableHead className="text-aptiv-gray-600 text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {shortlistedCandidates.map((candidate) => (
                   <TableRow
                     key={candidate.id}
-                    className="border-mint/10 hover:bg-forest"
+                    className="border-aptiv/10 hover:bg-aptiv/5"
                   >
-                    <TableCell className="text-white">{candidate.name}</TableCell>
-                    <TableCell className="text-white/80">
+                    <TableCell className="text-aptiv-gray-700 font-medium">
+                      {candidate.name}
+                    </TableCell>
+                    <TableCell className="text-aptiv-gray-600">
                       {candidate.role}
                     </TableCell>
-                    <TableCell className="text-white/80">
+                    <TableCell className="text-aptiv-gray-600">
                       {candidate.location}
                     </TableCell>
-                    <TableCell className="text-white/80">
+                    <TableCell className="text-aptiv-gray-600">
                       {candidate.experience}
                     </TableCell>
                     <TableCell>
@@ -190,7 +196,7 @@ const Shortlists = () => {
                           <Badge
                             key={skill}
                             variant="outline"
-                            className="text-mint border-mint/20"
+                            className="text-aptiv border-aptiv/20 bg-aptiv/5"
                           >
                             {skill}
                           </Badge>
@@ -203,7 +209,7 @@ const Shortlists = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleContact(candidate.email)}
-                          className="text-mint hover:text-mint hover:bg-forest"
+                          className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
                         >
                           <Mail className="h-4 w-4" />
                         </Button>
@@ -211,7 +217,7 @@ const Shortlists = () => {
                           variant="ghost"
                           size="icon"
                           onClick={() => handleRemove(candidate.id)}
-                          className="text-mint hover:text-mint hover:bg-forest"
+                          className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
                         >
                           <BookmarkX className="h-4 w-4" />
                         </Button>

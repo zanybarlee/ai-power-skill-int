@@ -56,7 +56,7 @@ export const CrawlTab = () => {
           placeholder="Enter search query (e.g., BIM Modeler)"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="bg-forest border-mint/20 text-white"
+          className="bg-white border-aptiv/20 text-aptiv-gray-700"
         />
         <Button
           onClick={handleSearchTalent}

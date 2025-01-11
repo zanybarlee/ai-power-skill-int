@@ -112,7 +112,7 @@ export const SearchTab = () => {
             placeholder="Search by name..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-forest border-mint/20 text-white placeholder:text-white/50"
+            className="pl-10 bg-white border-aptiv/20 text-aptiv-gray-700 placeholder:text-aptiv-gray-400"
           />
           <Search className="absolute left-3 top-3 h-4 w-4 text-white/50" />
         </div>

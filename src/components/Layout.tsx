@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Menu, X, FileText, Search, Users, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "react-router-dom";
+import Footer from "./Footer";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -126,13 +127,14 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 min-w-0">
+      <div className="flex-1 min-w-0 flex flex-col">
         <header className="h-16 border-b border-aptiv/10 flex items-center px-4 bg-white">
           <h2 className="text-aptiv-gray-700 font-medium">
             {navigationItems.find((item) => item.path === location.pathname)?.name || "Dashboard"}
           </h2>
         </header>
-        <main className="p-4">{children}</main>
+        <main className="flex-1 p-4">{children}</main>
+        <Footer />
       </div>
 
       {/* Mobile overlay */}

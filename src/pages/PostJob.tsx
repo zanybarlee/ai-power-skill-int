@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import type { Database } from "@/integrations/supabase/types";
 
 const formSchema = z.object({
   title: z.string().min(2, {
@@ -38,8 +39,10 @@ const formSchema = z.object({
   }),
 });
 
+type JobFormValues = z.infer<typeof formSchema>;
+
 const PostJob = () => {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<JobFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
@@ -51,9 +54,11 @@ const PostJob = () => {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: JobFormValues) {
     try {
-      const { error } = await supabase.from('jobs').insert([values]);
+      const { error } = await supabase
+        .from('jobs')
+        .insert([values]);
       
       if (error) throw error;
 
@@ -69,7 +74,7 @@ const PostJob = () => {
     <Layout>
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
-          <h1 className="text-2xl font-semibold text-aptiv-gray-700 mb-6">Post a New Job</h1>
+          <h1 className="text-2xl font-semibold text-gray-700 mb-6">Post a New Job</h1>
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -78,7 +83,7 @@ const PostJob = () => {
                 name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-aptiv-gray-700">Job Title</FormLabel>
+                    <FormLabel className="text-gray-700">Job Title</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. Senior Software Engineer" {...field} />
                     </FormControl>
@@ -92,7 +97,7 @@ const PostJob = () => {
                 name="company"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-aptiv-gray-700">Company Name</FormLabel>
+                    <FormLabel className="text-gray-700">Company Name</FormLabel>
                     <FormControl>
                       <Input placeholder="Your company name" {...field} />
                     </FormControl>
@@ -106,7 +111,7 @@ const PostJob = () => {
                 name="location"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-aptiv-gray-700">Location</FormLabel>
+                    <FormLabel className="text-gray-700">Location</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. New York, NY" {...field} />
                     </FormControl>
@@ -120,7 +125,7 @@ const PostJob = () => {
                 name="salary"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-aptiv-gray-700">Salary Range</FormLabel>
+                    <FormLabel className="text-gray-700">Salary Range</FormLabel>
                     <FormControl>
                       <Input placeholder="e.g. $80,000 - $120,000" {...field} />
                     </FormControl>
@@ -134,7 +139,7 @@ const PostJob = () => {
                 name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-aptiv-gray-700">Job Description</FormLabel>
+                    <FormLabel className="text-gray-700">Job Description</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="Describe the role and responsibilities"
@@ -152,7 +157,7 @@ const PostJob = () => {
                 name="requirements"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-aptiv-gray-700">Requirements</FormLabel>
+                    <FormLabel className="text-gray-700">Requirements</FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="List the required skills and qualifications"

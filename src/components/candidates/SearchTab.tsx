@@ -36,7 +36,7 @@ export const SearchTab = () => {
       throw new Error("Please enter a search query");
     }
 
-    console.log("Searching for:", searchTerm); // Debug log
+    console.log("Searching for:", searchTerm);
 
     const { data, error } = await supabase
       .from('cv_metadata')
@@ -45,11 +45,11 @@ export const SearchTab = () => {
       .limit(10);
 
     if (error) {
-      console.error("Supabase error:", error); // Debug log
+      console.error("Supabase error:", error);
       throw error;
     }
 
-    console.log("Raw data from Supabase:", data); // Debug log
+    console.log("Raw data from Supabase:", data);
     return (data || []) as DatabaseResult[];
   };
 
@@ -88,9 +88,8 @@ export const SearchTab = () => {
     }
   };
 
-  // Transform database results to match Candidate interface
   const formattedResults: Candidate[] = searchResults?.map((result): Candidate => {
-    console.log("Formatting result:", result); // Debug log
+    console.log("Formatting result:", result);
     return {
       id: result.id,
       name: result.name || 'Unknown',
@@ -102,7 +101,7 @@ export const SearchTab = () => {
     };
   }) || [];
 
-  console.log("Formatted results:", formattedResults); // Debug log
+  console.log("Formatted results:", formattedResults);
 
   return (
     <div className="space-y-6">
@@ -114,7 +113,7 @@ export const SearchTab = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-10 bg-white border-aptiv/20 text-aptiv-gray-700 placeholder:text-aptiv-gray-400"
           />
-          <Search className="absolute left-3 top-3 h-4 w-4 text-white/50" />
+          <Search className="absolute left-3 top-3 h-4 w-4 text-aptiv-gray-400" />
         </div>
 
         <Button 
@@ -138,7 +137,7 @@ export const SearchTab = () => {
 
       {formattedResults.length > 0 && (
         <>
-          <div className="text-white mb-4">
+          <div className="text-aptiv-gray-700 mb-4">
             Found {formattedResults.length} candidates
           </div>
           <CandidateTable candidates={formattedResults} />

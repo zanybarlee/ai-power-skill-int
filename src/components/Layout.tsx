@@ -127,15 +127,17 @@ const Layout = ({ children }: LayoutProps) => {
       </div>
 
       {/* Main content */}
-      <div className="flex-1 min-w-0 flex flex-col">
+      <div className="flex-1 flex flex-col min-h-screen">
         <header className="h-16 border-b border-aptiv/10 flex items-center px-4 bg-white">
           <h2 className="text-aptiv-gray-700 font-medium">
             {navigationItems.find((item) => item.path === location.pathname)?.name || "Dashboard"}
           </h2>
         </header>
         <main className="flex-1 p-4">{children}</main>
-        <Footer />
       </div>
+
+      {/* Footer positioned outside the main content */}
+      <Footer className="absolute bottom-0 left-0 right-0" />
 
       {/* Mobile overlay */}
       {isSidebarOpen && (

@@ -1,8 +1,13 @@
 import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
 
-const Footer = () => {
+interface FooterProps {
+  className?: string;
+}
+
+const Footer = ({ className }: FooterProps) => {
   return (
-    <footer className="bg-aptiv-gray-700 text-white py-16">
+    <footer className={cn("bg-aptiv-gray-700 text-white py-16 w-full", className)}>
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-12">
           {/* About Us Section */}

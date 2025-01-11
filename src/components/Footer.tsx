@@ -2,42 +2,74 @@ import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-    <footer className="py-20 px-4 border-t border-mint/10">
-      <div className="container mx-auto">
-        <div className="grid md:grid-cols-4 gap-12">
+    <footer className="bg-aptiv-gray-700 text-white py-16">
+      <div className="container mx-auto px-4">
+        <div className="grid md:grid-cols-3 gap-12">
+          {/* About Us Section */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold">ByteHire</h3>
-            <p className="text-white/60 max-w-xs">
-              Revolutionizing tech recruitment with AI-powered matching and seamless hiring processes.
+            <h3 className="text-aptiv font-semibold text-xl mb-6">About Us</h3>
+            <p className="text-aptiv-gray-200 text-sm leading-relaxed">
+              Our company Aptiv8 Pte Ltd was established since the year of 2015. We are one of the fastest 
+              growing IT solution provider that assist emerging markets and local markets on advance 
+              technology services.
             </p>
           </div>
-          <div>
-            <h4 className="font-medium mb-4">Product</h4>
-            <ul className="space-y-2">
-              <li><Link to="/features" className="text-white/60 hover:text-mint transition-colors">Features</Link></li>
-              <li><Link to="/pricing" className="text-white/60 hover:text-mint transition-colors">Pricing</Link></li>
-              <li><Link to="/enterprise" className="text-white/60 hover:text-mint transition-colors">Enterprise</Link></li>
-            </ul>
+
+          {/* Connect With Us Section */}
+          <div className="space-y-4">
+            <h3 className="text-aptiv font-semibold text-xl mb-6">Connect With Us</h3>
+            <div className="space-y-2 text-aptiv-gray-200 text-sm">
+              <p>8 Burn Road, #04-08, TRIVEX, Singapore 369977</p>
+              <p>Tel: +65 6908 0277</p>
+              <p>Email: enquiry@aptiv8.com</p>
+            </div>
           </div>
-          <div>
-            <h4 className="font-medium mb-4">Company</h4>
+
+          {/* Company Section */}
+          <div className="space-y-4">
+            <h3 className="text-aptiv font-semibold text-xl mb-6">Company</h3>
             <ul className="space-y-2">
-              <li><Link to="/about" className="text-white/60 hover:text-mint transition-colors">About Us</Link></li>
-              <li><Link to="/careers" className="text-white/60 hover:text-mint transition-colors">Careers</Link></li>
-              <li><Link to="/blog" className="text-white/60 hover:text-mint transition-colors">Blog</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-medium mb-4">Legal</h4>
-            <ul className="space-y-2">
-              <li><Link to="/privacy" className="text-white/60 hover:text-mint transition-colors">Privacy</Link></li>
-              <li><Link to="/terms" className="text-white/60 hover:text-mint transition-colors">Terms</Link></li>
-              <li><Link to="/security" className="text-white/60 hover:text-mint transition-colors">Security</Link></li>
+              <li>
+                <Link to="/" className="text-aptiv-gray-200 hover:text-aptiv text-sm transition-colors">
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link to="/about" className="text-aptiv-gray-200 hover:text-aptiv text-sm transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/it-solutions" className="text-aptiv-gray-200 hover:text-aptiv text-sm transition-colors">
+                  IT Solutions Division
+                </Link>
+              </li>
+              <li>
+                <Link to="/ea" className="text-aptiv-gray-200 hover:text-aptiv text-sm transition-colors">
+                  EA Division
+                </Link>
+              </li>
+              <li>
+                <Link to="/contact" className="text-aptiv-gray-200 hover:text-aptiv text-sm transition-colors">
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link to="/terms" className="text-aptiv-gray-200 hover:text-aptiv text-sm transition-colors">
+                  Term of Use
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
-        <div className="border-t border-mint/10 mt-16 pt-8 text-center text-white/60">
-          <p>&copy; {new Date().getFullYear()} ByteHire. All rights reserved.</p>
+      </div>
+      
+      {/* Copyright Section */}
+      <div className="border-t border-aptiv-gray-600 mt-12">
+        <div className="container mx-auto px-4 pt-8">
+          <p className="text-aptiv-gray-300 text-sm text-center">
+            Copyright 2015 Aptiv8 Pte Ltd
+          </p>
         </div>
       </div>
     </footer>

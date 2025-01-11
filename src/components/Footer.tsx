@@ -18,6 +18,9 @@ const Footer = ({ className }: FooterProps) => {
               growing IT solution provider that assist emerging markets and local markets on advance 
               technology services.
             </p>
+            <p className="text-aptiv-gray-300 text-sm">
+              Copyright 2025 Aptiv8 Pte Ltd
+            </p>
           </div>
 
           {/* Connect With Us Section */}
@@ -66,15 +69,6 @@ const Footer = ({ className }: FooterProps) => {
               </li>
             </ul>
           </div>
-        </div>
-      </div>
-      
-      {/* Copyright Section */}
-      <div className="border-t border-aptiv-gray-600 mt-8">
-        <div className="container mx-auto px-4 pt-4">
-          <p className="text-aptiv-gray-300 text-sm text-center">
-            Copyright 2015 Aptiv8 Pte Ltd
-          </p>
         </div>
       </div>
     </footer>

@@ -17,7 +17,8 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 
-// Update schema to match database requirements - all fields required
+type JobInsert = Database['public']['Tables']['jobs']['Insert'];
+
 const formSchema = z.object({
   title: z.string().min(2, {
     message: "Job title must be at least 2 characters.",
@@ -56,10 +57,18 @@ const PostJob = () => {
 
   async function onSubmit(values: JobFormValues) {
     try {
-      // Remove the array wrapper since we're inserting a single record
+      const jobData: JobInsert = {
+        title: values.title,
+        company: values.company,
+        location: values.location,
+        salary: values.salary,
+        description: values.description,
+        requirements: values.requirements,
+      };
+
       const { error } = await supabase
         .from('jobs')
-        .insert(values);
+        .insert(jobData);
       
       if (error) throw error;
 

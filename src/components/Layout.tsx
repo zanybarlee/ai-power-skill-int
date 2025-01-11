@@ -35,20 +35,20 @@ const Layout = ({ children }: LayoutProps) => {
   ];
 
   return (
-    <div className="min-h-screen flex w-full bg-forest">
+    <div className="min-h-screen flex w-full bg-white">
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed lg:static h-full bg-forest-light",
+          "fixed lg:static h-full bg-aptiv-gray-700",
           "transition-all duration-300 z-40 flex flex-col",
           isSidebarOpen ? "w-64" : "w-0 lg:w-20"
         )}
       >
         {/* Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-mint/10">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-aptiv/10">
           <h1 
             className={cn(
-              "text-mint font-bold tracking-wider",
+              "text-white font-bold tracking-wider",
               !isSidebarOpen && "lg:hidden"
             )}
           >
@@ -56,7 +56,7 @@ const Layout = ({ children }: LayoutProps) => {
           </h1>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-forest rounded-md text-mint transition-colors"
+            className="p-2 hover:bg-aptiv-gray-600 rounded-md text-white transition-colors"
           >
             {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -73,10 +73,10 @@ const Layout = ({ children }: LayoutProps) => {
               to={item.path}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-md transition-all",
-                "hover:bg-forest hover:text-mint group",
+                "hover:bg-aptiv hover:text-white group",
                 location.pathname === item.path
-                  ? "bg-forest text-mint"
-                  : "text-white/70",
+                  ? "bg-aptiv text-white"
+                  : "text-aptiv-gray-200",
                 !isSidebarOpen && "lg:justify-center"
               )}
             >
@@ -101,13 +101,13 @@ const Layout = ({ children }: LayoutProps) => {
 
         {/* Footer */}
         <div className={cn(
-          "p-4 border-t border-mint/10",
+          "p-4 border-t border-aptiv/10",
           !isSidebarOpen && "lg:flex lg:justify-center"
         )}>
           <button 
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-md w-full",
-              "text-white/70 hover:bg-forest hover:text-mint transition-all group",
+              "text-aptiv-gray-200 hover:bg-aptiv hover:text-white transition-all group",
               !isSidebarOpen && "lg:justify-center lg:w-auto"
             )}
           >
@@ -127,8 +127,8 @@ const Layout = ({ children }: LayoutProps) => {
 
       {/* Main content */}
       <div className="flex-1 min-w-0">
-        <header className="h-16 border-b border-mint/10 flex items-center px-4">
-          <h2 className="text-white/90 font-medium">
+        <header className="h-16 border-b border-aptiv/10 flex items-center px-4 bg-white">
+          <h2 className="text-aptiv-gray-700 font-medium">
             {navigationItems.find((item) => item.path === location.pathname)?.name || "Dashboard"}
           </h2>
         </header>

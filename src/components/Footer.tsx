@@ -7,7 +7,7 @@ interface FooterProps {
 
 const Footer = ({ className }: FooterProps) => {
   return (
-    <footer className={cn("bg-aptiv-gray-700 text-white py-8 w-full", className)}>
+    <footer className={cn("bg-aptiv-gray-700 text-white py-6 w-full", className)}>
       <div className="container mx-auto px-4">
         <div className="grid md:grid-cols-3 gap-8">
           {/* About Us Section */}

@@ -8,6 +8,11 @@ import PostJob from "./pages/PostJob";
 import Candidates from "./pages/Candidates";
 import Shortlists from "./pages/Shortlists";
 import Settings from "./pages/Settings";
+import About from "./pages/About";
+import ITSolutions from "./pages/ITSolutions";
+import EADivision from "./pages/EADivision";
+import Contact from "./pages/Contact";
+import Terms from "./pages/Terms";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +28,11 @@ const App = () => (
           <Route path="/candidates" element={<Candidates />} />
           <Route path="/shortlists" element={<Shortlists />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/it-solutions" element={<ITSolutions />} />
+          <Route path="/ea" element={<EADivision />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/terms" element={<Terms />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>

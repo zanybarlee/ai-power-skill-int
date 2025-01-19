@@ -9,6 +9,44 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      cv_match: {
+        Row: {
+          created_at: string | null
+          cv_metadata_id: string | null
+          id: string
+          job_description: string
+          match_score: number | null
+          matched_at: string | null
+          status: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          cv_metadata_id?: string | null
+          id?: string
+          job_description: string
+          match_score?: number | null
+          matched_at?: string | null
+          status?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          cv_metadata_id?: string | null
+          id?: string
+          job_description?: string
+          match_score?: number | null
+          matched_at?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cv_match_cv_metadata_id_fkey"
+            columns: ["cv_metadata_id"]
+            isOneToOne: false
+            referencedRelation: "cv_metadata"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cv_metadata: {
         Row: {
           certifications: Json | null

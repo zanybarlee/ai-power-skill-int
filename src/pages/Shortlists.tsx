@@ -1,50 +1,15 @@
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { BookmarkX, Mail, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { queryBestMatch } from "@/services/matchingService";
-import { Textarea } from "@/components/ui/textarea";
-
-const shortlistedCandidates = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    role: "Frontend Developer",
-    location: "San Francisco",
-    experience: "5 years",
-    skills: ["React", "TypeScript", "Tailwind CSS"],
-    email: "sarah.j@example.com",
-  },
-  {
-    id: 2,
-    name: "Michael Chen",
-    role: "Backend Developer",
-    location: "New York",
-    experience: "7 years",
-    skills: ["Node.js", "Python", "PostgreSQL"],
-    email: "michael.c@example.com",
-  },
-  {
-    id: 3,
-    name: "Emily Rodriguez",
-    role: "Full Stack Developer",
-    location: "Austin",
-    experience: "4 years",
-    skills: ["React", "Node.js", "MongoDB"],
-    email: "emily.r@example.com",
-  },
-];
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { MatchedCandidatesTable } from "@/components/shortlists/MatchedCandidatesTable";
+import { normalizeSkills } from "@/utils/candidateUtils";
 
 const Shortlists = () => {
   const { toast } = useToast();
@@ -54,6 +19,45 @@ const Shortlists = () => {
   const [isMatching, setIsMatching] = useState(false);
   const [matchingResult, setMatchingResult] = useState<string | null>(() => {
     return localStorage.getItem("matchingResult");
+  });
+
+  const { data: matchedCandidates = [] } = useQuery({
+    queryKey: ['matchedCandidates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('cv_match')
+        .select(`
+          id,
+          match_score,
+          cv_metadata:cv_metadata_id (
+            id,
+            name,
+            email,
+            experience,
+            location,
+            skills
+          )
+        `)
+        .order('match_score', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching matched candidates:', error);
+        throw error;
+      }
+
+      return data.map((match) => ({
+        id: match.id,
+        name: match.cv_metadata?.name || 'Unknown',
+        role: 'Not specified',
+        location: match.cv_metadata?.location || 'Not specified',
+        experience: match.cv_metadata?.experience 
+          ? `${match.cv_metadata.experience} years` 
+          : 'Not specified',
+        skills: normalizeSkills(match.cv_metadata?.skills),
+        email: match.cv_metadata?.email || '',
+        match_score: Math.round(match.match_score || 0)
+      }));
+    }
   });
 
   // Save to localStorage whenever values change
@@ -66,17 +70,6 @@ const Shortlists = () => {
       localStorage.setItem("matchingResult", matchingResult);
     }
   }, [matchingResult]);
-
-  const handleRemove = (candidateId: number) => {
-    toast({
-      title: "Candidate removed",
-      description: "The candidate has been removed from your shortlist.",
-    });
-  };
-
-  const handleContact = (email: string) => {
-    window.location.href = `mailto:${email}`;
-  };
 
   const handleMatch = async () => {
     if (!jobDescription.trim()) {
@@ -161,72 +154,7 @@ const Shortlists = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow className="border-aptiv/10">
-                  <TableHead className="text-aptiv-gray-600">Name</TableHead>
-                  <TableHead className="text-aptiv-gray-600">Role</TableHead>
-                  <TableHead className="text-aptiv-gray-600">Location</TableHead>
-                  <TableHead className="text-aptiv-gray-600">Experience</TableHead>
-                  <TableHead className="text-aptiv-gray-600">Skills</TableHead>
-                  <TableHead className="text-aptiv-gray-600 text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {shortlistedCandidates.map((candidate) => (
-                  <TableRow
-                    key={candidate.id}
-                    className="border-aptiv/10 hover:bg-aptiv/5"
-                  >
-                    <TableCell className="text-aptiv-gray-700 font-medium">
-                      {candidate.name}
-                    </TableCell>
-                    <TableCell className="text-aptiv-gray-600">
-                      {candidate.role}
-                    </TableCell>
-                    <TableCell className="text-aptiv-gray-600">
-                      {candidate.location}
-                    </TableCell>
-                    <TableCell className="text-aptiv-gray-600">
-                      {candidate.experience}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-2">
-                        {candidate.skills.map((skill) => (
-                          <Badge
-                            key={skill}
-                            variant="outline"
-                            className="text-aptiv border-aptiv/20 bg-aptiv/5"
-                          >
-                            {skill}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleContact(candidate.email)}
-                          className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
-                        >
-                          <Mail className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleRemove(candidate.id)}
-                          className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
-                        >
-                          <BookmarkX className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+            <MatchedCandidatesTable candidates={matchedCandidates} />
           </CardContent>
         </Card>
       </div>

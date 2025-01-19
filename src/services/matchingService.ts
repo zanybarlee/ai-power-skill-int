@@ -24,8 +24,9 @@ export const queryBestMatch = async (jobDescription: string) => {
     }
     
     const result = await response.json();
-    return result.text;
+    return result;
   } catch (error) {
+    console.error('Error querying best match:', error);
     throw new Error('Error querying best match: ' + (error as Error).message);
   }
 };

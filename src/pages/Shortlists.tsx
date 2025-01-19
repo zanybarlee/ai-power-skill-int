@@ -17,9 +17,7 @@ const Shortlists = () => {
     return localStorage.getItem("jobDescription") || "";
   });
   const [isMatching, setIsMatching] = useState(false);
-  const [matchingResult, setMatchingResult] = useState<string | null>(() => {
-    return localStorage.getItem("matchingResult");
-  });
+  const [matchingResults, setMatchingResults] = useState<Array<{ name: string; score: number; details: string }>>([]);
 
   const { data: matchedCandidates = [] } = useQuery({
     queryKey: ['matchedCandidates'],
@@ -65,12 +63,6 @@ const Shortlists = () => {
     localStorage.setItem("jobDescription", jobDescription);
   }, [jobDescription]);
 
-  useEffect(() => {
-    if (matchingResult) {
-      localStorage.setItem("matchingResult", matchingResult);
-    }
-  }, [matchingResult]);
-
   const handleMatch = async () => {
     if (!jobDescription.trim()) {
       toast({
@@ -84,12 +76,23 @@ const Shortlists = () => {
     setIsMatching(true);
     try {
       const result = await queryBestMatch(jobDescription);
-      setMatchingResult(result);
+      // Parse the result and update the state
+      const parsedResults = Array.isArray(result.matches) 
+        ? result.matches.map((match: any) => ({
+            name: match.name || 'Unknown',
+            score: Math.round(match.score * 100),
+            details: match.details || ''
+          }))
+        : [];
+      
+      setMatchingResults(parsedResults);
+      
       toast({
         title: "Match Complete",
         description: "Best matches have been found based on the job description.",
       });
     } catch (error) {
+      console.error('Matching error:', error);
       toast({
         title: "Error",
         description: "Failed to find matches. Please try again.",
@@ -136,12 +139,22 @@ const Shortlists = () => {
               </Button>
             </div>
             
-            {matchingResult && (
+            {matchingResults.length > 0 && (
               <div className="mt-4 p-4 bg-white border border-aptiv/10 rounded-md">
                 <h3 className="text-aptiv font-medium mb-2">Matching Results</h3>
-                <p className="text-aptiv-gray-700 whitespace-pre-wrap">
-                  {matchingResult}
-                </p>
+                <div className="space-y-2">
+                  {matchingResults.map((result, index) => (
+                    <div key={index} className="p-3 bg-gray-50 rounded-md">
+                      <div className="flex justify-between items-center">
+                        <span className="font-medium">{result.name}</span>
+                        <span className="text-aptiv">{result.score}% Match</span>
+                      </div>
+                      {result.details && (
+                        <p className="text-sm text-gray-600 mt-1">{result.details}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </CardContent>

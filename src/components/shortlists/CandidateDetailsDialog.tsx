@@ -3,6 +3,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
@@ -41,15 +42,18 @@ export const CandidateDetailsDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
-        <DialogHeader>
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden bg-white border border-aptiv/20 shadow-lg">
+        <DialogHeader className="space-y-2">
           <DialogTitle className="text-2xl font-semibold text-aptiv-gray-700">
             {candidate.name}
           </DialogTitle>
+          <DialogDescription className="text-aptiv-gray-500">
+            Match Score: {candidate.match_score}%
+          </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="h-full max-h-[calc(80vh-100px)] pr-4">
+        <ScrollArea className="h-full max-h-[calc(80vh-140px)] pr-4">
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-aptiv/5 rounded-lg">
               <div className="space-y-2">
                 <h3 className="font-medium text-aptiv-gray-700">Contact Information</h3>
                 <p className="text-sm text-aptiv-gray-600">Email: {candidate.email}</p>
@@ -59,15 +63,12 @@ export const CandidateDetailsDialog = ({
               <div className="space-y-2">
                 <h3 className="font-medium text-aptiv-gray-700">Match Details</h3>
                 <p className="text-sm text-aptiv-gray-600">
-                  Match Score: {candidate.match_score}%
-                </p>
-                <p className="text-sm text-aptiv-gray-600">
                   Matched At: {new Date(candidate.matched_at).toLocaleDateString()}
                 </p>
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
               <h3 className="font-medium text-aptiv-gray-700">Skills</h3>
               <div className="flex flex-wrap gap-2">
                 {candidate.skills.map((skill, index) => (
@@ -82,7 +83,7 @@ export const CandidateDetailsDialog = ({
               </div>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
               <h3 className="font-medium text-aptiv-gray-700">Experience & Education</h3>
               <p className="text-sm text-aptiv-gray-600">
                 Experience: {candidate.experience} years
@@ -91,7 +92,7 @@ export const CandidateDetailsDialog = ({
             </div>
 
             {candidate.certifications && candidate.certifications.length > 0 && (
-              <div className="space-y-2">
+              <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
                 <h3 className="font-medium text-aptiv-gray-700">Certifications</h3>
                 <div className="flex flex-wrap gap-2">
                   {candidate.certifications.map((cert, index) => (
@@ -107,7 +108,7 @@ export const CandidateDetailsDialog = ({
               </div>
             )}
 
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
               <h3 className="font-medium text-aptiv-gray-700">Additional Information</h3>
               {candidate.nationality && (
                 <p className="text-sm text-aptiv-gray-600">
@@ -131,14 +132,14 @@ export const CandidateDetailsDialog = ({
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
               <h3 className="font-medium text-aptiv-gray-700">CV Content</h3>
               <p className="text-sm text-aptiv-gray-600 whitespace-pre-wrap">
                 {candidate.cv_content}
               </p>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
               <h3 className="font-medium text-aptiv-gray-700">Job Description</h3>
               <p className="text-sm text-aptiv-gray-600 whitespace-pre-wrap">
                 {candidate.job_description}

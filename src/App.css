@@ -40,36 +40,3 @@
 .read-the-docs {
   color: #888;
 }
-
-/* Add Markdown prose styling */
-.prose {
-  @apply text-aptiv-gray-600;
-}
-
-.prose h1, .prose h2, .prose h3, .prose h4, .prose h5, .prose h6 {
-  @apply text-aptiv-gray-700 font-medium mt-4 mb-2;
-}
-
-.prose p {
-  @apply mb-2;
-}
-
-.prose ul, .prose ol {
-  @apply ml-4 mb-2;
-}
-
-.prose li {
-  @apply mb-1;
-}
-
-.prose a {
-  @apply text-aptiv hover:underline;
-}
-
-.prose code {
-  @apply bg-aptiv/5 px-1 rounded;
-}
-
-.prose blockquote {
-  @apply border-l-4 border-aptiv/20 pl-4 italic;
-}

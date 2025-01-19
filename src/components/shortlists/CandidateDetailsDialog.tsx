@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import ReactMarkdown from 'react-markdown';
 
 interface CandidateDetails {
   name: string;
@@ -86,12 +85,10 @@ export const CandidateDetailsDialog = ({
 
             <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
               <h3 className="font-medium text-aptiv-gray-700">Experience & Education</h3>
-              <div className="text-sm text-aptiv-gray-600">
-                <p>Experience: {candidate.experience} years</p>
-                <div className="prose prose-sm max-w-none mt-2">
-                  <ReactMarkdown>{candidate.education}</ReactMarkdown>
-                </div>
-              </div>
+              <p className="text-sm text-aptiv-gray-600">
+                Experience: {candidate.experience} years
+              </p>
+              <p className="text-sm text-aptiv-gray-600">Education: {candidate.education}</p>
             </div>
 
             {candidate.certifications && candidate.certifications.length > 0 && (
@@ -137,9 +134,9 @@ export const CandidateDetailsDialog = ({
 
             <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
               <h3 className="font-medium text-aptiv-gray-700">CV Content</h3>
-              <div className="prose prose-sm max-w-none">
-                <ReactMarkdown>{candidate.cv_content}</ReactMarkdown>
-              </div>
+              <p className="text-sm text-aptiv-gray-600 whitespace-pre-wrap">
+                {candidate.cv_content}
+              </p>
             </div>
 
             <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">

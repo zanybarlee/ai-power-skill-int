@@ -163,7 +163,7 @@ const Shortlists = () => {
         <Card className="border border-aptiv/10 bg-white shadow-sm">
           <CardHeader>
             <CardTitle className="text-2xl font-semibold text-aptiv-gray-700">
-              Shortlisted Candidates
+              Matched Candidates
             </CardTitle>
           </CardHeader>
           <CardContent>

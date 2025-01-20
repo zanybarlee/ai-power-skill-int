@@ -35,7 +35,7 @@ const Landing = () => {
 
         {/* Globe Background */}
         <div className="absolute inset-0 z-0">
-          <Globe className="scale-125" />
+          <Globe className="scale-[1.2]" />
           <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/80 to-white/95" />
         </div>
 

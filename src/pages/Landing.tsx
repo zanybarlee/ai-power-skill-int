@@ -53,10 +53,12 @@ const Landing = () => {
         </div>
       </div>
 
-      {/* Globe Section - Moved here */}
-      <div className="relative w-full h-[60vh] flex items-center justify-center mb-20">
-        <Globe className="opacity-100 scale-125" />
-        <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none" />
+      {/* Globe Section - As background */}
+      <div className="absolute inset-0 w-full h-screen pointer-events-none" style={{ top: '60vh' }}>
+        <div className="relative w-full h-full">
+          <Globe className="opacity-100 scale-125" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white" />
+        </div>
       </div>
 
       {/* Features Section */}

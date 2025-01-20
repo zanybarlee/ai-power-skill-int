@@ -54,15 +54,15 @@ const Landing = () => {
       </div>
 
       {/* Globe Section - As background */}
-      <div className="absolute inset-0 w-full h-screen pointer-events-none" style={{ top: '60vh' }}>
+      <div className="fixed left-0 right-0 w-full h-screen" style={{ top: '40vh', zIndex: 0 }}>
         <div className="relative w-full h-full">
-          <Globe className="opacity-100 scale-125" />
+          <Globe className="opacity-80 scale-125" />
           <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white" />
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="py-20 bg-white relative z-10">
+      <div className="py-20 bg-transparent relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-aptiv-gray-700 mb-4">
@@ -94,7 +94,7 @@ const Landing = () => {
             ].map((feature, index) => (
               <div 
                 key={index}
-                className="bg-white p-6 rounded-lg shadow-sm border border-aptiv/10"
+                className="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-sm border border-aptiv/10"
               >
                 <div className="w-12 h-12 bg-aptiv/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   {feature.icon}

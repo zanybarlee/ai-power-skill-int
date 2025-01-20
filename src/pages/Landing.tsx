@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Globe } from "@/components/ui/globe";
-import { Robot, Filter, Clock } from "lucide-react";
+import { Bot, Filter, Clock } from "lucide-react";
 
 const Landing = () => {
   return (
@@ -79,7 +79,7 @@ const Landing = () => {
               {
                 title: "AI Matching",
                 description: "Advanced algorithms match candidates to your job requirements with high accuracy",
-                icon: <Robot className="w-6 h-6 text-aptiv" />
+                icon: <Bot className="w-6 h-6 text-aptiv" />
               },
               {
                 title: "Automated Screening",

@@ -36,7 +36,7 @@ const Landing = () => {
 
         {/* Globe Background */}
         <div className="absolute inset-0 z-0 translate-y-[20%]">
-          <Globe className="opacity-90 scale-125" /> {/* Increased opacity from 75 to 90 */}
+          <Globe className="scale-125" /> {/* Removed opacity class for 100% visibility */}
           <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white/90" />
         </div>
 

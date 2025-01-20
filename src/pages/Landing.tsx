@@ -10,7 +10,7 @@ const Landing = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-aptiv/5 to-transparent" />
         
         {/* Navigation */}
-        <nav className="relative z-10 glass-nav">
+        <nav className="relative z-50 glass-nav">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-6">
               <div className="flex items-center">
@@ -34,10 +34,16 @@ const Landing = () => {
           </div>
         </nav>
 
+        {/* Globe Background */}
+        <div className="absolute inset-0 z-0">
+          <Globe className="opacity-75" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/90" />
+        </div>
+
         {/* Hero Content */}
-        <div className="relative pt-20 pb-32 sm:pt-24 sm:pb-40">
+        <div className="relative z-10 pt-20 pb-32 sm:pt-24 sm:pb-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center relative z-10">
+            <div className="text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-aptiv-gray-700 mb-6">
                 AI-Powered Talent Matching
               </h1>
@@ -50,18 +56,12 @@ const Landing = () => {
                 </Button>
               </Link>
             </div>
-            
-            {/* Globe Animation */}
-            <div className="relative h-[600px] mt-12">
-              <Globe className="z-0" />
-              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10" />
-            </div>
           </div>
         </div>
       </div>
 
       {/* Features Section */}
-      <div className="py-20 bg-gray-50">
+      <div className="py-20 bg-white/80 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-aptiv-gray-700 mb-4">
@@ -110,7 +110,7 @@ const Landing = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-aptiv py-20">
+      <div className="bg-aptiv py-20 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to transform your hiring process?

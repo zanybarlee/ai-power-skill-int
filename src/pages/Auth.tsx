@@ -13,7 +13,11 @@ const Auth = () => {
   useEffect(() => {
     // Check if user is already logged in
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const { data: { session }, error } = await supabase.auth.getSession();
+      if (error) {
+        setErrorMessage(getErrorMessage(error));
+        return;
+      }
       if (session) {
         navigate("/");
       }
@@ -33,6 +37,10 @@ const Auth = () => {
         if (error) {
           setErrorMessage(getErrorMessage(error));
         }
+      }
+      // Clear error message on successful events
+      if (["SIGNED_IN", "SIGNED_UP", "PASSWORD_RECOVERY"].includes(event)) {
+        setErrorMessage("");
       }
     });
 

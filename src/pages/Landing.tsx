@@ -33,16 +33,8 @@ const Landing = () => {
           </div>
         </nav>
 
-        {/* Globe Background */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-full h-[80vh] flex items-center justify-center">
-            <Globe className="opacity-100 scale-125" />
-            <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none" />
-          </div>
-        </div>
-
         {/* Hero Content */}
-        <div className="relative z-20 pt-20 pb-32 sm:pt-24 sm:pb-40">
+        <div className="relative z-20 pt-20 pb-32">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-aptiv-gray-700 mb-6">
@@ -59,6 +51,12 @@ const Landing = () => {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Globe Section - Moved here */}
+      <div className="relative w-full h-[60vh] flex items-center justify-center mb-20">
+        <Globe className="opacity-100 scale-125" />
+        <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none" />
       </div>
 
       {/* Features Section */}

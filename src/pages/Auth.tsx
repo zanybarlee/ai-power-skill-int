@@ -19,7 +19,7 @@ const Auth = () => {
         return;
       }
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     };
     checkUser();
@@ -27,7 +27,7 @@ const Auth = () => {
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session) {
-        navigate("/");
+        navigate("/dashboard");
       }
       if (event === "SIGNED_OUT") {
         navigate("/auth");

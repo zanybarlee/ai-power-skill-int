@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,26 +15,39 @@ const Layout = ({ children }: LayoutProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          navigate("/auth", { replace: true });
+          return;
+        }
+
         if (!session) {
           navigate("/auth", { replace: true });
-        } else {
-          setIsLoading(false);
+          return;
         }
+
+        setIsLoading(false);
       } catch (error) {
+        console.error('Auth error:', error);
         setIsLoading(false);
         navigate("/auth", { replace: true });
       }
     };
 
-    // Subscribe to auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT') {
+      if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
         navigate("/auth", { replace: true });
+      }
+      
+      if (event === 'TOKEN_REFRESHED' && session) {
+        setIsLoading(false);
       }
     });
 
@@ -45,7 +59,25 @@ const Layout = ({ children }: LayoutProps) => {
   }, [navigate]);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        toast({
+          title: "Error signing out",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+      navigate("/auth", { replace: true });
+    } catch (error) {
+      console.error('Logout error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to sign out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const navigationItems = [
@@ -74,7 +106,7 @@ const Layout = ({ children }: LayoutProps) => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-aptiv"></div>
+        <div className="h-8 w-8 border-t-2 border-b-2 border-aptiv rounded-full"></div>
       </div>
     );
   }

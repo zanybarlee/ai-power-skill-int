@@ -34,7 +34,7 @@ const Landing = () => {
         </nav>
 
         {/* Globe Background */}
-        <div className="absolute inset-0 z-10 overflow-visible -top-24">
+        <div className="absolute inset-0 z-10 overflow-visible flex items-center justify-center">
           <Globe className="scale-[1.2] opacity-100" />
           <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/80" />
         </div>

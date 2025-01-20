@@ -34,9 +34,11 @@ const Landing = () => {
         </nav>
 
         {/* Globe Background */}
-        <div className="absolute inset-0 flex items-center justify-center z-10">
-          <Globe className="opacity-100" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/80" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-full h-[80vh] flex items-center justify-center">
+            <Globe className="opacity-100 scale-125" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none" />
+          </div>
         </div>
 
         {/* Hero Content */}

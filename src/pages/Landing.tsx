@@ -7,7 +7,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden min-h-[80vh]">
         {/* Navigation */}
         <nav className="relative z-50 glass-nav">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,7 +34,7 @@ const Landing = () => {
         </nav>
 
         {/* Globe Background */}
-        <div className="absolute inset-0 z-10 overflow-visible">
+        <div className="absolute inset-0 z-10 overflow-visible -top-24">
           <Globe className="scale-[1.2] opacity-100" />
           <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/80" />
         </div>

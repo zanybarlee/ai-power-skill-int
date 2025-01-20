@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { Globe } from "@/components/ui/globe";
 
 const Landing = () => {
   return (
@@ -36,7 +37,7 @@ const Landing = () => {
         {/* Hero Content */}
         <div className="relative pt-20 pb-32 sm:pt-24 sm:pb-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
+            <div className="text-center relative z-10">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-aptiv-gray-700 mb-6">
                 AI-Powered Talent Matching
               </h1>
@@ -48,6 +49,12 @@ const Landing = () => {
                   Start Hiring Now
                 </Button>
               </Link>
+            </div>
+            
+            {/* Globe Animation */}
+            <div className="relative h-[600px] mt-12">
+              <Globe className="z-0" />
+              <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent z-10" />
             </div>
           </div>
         </div>

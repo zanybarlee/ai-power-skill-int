@@ -8,8 +8,6 @@ const Landing = () => {
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-aptiv/5 to-transparent" />
-        
         {/* Navigation */}
         <nav className="relative z-50 glass-nav">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -36,13 +34,13 @@ const Landing = () => {
         </nav>
 
         {/* Globe Background */}
-        <div className="absolute inset-0 z-0 translate-y-[20%]">
-          <Globe className="scale-125" /> {/* Removed opacity class for 100% visibility */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white/90" />
+        <div className="absolute inset-0 z-0">
+          <Globe className="scale-125" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/80 to-white/95" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 pt-20 pb-32 sm:pt-24 sm:pb-40">
+        <div className="relative z-10 pt-20 pb-32 sm:pt-24 sm:pb-40 bg-white/80 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-aptiv-gray-700 mb-6">
@@ -62,7 +60,7 @@ const Landing = () => {
       </div>
 
       {/* Features Section */}
-      <div className="py-20 bg-white/80 relative z-10">
+      <div className="py-20 bg-white relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-aptiv-gray-700 mb-4">

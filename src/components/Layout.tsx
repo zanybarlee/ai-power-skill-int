@@ -12,6 +12,7 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
+  const [isContentVisible, setIsContentVisible] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -21,9 +22,18 @@ const Layout = ({ children }: LayoutProps) => {
         const { data: { session } } = await supabase.auth.getSession();
         if (!session) {
           navigate("/auth", { replace: true });
+        } else {
+          // Add a small delay before showing content for smooth transition
+          setTimeout(() => {
+            setIsLoading(false);
+            setTimeout(() => {
+              setIsContentVisible(true);
+            }, 100);
+          }, 300);
         }
-      } finally {
+      } catch (error) {
         setIsLoading(false);
+        navigate("/auth", { replace: true });
       }
     };
 
@@ -71,13 +81,17 @@ const Layout = ({ children }: LayoutProps) => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-aptiv"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-aptiv transition-all duration-500"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex min-h-screen">
+    <div className={cn(
+      "flex min-h-screen",
+      isContentVisible ? "opacity-100" : "opacity-0",
+      "transition-opacity duration-300 ease-in-out"
+    )}>
       {/* Sidebar */}
       <div
         className={cn(
@@ -173,7 +187,8 @@ const Layout = ({ children }: LayoutProps) => {
       {/* Main content */}
       <div className={cn(
         "flex-1 flex flex-col min-h-screen",
-        isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
+        isSidebarOpen ? "lg:ml-64" : "lg:ml-20",
+        "transition-all duration-300"
       )}>
         <header className="h-16 border-b border-aptiv/10 flex items-center px-4 bg-white">
           <h2 className="text-aptiv-gray-700 font-medium">

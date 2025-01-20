@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Globe } from "@/components/ui/globe";
+import { Robot, Filter, Clock } from "lucide-react";
 
 const Landing = () => {
   return (
@@ -77,15 +78,18 @@ const Landing = () => {
             {[
               {
                 title: "AI Matching",
-                description: "Advanced algorithms match candidates to your job requirements with high accuracy"
+                description: "Advanced algorithms match candidates to your job requirements with high accuracy",
+                icon: <Robot className="w-6 h-6 text-aptiv" />
               },
               {
                 title: "Automated Screening",
-                description: "Pre-screen candidates automatically based on your specific criteria"
+                description: "Pre-screen candidates automatically based on your specific criteria",
+                icon: <Filter className="w-6 h-6 text-aptiv" />
               },
               {
                 title: "Quick Hiring",
-                description: "Reduce time-to-hire with our streamlined recruitment process"
+                description: "Reduce time-to-hire with our streamlined recruitment process",
+                icon: <Clock className="w-6 h-6 text-aptiv" />
               }
             ].map((feature, index) => (
               <div 
@@ -93,9 +97,7 @@ const Landing = () => {
                 className="bg-white p-6 rounded-lg shadow-sm border border-aptiv/10"
               >
                 <div className="w-12 h-12 bg-aptiv/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
-                  <div className="w-6 h-6 text-aptiv">
-                    {/* Icon placeholder */}
-                  </div>
+                  {feature.icon}
                 </div>
                 <h3 className="text-xl font-semibold text-aptiv-gray-700 mb-2">
                   {feature.title}

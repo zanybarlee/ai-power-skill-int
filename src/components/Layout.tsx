@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Menu, X, FileText, Search, Users, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Footer from "./Footer";
+import { supabase } from "@/integrations/supabase/client";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -11,6 +12,23 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is logged in
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        navigate("/auth");
+      }
+    };
+    checkUser();
+  }, [navigate]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/auth");
+  };
 
   const navigationItems = [
     {
@@ -108,6 +126,7 @@ const Layout = ({ children }: LayoutProps) => {
           !isSidebarOpen && "lg:flex lg:justify-center"
         )}>
           <button 
+            onClick={handleLogout}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-md w-full",
               "text-aptiv-gray-200 hover:bg-aptiv hover:text-white transition-all group",

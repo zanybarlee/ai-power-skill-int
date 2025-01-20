@@ -13,6 +13,7 @@ import ITSolutions from "./pages/ITSolutions";
 import EADivision from "./pages/EADivision";
 import Contact from "./pages/Contact";
 import Terms from "./pages/Terms";
+import Auth from "./pages/Auth";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
           <Route path="/post-job" element={<PostJob />} />
           <Route path="/candidates" element={<Candidates />} />
           <Route path="/shortlists" element={<Shortlists />} />

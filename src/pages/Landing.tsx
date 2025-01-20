@@ -35,9 +35,9 @@ const Landing = () => {
         </nav>
 
         {/* Globe Background */}
-        <div className="absolute inset-0 z-0">
-          <Globe className="opacity-75" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/90" />
+        <div className="absolute inset-0 z-0 translate-y-[20%]"> {/* Moved down 20% */}
+          <Globe className="opacity-75 scale-125" /> {/* Enlarged by 25% */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/90 via-white/70 to-white/90" />
         </div>
 
         {/* Hero Content */}

@@ -7,7 +7,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden min-h-[80vh]">
+      <div className="relative overflow-hidden">
         {/* Navigation */}
         <nav className="relative z-50 glass-nav">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,13 +34,13 @@ const Landing = () => {
         </nav>
 
         {/* Globe Background */}
-        <div className="absolute inset-0 z-10 overflow-visible flex items-center justify-center">
-          <Globe className="scale-[1.2] opacity-100" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/80" />
+        <div className="absolute inset-0 z-0">
+          <Globe className="scale-125" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/80 to-white/95" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-20 pt-20 pb-32 sm:pt-24 sm:pb-40">
+        <div className="relative z-10 pt-20 pb-32 sm:pt-24 sm:pb-40 bg-white/80 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-aptiv-gray-700 mb-6">
@@ -60,7 +60,7 @@ const Landing = () => {
       </div>
 
       {/* Features Section */}
-      <div className="py-20 bg-white relative z-30">
+      <div className="py-20 bg-white relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-aptiv-gray-700 mb-4">
@@ -110,7 +110,7 @@ const Landing = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-aptiv py-20 relative z-30">
+      <div className="bg-aptiv py-20 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl font-bold text-white mb-4">
             Ready to transform your hiring process?

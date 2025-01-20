@@ -56,7 +56,7 @@ const Landing = () => {
       {/* Globe Section - As background */}
       <div className="fixed left-0 right-0 w-full h-screen" style={{ top: '25vh', zIndex: 0 }}>
         <div className="relative w-full h-full">
-          <Globe className="opacity-70 scale-[1.5]" />
+          <Globe className="opacity-70 scale-[1.3]" />
           <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none" />
         </div>
       </div>

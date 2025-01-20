@@ -12,7 +12,6 @@ interface LayoutProps {
 const Layout = ({ children }: LayoutProps) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
-  const [isContentVisible, setIsContentVisible] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -23,13 +22,7 @@ const Layout = ({ children }: LayoutProps) => {
         if (!session) {
           navigate("/auth", { replace: true });
         } else {
-          // Add a small delay before showing content for smooth transition
-          setTimeout(() => {
-            setIsLoading(false);
-            setTimeout(() => {
-              setIsContentVisible(true);
-            }, 100);
-          }, 300);
+          setIsLoading(false);
         }
       } catch (error) {
         setIsLoading(false);
@@ -81,22 +74,17 @@ const Layout = ({ children }: LayoutProps) => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-aptiv transition-all duration-500"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-aptiv"></div>
       </div>
     );
   }
 
   return (
-    <div className={cn(
-      "flex min-h-screen",
-      isContentVisible ? "opacity-100" : "opacity-0",
-      "transition-opacity duration-300 ease-in-out"
-    )}>
+    <div className="flex min-h-screen">
       {/* Sidebar */}
       <div
         className={cn(
           "fixed inset-y-0 left-0 bg-aptiv-gray-700 z-40",
-          "transition-all duration-300",
           isSidebarOpen ? "w-64" : "w-0 lg:w-20"
         )}
       >
@@ -107,14 +95,14 @@ const Layout = ({ children }: LayoutProps) => {
               src="/lovable-uploads/5d0792c7-11b1-4e59-af76-3c687201c682.png" 
               alt="Aptiv8 Logo" 
               className={cn(
-                "h-8 transition-all duration-300",
+                "h-8",
                 isSidebarOpen ? "w-32" : "w-12 lg:w-12"
               )}
             />
           </div>
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-aptiv-gray-600 rounded-md text-white transition-colors"
+            className="p-2 hover:bg-aptiv-gray-600 rounded-md text-white"
           >
             {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -130,21 +118,15 @@ const Layout = ({ children }: LayoutProps) => {
               key={item.path}
               to={item.path}
               className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-md transition-all",
-                "hover:bg-aptiv hover:text-white group",
+                "flex items-center gap-3 px-3 py-2.5 rounded-md",
+                "hover:bg-aptiv hover:text-white",
                 location.pathname === item.path
                   ? "bg-aptiv text-white"
                   : "text-aptiv-gray-200",
                 !isSidebarOpen && "lg:justify-center"
               )}
             >
-              <item.icon 
-                size={20} 
-                className={cn(
-                  "transition-transform",
-                  "group-hover:scale-110"
-                )}
-              />
+              <item.icon size={20} />
               <span 
                 className={cn(
                   "font-medium text-sm",
@@ -166,14 +148,11 @@ const Layout = ({ children }: LayoutProps) => {
             onClick={handleLogout}
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-md w-full",
-              "text-aptiv-gray-200 hover:bg-aptiv hover:text-white transition-all group",
+              "text-aptiv-gray-200 hover:bg-aptiv hover:text-white",
               !isSidebarOpen && "lg:justify-center lg:w-auto"
             )}
           >
-            <LogOut 
-              size={20} 
-              className="group-hover:scale-110 transition-transform"
-            />
+            <LogOut size={20} />
             <span className={cn(
               "font-medium text-sm",
               !isSidebarOpen && "lg:hidden"
@@ -187,8 +166,7 @@ const Layout = ({ children }: LayoutProps) => {
       {/* Main content */}
       <div className={cn(
         "flex-1 flex flex-col min-h-screen",
-        isSidebarOpen ? "lg:ml-64" : "lg:ml-20",
-        "transition-all duration-300"
+        isSidebarOpen ? "lg:ml-64" : "lg:ml-20"
       )}>
         <header className="h-16 border-b border-aptiv/10 flex items-center px-4 bg-white">
           <h2 className="text-aptiv-gray-700 font-medium">

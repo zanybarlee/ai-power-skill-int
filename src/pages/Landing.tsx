@@ -7,7 +7,7 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-visible">
         {/* Navigation */}
         <nav className="relative z-50 glass-nav">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -34,13 +34,13 @@ const Landing = () => {
         </nav>
 
         {/* Globe Background */}
-        <div className="absolute inset-0 z-0">
-          <Globe className="scale-125" />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/95 via-white/80 to-white/95" />
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <Globe className="opacity-100" />
+          <div className="absolute inset-0 bg-gradient-to-b from-white/80 via-white/60 to-white/80" />
         </div>
 
         {/* Hero Content */}
-        <div className="relative z-10 pt-20 pb-32 sm:pt-24 sm:pb-40 bg-white/80 backdrop-blur-sm">
+        <div className="relative z-20 pt-20 pb-32 sm:pt-24 sm:pb-40">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-aptiv-gray-700 mb-6">

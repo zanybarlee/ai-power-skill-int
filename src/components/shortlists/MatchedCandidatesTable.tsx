@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { BookmarkX, Mail } from "lucide-react";
+import { BookmarkX, Mail, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,9 +20,10 @@ interface MatchedCandidate {
 
 interface MatchedCandidatesTableProps {
   candidates: MatchedCandidate[];
+  onClearMatches: () => void;
 }
 
-export const MatchedCandidatesTable = ({ candidates }: MatchedCandidatesTableProps) => {
+export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCandidatesTableProps) => {
   const { toast } = useToast();
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(null);
   const [candidateDetails, setCandidateDetails] = useState<any>(null);
@@ -37,6 +38,14 @@ export const MatchedCandidatesTable = ({ candidates }: MatchedCandidatesTablePro
 
   const handleContact = (email: string) => {
     window.location.href = `mailto:${email}`;
+  };
+
+  const handleClearMatches = () => {
+    onClearMatches();
+    toast({
+      title: "Matches cleared",
+      description: "All matches have been cleared from the table.",
+    });
   };
 
   const handleRowClick = async (candidateId: string) => {
@@ -72,6 +81,23 @@ export const MatchedCandidatesTable = ({ candidates }: MatchedCandidatesTablePro
 
   return (
     <>
+      <div className="flex justify-between items-center mb-4">
+        <div className="text-sm text-aptiv-gray-600">
+          {candidates.length} candidates matched
+        </div>
+        {candidates.length > 0 && (
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={handleClearMatches}
+            className="bg-red-600 hover:bg-red-700"
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Clear Matches
+          </Button>
+        )}
+      </div>
+
       <Table>
         <TableHeader>
           <TableRow className="border-aptiv/10">

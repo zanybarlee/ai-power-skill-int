@@ -77,7 +77,6 @@ const Shortlists = () => {
     setIsMatching(true);
     try {
       const result = await queryBestMatch(jobDescription);
-      // Parse the result and update the state
       const parsedResults = Array.isArray(result.matches) 
         ? result.matches.map((match: any) => ({
             name: match.name || 'Unknown',
@@ -105,6 +104,11 @@ const Shortlists = () => {
     } finally {
       setIsMatching(false);
     }
+  };
+
+  const handleClearMatches = () => {
+    setMatchingResults([]);
+    queryClient.setQueryData(['matchedCandidates'], []);
   };
 
   return (
@@ -171,7 +175,10 @@ const Shortlists = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <MatchedCandidatesTable candidates={matchedCandidates} />
+            <MatchedCandidatesTable 
+              candidates={matchedCandidates} 
+              onClearMatches={handleClearMatches}
+            />
           </CardContent>
         </Card>
       </div>

@@ -4,11 +4,40 @@ import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { searchTalent } from "@/services/talentSearch";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { format } from "date-fns";
 
 export const CrawlTab = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Query to fetch today's crawl results
+  const { data: todayResults, refetch: refetchResults } = useQuery({
+    queryKey: ['todayCrawls'],
+    queryFn: async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      const { data, error } = await supabase
+        .from('cv_metadata')
+        .select('*')
+        .gte('created_at', today.toISOString())
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },
+  });
 
   const handleSearchTalent = async () => {
     if (!searchQuery.trim()) {
@@ -32,6 +61,7 @@ export const CrawlTab = () => {
       };
 
       const result = await searchTalent(params);
+      await refetchResults(); // Refresh the results after new crawl
       toast({
         title: "Success",
         description: "CV crawl completed successfully",
@@ -49,7 +79,7 @@ export const CrawlTab = () => {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <div className="flex items-center gap-4">
         <Input
           type="text"
@@ -66,6 +96,47 @@ export const CrawlTab = () => {
           <Search className="h-5 w-5 mr-2" />
           {isLoading ? "Crawling..." : "Crawl CV"}
         </Button>
+      </div>
+
+      {/* Results Pane */}
+      <div className="bg-white rounded-lg border border-aptiv/10 p-6">
+        <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">Today's Crawl Results</h2>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Experience</TableHead>
+                <TableHead>Time</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {todayResults?.map((result) => (
+                <TableRow key={result.id}>
+                  <TableCell>{result.name || 'N/A'}</TableCell>
+                  <TableCell>{result.email || 'N/A'}</TableCell>
+                  <TableCell>{result.location || 'N/A'}</TableCell>
+                  <TableCell>{result.experience ? `${result.experience} years` : 'N/A'}</TableCell>
+                  <TableCell>
+                    {result.created_at 
+                      ? format(new Date(result.created_at), 'HH:mm:ss')
+                      : 'N/A'
+                    }
+                  </TableCell>
+                </TableRow>
+              ))}
+              {(!todayResults || todayResults.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-gray-500">
+                    No results found for today
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

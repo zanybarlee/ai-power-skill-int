@@ -57,6 +57,25 @@ export const CrawlTab = () => {
       if (error) throw error;
       return data;
     },
+    onSuccess: (data) => {
+      let dateText;
+      if (date) {
+        dateText = format(date, "PPP");
+      } else {
+        if (daysAgo === 0) {
+          dateText = "today";
+        } else if (daysAgo === 1) {
+          dateText = "yesterday";
+        } else {
+          dateText = `${daysAgo} days ago`;
+        }
+      }
+
+      toast({
+        title: "Results Updated",
+        description: `Showing ${data?.length || 0} results from ${dateText}`,
+      });
+    }
   });
 
   useEffect(() => {
@@ -112,24 +131,6 @@ export const CrawlTab = () => {
   const handleCheckResults = async () => {
     await refetchResults();
     setShowResults(true);
-    
-    let dateText;
-    if (date) {
-      dateText = format(date, "PPP");
-    } else {
-      if (daysAgo === 0) {
-        dateText = "today";
-      } else if (daysAgo === 1) {
-        dateText = "yesterday";
-      } else {
-        dateText = `${daysAgo} days ago`;
-      }
-    }
-
-    toast({
-      title: "Results Updated",
-      description: `Showing ${crawlResults?.length || 0} results from ${dateText}`,
-    });
   };
 
   const handleRowClick = (candidate: any) => {
@@ -226,14 +227,16 @@ export const CrawlTab = () => {
         </div>
       </div>
 
-      {/* Results Pane - Always visible now */}
+      {/* Results Pane */}
       <div className="bg-white rounded-lg border border-aptiv/10 p-6">
         <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">
           Crawl Results {date 
             ? format(date, "PPP")
             : daysAgo === 0 
               ? "Today" 
-              : `(${daysAgo} days ago)`}
+              : daysAgo === 1
+                ? "Yesterday"
+                : `(${daysAgo} days ago)`}
         </h2>
         <div className="overflow-x-auto">
           <Table>
@@ -287,7 +290,9 @@ export const CrawlTab = () => {
                       ? format(date, "PPP")
                       : daysAgo === 0 
                         ? "today" 
-                        : `${daysAgo} days ago`}
+                        : daysAgo === 1
+                          ? "yesterday"
+                          : `${daysAgo} days ago`}
                   </TableCell>
                 </TableRow>
               )}

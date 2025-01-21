@@ -42,11 +42,11 @@ export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCa
 
   const handleClearMatches = async () => {
     try {
-      // Clear matches from the database
+      // Clear matches from the database - now without any condition
       const { error } = await supabase
         .from('cv_match')
         .delete()
-        .neq('id', ''); // This will delete all records
+        .is('id', 'is not', null); // This will delete all records
 
       if (error) throw error;
 

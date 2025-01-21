@@ -22,6 +22,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { CandidateDetailsDialog } from "@/components/shortlists/CandidateDetailsDialog";
 
 export const CrawlTab = () => {
   const { toast } = useToast();
@@ -30,8 +31,9 @@ export const CrawlTab = () => {
   const [showResults, setShowResults] = useState(false);
   const [daysAgo, setDaysAgo] = useState(0);
   const [date, setDate] = useState<Date>();
+  const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Query to fetch results from selected date
   const { data: crawlResults, refetch: refetchResults } = useQuery({
     queryKey: ['crawlResults', date || daysAgo],
     queryFn: async () => {
@@ -115,6 +117,17 @@ export const CrawlTab = () => {
       title: "Results Updated",
       description: `Showing ${crawlResults?.length || 0} results from ${dateText}`,
     });
+  };
+
+  const handleRowClick = (candidate: any) => {
+    const candidateDetails = {
+      ...candidate,
+      match_score: null,
+      job_description: null,
+      matched_at: candidate.created_at,
+    };
+    setSelectedCandidate(candidateDetails);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -224,7 +237,11 @@ export const CrawlTab = () => {
               </TableHeader>
               <TableBody>
                 {crawlResults?.map((result) => (
-                  <TableRow key={result.id}>
+                  <TableRow 
+                    key={result.id}
+                    className="cursor-pointer hover:bg-aptiv/5"
+                    onClick={() => handleRowClick(result)}
+                  >
                     <TableCell>{result.name || 'N/A'}</TableCell>
                     <TableCell>{result.email || 'N/A'}</TableCell>
                     <TableCell>{result.location || 'N/A'}</TableCell>
@@ -237,7 +254,10 @@ export const CrawlTab = () => {
                     </TableCell>
                     <TableCell>
                       <Button
-                        onClick={() => handleEnquiry(result)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEnquiry(result);
+                        }}
                         variant="outline"
                         size="sm"
                         className="text-aptiv hover:text-white hover:bg-aptiv"
@@ -264,6 +284,15 @@ export const CrawlTab = () => {
           </div>
         </div>
       )}
+
+      <CandidateDetailsDialog
+        isOpen={isDialogOpen}
+        onClose={() => {
+          setIsDialogOpen(false);
+          setSelectedCandidate(null);
+        }}
+        candidate={selectedCandidate}
+      />
     </div>
   );
 };

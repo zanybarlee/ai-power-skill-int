@@ -28,7 +28,7 @@ export const CrawlTab = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showResults, setShowResults] = useState(true); // Changed to true by default
+  const [showResults, setShowResults] = useState(true);
   const [daysAgo, setDaysAgo] = useState(0);
   const [date, setDate] = useState<Date>();
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
@@ -59,10 +59,9 @@ export const CrawlTab = () => {
     },
   });
 
-  // Fetch results when component mounts
   useEffect(() => {
     handleCheckResults();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   const handleSearchTalent = async () => {
     if (!searchQuery.trim()) {
@@ -113,11 +112,20 @@ export const CrawlTab = () => {
   const handleCheckResults = async () => {
     await refetchResults();
     setShowResults(true);
-    const dateText = date 
-      ? format(date, "PPP")
-      : daysAgo === 0 
-        ? "today" 
-        : `${daysAgo} days ago`;
+    
+    let dateText;
+    if (date) {
+      dateText = format(date, "PPP");
+    } else {
+      if (daysAgo === 0) {
+        dateText = "today";
+      } else if (daysAgo === 1) {
+        dateText = "yesterday";
+      } else {
+        dateText = `${daysAgo} days ago`;
+      }
+    }
+
     toast({
       title: "Results Updated",
       description: `Showing ${crawlResults?.length || 0} results from ${dateText}`,

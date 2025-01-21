@@ -36,28 +36,28 @@ const Candidates = () => {
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
           <h1 className="text-2xl font-semibold text-aptiv-gray-700 mb-6">Candidate Search</h1>
           
-          <Tabs defaultValue="search" className="w-full">
+          <Tabs defaultValue="crawl" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-white border border-aptiv/20 rounded-lg p-1">
-              <TabsTrigger 
-                value="search" 
-                className="data-[state=active]:bg-aptiv data-[state=active]:text-white data-[state=active]:shadow-none text-aptiv-gray-600 hover:text-aptiv px-8 py-2.5"
-              >
-                Search Talent
-              </TabsTrigger>
               <TabsTrigger 
                 value="crawl" 
                 className="data-[state=active]:bg-aptiv data-[state=active]:text-white data-[state=active]:shadow-none text-aptiv-gray-600 hover:text-aptiv px-8 py-2.5"
               >
                 Crawl CV
               </TabsTrigger>
+              <TabsTrigger 
+                value="search" 
+                className="data-[state=active]:bg-aptiv data-[state=active]:text-white data-[state=active]:shadow-none text-aptiv-gray-600 hover:text-aptiv px-8 py-2.5"
+              >
+                Search Talent
+              </TabsTrigger>
             </TabsList>
-
-            <TabsContent value="search" className="mt-6">
-              <SearchTab />
-            </TabsContent>
 
             <TabsContent value="crawl" className="mt-6">
               <CrawlTab />
+            </TabsContent>
+
+            <TabsContent value="search" className="mt-6">
+              <SearchTab />
             </TabsContent>
           </Tabs>
         </div>

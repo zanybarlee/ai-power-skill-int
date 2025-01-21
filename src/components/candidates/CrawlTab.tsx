@@ -61,7 +61,7 @@ export const CrawlTab = () => {
         <Button
           onClick={handleSearchTalent}
           disabled={isLoading}
-          className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
+          className="bg-forest hover:bg-forest/90 text-white flex items-center gap-2"
         >
           <Search className="h-4 w-4" />
           {isLoading ? "Crawling..." : "Crawl CV"}

@@ -119,7 +119,7 @@ export const SearchTab = () => {
         <Button 
           onClick={handleTalentSearch}
           disabled={isLoading || isSearching}
-          className="bg-mint hover:bg-mint/90 text-forest flex items-center gap-2"
+          className="bg-forest hover:bg-forest/90 text-white flex items-center gap-2"
         >
           {(isLoading || isSearching) ? (
             <>

@@ -6,13 +6,14 @@ import { Search } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { queryBestMatch } from "@/services/matchingService";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchedCandidatesTable } from "@/components/shortlists/MatchedCandidatesTable";
 import { normalizeSkills } from "@/utils/candidateUtils";
 
 const Shortlists = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [jobDescription, setJobDescription] = useState(() => {
     return localStorage.getItem("jobDescription") || "";
   });
@@ -86,6 +87,9 @@ const Shortlists = () => {
         : [];
       
       setMatchingResults(parsedResults);
+      
+      // Invalidate and refetch the matchedCandidates query
+      await queryClient.invalidateQueries({ queryKey: ['matchedCandidates'] });
       
       toast({
         title: "Match Complete",

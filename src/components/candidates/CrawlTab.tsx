@@ -61,9 +61,9 @@ export const CrawlTab = () => {
         <Button
           onClick={handleSearchTalent}
           disabled={isLoading}
-          className="bg-forest hover:bg-forest/90 text-white flex items-center gap-2"
+          className="bg-aptiv hover:bg-aptiv/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 text-base py-6 px-8"
         >
-          <Search className="h-4 w-4" />
+          <Search className="h-5 w-5 mr-2" />
           {isLoading ? "Crawling..." : "Crawl CV"}
         </Button>
       </div>

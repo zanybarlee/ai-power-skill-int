@@ -88,20 +88,15 @@ export const SearchTab = () => {
     }
   };
 
-  const formattedResults: Candidate[] = searchResults?.map((result): Candidate => {
-    console.log("Formatting result:", result);
-    return {
-      id: result.id,
-      name: result.name || 'Unknown',
-      role: 'Not specified',
-      experience: result.experience ? `${result.experience} years` : 'Not specified',
-      location: result.location || 'Not specified',
-      skills: normalizeSkills(result.skills),
-      availability: 'Not specified'
-    };
-  }) || [];
-
-  console.log("Formatted results:", formattedResults);
+  const formattedResults = searchResults?.map((result): Candidate => ({
+    id: result.id,
+    name: result.name || 'Unknown',
+    role: 'Not specified',
+    experience: result.experience ? `${result.experience} years` : 'Not specified',
+    location: result.location || 'Not specified',
+    skills: normalizeSkills(result.skills),
+    availability: 'Not specified'
+  })) || [];
 
   return (
     <div className="space-y-6">
@@ -119,16 +114,16 @@ export const SearchTab = () => {
         <Button 
           onClick={handleTalentSearch}
           disabled={isLoading || isSearching}
-          className="bg-forest hover:bg-forest/90 text-white flex items-center gap-2"
+          className="bg-aptiv hover:bg-aptiv/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 text-base py-6"
         >
           {(isLoading || isSearching) ? (
             <>
-              <RefreshCw className="h-4 w-4 animate-spin" />
+              <RefreshCw className="h-5 w-5 animate-spin mr-2" />
               Searching...
             </>
           ) : (
             <>
-              <Search className="h-4 w-4" />
+              <Search className="h-5 w-5 mr-2" />
               Search Talent
             </>
           )}

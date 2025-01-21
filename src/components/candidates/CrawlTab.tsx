@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Mail } from "lucide-react";
+import { Search, Mail, ClipboardList } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { searchTalent } from "@/services/talentSearch";
 import { useQuery } from "@tanstack/react-query";
@@ -20,6 +20,7 @@ export const CrawlTab = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
 
   // Query to fetch today's crawl results
   const { data: todayResults, refetch: refetchResults } = useQuery({
@@ -85,6 +86,15 @@ export const CrawlTab = () => {
     });
   };
 
+  const handleCheckResults = async () => {
+    await refetchResults();
+    setShowResults(true);
+    toast({
+      title: "Results Updated",
+      description: `Showing ${todayResults?.length || 0} results from today's crawls`,
+    });
+  };
+
   return (
     <div className="space-y-8">
       <div className="flex items-center gap-4">
@@ -103,60 +113,70 @@ export const CrawlTab = () => {
           <Search className="h-5 w-5 mr-2" />
           {isLoading ? "Crawling..." : "Crawl CV"}
         </Button>
+        <Button
+          onClick={handleCheckResults}
+          variant="outline"
+          className="border-aptiv text-aptiv hover:bg-aptiv hover:text-white transition-all duration-200"
+        >
+          <ClipboardList className="h-5 w-5 mr-2" />
+          Check Today's Results
+        </Button>
       </div>
 
       {/* Results Pane */}
-      <div className="bg-white rounded-lg border border-aptiv/10 p-6">
-        <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">Today's Crawl Results</h2>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Location</TableHead>
-                <TableHead>Experience</TableHead>
-                <TableHead>Time</TableHead>
-                <TableHead>Action</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {todayResults?.map((result) => (
-                <TableRow key={result.id}>
-                  <TableCell>{result.name || 'N/A'}</TableCell>
-                  <TableCell>{result.email || 'N/A'}</TableCell>
-                  <TableCell>{result.location || 'N/A'}</TableCell>
-                  <TableCell>{result.experience ? `${result.experience} years` : 'N/A'}</TableCell>
-                  <TableCell>
-                    {result.created_at 
-                      ? format(new Date(result.created_at), 'HH:mm:ss')
-                      : 'N/A'
-                    }
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      onClick={() => handleEnquiry(result)}
-                      variant="outline"
-                      size="sm"
-                      className="text-aptiv hover:text-white hover:bg-aptiv"
-                    >
-                      <Mail className="h-4 w-4 mr-1" />
-                      Enquire
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {(!todayResults || todayResults.length === 0) && (
+      {showResults && (
+        <div className="bg-white rounded-lg border border-aptiv/10 p-6">
+          <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">Today's Crawl Results</h2>
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center text-gray-500">
-                    No results found for today
-                  </TableCell>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Experience</TableHead>
+                  <TableHead>Time</TableHead>
+                  <TableHead>Action</TableHead>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {todayResults?.map((result) => (
+                  <TableRow key={result.id}>
+                    <TableCell>{result.name || 'N/A'}</TableCell>
+                    <TableCell>{result.email || 'N/A'}</TableCell>
+                    <TableCell>{result.location || 'N/A'}</TableCell>
+                    <TableCell>{result.experience ? `${result.experience} years` : 'N/A'}</TableCell>
+                    <TableCell>
+                      {result.created_at 
+                        ? format(new Date(result.created_at), 'HH:mm:ss')
+                        : 'N/A'
+                      }
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        onClick={() => handleEnquiry(result)}
+                        variant="outline"
+                        size="sm"
+                        className="text-aptiv hover:text-white hover:bg-aptiv"
+                      >
+                        <Mail className="h-4 w-4 mr-1" />
+                        Enquire
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+                {(!todayResults || todayResults.length === 0) && (
+                  <TableRow>
+                    <TableCell colSpan={6} className="text-center text-gray-500">
+                      No results found for today
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

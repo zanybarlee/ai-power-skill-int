@@ -57,24 +57,26 @@ export const CrawlTab = () => {
       if (error) throw error;
       return data;
     },
-    onSuccess: (data) => {
-      let dateText;
-      if (date) {
-        dateText = format(date, "PPP");
-      } else {
-        if (daysAgo === 0) {
-          dateText = "today";
-        } else if (daysAgo === 1) {
-          dateText = "yesterday";
+    meta: {
+      onSuccess: (data: any) => {
+        let dateText;
+        if (date) {
+          dateText = format(date, "PPP");
         } else {
-          dateText = `${daysAgo} days ago`;
+          if (daysAgo === 0) {
+            dateText = "today";
+          } else if (daysAgo === 1) {
+            dateText = "yesterday";
+          } else {
+            dateText = `${daysAgo} days ago`;
+          }
         }
-      }
 
-      toast({
-        title: "Results Updated",
-        description: `Showing ${data?.length || 0} results from ${dateText}`,
-      });
+        toast({
+          title: "Results Updated",
+          description: `Showing ${data?.length || 0} results from ${dateText}`,
+        });
+      }
     }
   });
 
@@ -311,4 +313,4 @@ export const CrawlTab = () => {
       />
     </div>
   );
-};
+});

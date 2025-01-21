@@ -27,55 +27,6 @@ export const CrawlTab = () => {
   const { data: crawlResults, refetch: refetchResults } = useQuery({
     queryKey: ['crawlResults', daysAgo],
     queryFn: async () => {
-      const selectedDate = subDays(new Date(), daysAgo);
-      selectedDate.setHours(0, 0, 0, 0);
-      const nextDate = new Date(selectedDate);
-      nextDate.setDate(nextDate.getDate() + 1);
-
-      const { data, error } = await supabase
-        .from('cv_metadata')
-        .select('*')
-        .gte('created_at', selectedDate.toISOString())
-        .lt('created_at', nextDate.toISOString())
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      return data;
-    },I'll modify the CrawlTab component to allow viewing crawl results from the last 5 days instead of just today.
-
-<lov-code>
-Let's update the CrawlTab.tsx file to include this functionality:
-
-<lov-write file_path="src/components/candidates/CrawlTab.tsx">
-import { useState } from "react";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Mail, ClipboardList } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { searchTalent } from "@/services/talentSearch";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { format, subDays } from "date-fns";
-
-export const CrawlTab = () => {
-  const { toast } = useToast();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
-  const [daysAgo, setDaysAgo] = useState(0); // 0 = today, 1 = yesterday, etc.
-
-  // Query to fetch results from selected date
-  const { data: crawlResults, refetch: refetchResults } = useQuery({
-    queryKey: ['crawlResults', daysAgo],
-    queryFn: async () => {
       const targetDate = subDays(new Date(), daysAgo);
       targetDate.setHours(0, 0, 0, 0);
       const nextDate = new Date(targetDate);
@@ -90,7 +41,7 @@ export const CrawlTab = () => {
 
       if (error) throw error;
       return data;
-    },
+    }
   });
 
   const handleSearchTalent = async () => {

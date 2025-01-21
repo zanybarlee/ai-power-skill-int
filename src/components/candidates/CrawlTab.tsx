@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, Mail, ClipboardList, CalendarIcon } from "lucide-react";
@@ -28,7 +28,7 @@ export const CrawlTab = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showResults, setShowResults] = useState(false);
+  const [showResults, setShowResults] = useState(true); // Changed to true by default
   const [daysAgo, setDaysAgo] = useState(0);
   const [date, setDate] = useState<Date>();
   const [selectedCandidate, setSelectedCandidate] = useState<any>(null);
@@ -58,6 +58,11 @@ export const CrawlTab = () => {
       return data;
     },
   });
+
+  // Fetch results when component mounts
+  useEffect(() => {
+    handleCheckResults();
+  }, []); // Empty dependency array means this runs once on mount
 
   const handleSearchTalent = async () => {
     if (!searchQuery.trim()) {
@@ -213,77 +218,75 @@ export const CrawlTab = () => {
         </div>
       </div>
 
-      {/* Results Pane */}
-      {showResults && (
-        <div className="bg-white rounded-lg border border-aptiv/10 p-6">
-          <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">
-            Crawl Results {date 
-              ? format(date, "PPP")
-              : daysAgo === 0 
-                ? "Today" 
-                : `(${daysAgo} days ago)`}
-          </h2>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Experience</TableHead>
-                  <TableHead>Time</TableHead>
-                  <TableHead>Action</TableHead>
+      {/* Results Pane - Always visible now */}
+      <div className="bg-white rounded-lg border border-aptiv/10 p-6">
+        <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">
+          Crawl Results {date 
+            ? format(date, "PPP")
+            : daysAgo === 0 
+              ? "Today" 
+              : `(${daysAgo} days ago)`}
+        </h2>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Location</TableHead>
+                <TableHead>Experience</TableHead>
+                <TableHead>Time</TableHead>
+                <TableHead>Action</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {crawlResults?.map((result) => (
+                <TableRow 
+                  key={result.id}
+                  className="cursor-pointer hover:bg-aptiv/5"
+                  onClick={() => handleRowClick(result)}
+                >
+                  <TableCell>{result.name || 'N/A'}</TableCell>
+                  <TableCell>{result.email || 'N/A'}</TableCell>
+                  <TableCell>{result.location || 'N/A'}</TableCell>
+                  <TableCell>{result.experience ? `${result.experience} years` : 'N/A'}</TableCell>
+                  <TableCell>
+                    {result.created_at 
+                      ? format(new Date(result.created_at), 'HH:mm:ss')
+                      : 'N/A'
+                    }
+                  </TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEnquiry(result);
+                      }}
+                      variant="outline"
+                      size="sm"
+                      className="text-aptiv hover:text-white hover:bg-aptiv"
+                    >
+                      <Mail className="h-4 w-4 mr-1" />
+                      Enquire
+                    </Button>
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {crawlResults?.map((result) => (
-                  <TableRow 
-                    key={result.id}
-                    className="cursor-pointer hover:bg-aptiv/5"
-                    onClick={() => handleRowClick(result)}
-                  >
-                    <TableCell>{result.name || 'N/A'}</TableCell>
-                    <TableCell>{result.email || 'N/A'}</TableCell>
-                    <TableCell>{result.location || 'N/A'}</TableCell>
-                    <TableCell>{result.experience ? `${result.experience} years` : 'N/A'}</TableCell>
-                    <TableCell>
-                      {result.created_at 
-                        ? format(new Date(result.created_at), 'HH:mm:ss')
-                        : 'N/A'
-                      }
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEnquiry(result);
-                        }}
-                        variant="outline"
-                        size="sm"
-                        className="text-aptiv hover:text-white hover:bg-aptiv"
-                      >
-                        <Mail className="h-4 w-4 mr-1" />
-                        Enquire
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-                {(!crawlResults || crawlResults.length === 0) && (
-                  <TableRow>
-                    <TableCell colSpan={6} className="text-center text-gray-500">
-                      No results found for {date 
-                        ? format(date, "PPP")
-                        : daysAgo === 0 
-                          ? "today" 
-                          : `${daysAgo} days ago`}
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+              ))}
+              {(!crawlResults || crawlResults.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-gray-500">
+                    No results found for {date 
+                      ? format(date, "PPP")
+                      : daysAgo === 0 
+                        ? "today" 
+                        : `${daysAgo} days ago`}
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
         </div>
-      )}
+      </div>
 
       <CandidateDetailsDialog
         isOpen={isDialogOpen}

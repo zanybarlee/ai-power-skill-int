@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Mail, ClipboardList } from "lucide-react";
+import { Search, Mail, ClipboardList, CalendarIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { searchTalent } from "@/services/talentSearch";
 import { useQuery } from "@tanstack/react-query";
@@ -15,19 +15,32 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format, subDays } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 export const CrawlTab = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [daysAgo, setDaysAgo] = useState(0); // 0 = today, 1 = yesterday, etc.
+  const [daysAgo, setDaysAgo] = useState(0);
+  const [date, setDate] = useState<Date>();
 
   // Query to fetch results from selected date
   const { data: crawlResults, refetch: refetchResults } = useQuery({
-    queryKey: ['crawlResults', daysAgo],
+    queryKey: ['crawlResults', date || daysAgo],
     queryFn: async () => {
-      const targetDate = subDays(new Date(), daysAgo);
+      let targetDate;
+      if (date) {
+        targetDate = new Date(date);
+      } else {
+        targetDate = subDays(new Date(), daysAgo);
+      }
       targetDate.setHours(0, 0, 0, 0);
       const nextDate = new Date(targetDate);
       nextDate.setDate(targetDate.getDate() + 1);
@@ -41,7 +54,7 @@ export const CrawlTab = () => {
 
       if (error) throw error;
       return data;
-    }
+    },
   });
 
   const handleSearchTalent = async () => {
@@ -93,7 +106,11 @@ export const CrawlTab = () => {
   const handleCheckResults = async () => {
     await refetchResults();
     setShowResults(true);
-    const dateText = daysAgo === 0 ? "today" : `${daysAgo} days ago`;
+    const dateText = date 
+      ? format(date, "PPP")
+      : daysAgo === 0 
+        ? "today" 
+        : `${daysAgo} days ago`;
     toast({
       title: "Results Updated",
       description: `Showing ${crawlResults?.length || 0} results from ${dateText}`,
@@ -129,31 +146,69 @@ export const CrawlTab = () => {
       </div>
 
       {/* Date Selection */}
-      <div className="flex gap-2">
-        {[0, 1, 2, 3, 4].map((days) => (
-          <Button
-            key={days}
-            variant={daysAgo === days ? "default" : "outline"}
-            onClick={() => {
-              setDaysAgo(days);
-              if (showResults) handleCheckResults();
-            }}
-            className={`${
-              daysAgo === days 
-                ? "bg-aptiv text-white" 
-                : "border-aptiv text-aptiv hover:bg-aptiv hover:text-white"
-            } transition-all duration-200`}
-          >
-            {days === 0 ? "Today" : `${days} days ago`}
-          </Button>
-        ))}
+      <div className="flex gap-4 items-center">
+        <div className="flex gap-2">
+          {[0, 1, 2, 3, 4].map((days) => (
+            <Button
+              key={days}
+              variant={!date && daysAgo === days ? "default" : "outline"}
+              onClick={() => {
+                setDate(undefined);
+                setDaysAgo(days);
+                if (showResults) handleCheckResults();
+              }}
+              className={cn(
+                !date && daysAgo === days 
+                  ? "bg-aptiv text-white" 
+                  : "border-aptiv text-aptiv hover:bg-aptiv hover:text-white",
+                "transition-all duration-200"
+              )}
+            >
+              {days === 0 ? "Today" : `${days} days ago`}
+            </Button>
+          ))}
+        </div>
+        <div className="flex items-center">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button
+                variant={date ? "default" : "outline"}
+                className={cn(
+                  "w-[240px] justify-start text-left font-normal",
+                  date ? "bg-aptiv text-white" : "border-aptiv text-aptiv hover:bg-aptiv hover:text-white"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {date ? format(date, "PPP") : "Pick a date"}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(newDate) => {
+                  setDate(newDate);
+                  if (newDate) {
+                    setDaysAgo(-1);
+                    if (showResults) handleCheckResults();
+                  }
+                }}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
 
       {/* Results Pane */}
       {showResults && (
         <div className="bg-white rounded-lg border border-aptiv/10 p-6">
           <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">
-            Crawl Results {daysAgo === 0 ? "Today" : `(${daysAgo} days ago)`}
+            Crawl Results {date 
+              ? format(date, "PPP")
+              : daysAgo === 0 
+                ? "Today" 
+                : `(${daysAgo} days ago)`}
           </h2>
           <div className="overflow-x-auto">
             <Table>
@@ -196,7 +251,11 @@ export const CrawlTab = () => {
                 {(!crawlResults || crawlResults.length === 0) && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-gray-500">
-                      No results found for {daysAgo === 0 ? "today" : `${daysAgo} days ago`}
+                      No results found for {date 
+                        ? format(date, "PPP")
+                        : daysAgo === 0 
+                          ? "today" 
+                          : `${daysAgo} days ago`}
                     </TableCell>
                   </TableRow>
                 )}

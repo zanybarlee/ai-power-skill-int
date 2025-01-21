@@ -40,12 +40,31 @@ export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCa
     window.location.href = `mailto:${email}`;
   };
 
-  const handleClearMatches = () => {
-    onClearMatches();
-    toast({
-      title: "Matches cleared",
-      description: "All matches have been cleared from the table.",
-    });
+  const handleClearMatches = async () => {
+    try {
+      // Clear matches from the database
+      const { error } = await supabase
+        .from('cv_match')
+        .delete()
+        .neq('id', ''); // This will delete all records
+
+      if (error) throw error;
+
+      // Clear UI state
+      onClearMatches();
+      
+      toast({
+        title: "Matches cleared",
+        description: "All matches have been cleared from the table and database.",
+      });
+    } catch (error) {
+      console.error('Error clearing matches:', error);
+      toast({
+        title: "Error",
+        description: "Failed to clear matches. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleRowClick = async (candidateId: string) => {

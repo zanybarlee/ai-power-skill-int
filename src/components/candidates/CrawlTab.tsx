@@ -14,25 +14,78 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { format } from "date-fns";
+import { format, subDays } from "date-fns";
 
 export const CrawlTab = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
+  const [daysAgo, setDaysAgo] = useState(0); // 0 = today, 1 = yesterday, etc.
 
-  // Query to fetch today's crawl results
-  const { data: todayResults, refetch: refetchResults } = useQuery({
-    queryKey: ['todayCrawls'],
+  // Query to fetch results from selected date
+  const { data: crawlResults, refetch: refetchResults } = useQuery({
+    queryKey: ['crawlResults', daysAgo],
     queryFn: async () => {
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      const selectedDate = subDays(new Date(), daysAgo);
+      selectedDate.setHours(0, 0, 0, 0);
+      const nextDate = new Date(selectedDate);
+      nextDate.setDate(nextDate.getDate() + 1);
 
       const { data, error } = await supabase
         .from('cv_metadata')
         .select('*')
-        .gte('created_at', today.toISOString())
+        .gte('created_at', selectedDate.toISOString())
+        .lt('created_at', nextDate.toISOString())
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    },I'll modify the CrawlTab component to allow viewing crawl results from the last 5 days instead of just today.
+
+<lov-code>
+Let's update the CrawlTab.tsx file to include this functionality:
+
+<lov-write file_path="src/components/candidates/CrawlTab.tsx">
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Search, Mail, ClipboardList } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { searchTalent } from "@/services/talentSearch";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { format, subDays } from "date-fns";
+
+export const CrawlTab = () => {
+  const { toast } = useToast();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showResults, setShowResults] = useState(false);
+  const [daysAgo, setDaysAgo] = useState(0); // 0 = today, 1 = yesterday, etc.
+
+  // Query to fetch results from selected date
+  const { data: crawlResults, refetch: refetchResults } = useQuery({
+    queryKey: ['crawlResults', daysAgo],
+    queryFn: async () => {
+      const targetDate = subDays(new Date(), daysAgo);
+      targetDate.setHours(0, 0, 0, 0);
+      const nextDate = new Date(targetDate);
+      nextDate.setDate(targetDate.getDate() + 1);
+
+      const { data, error } = await supabase
+        .from('cv_metadata')
+        .select('*')
+        .gte('created_at', targetDate.toISOString())
+        .lt('created_at', nextDate.toISOString())
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -89,9 +142,10 @@ export const CrawlTab = () => {
   const handleCheckResults = async () => {
     await refetchResults();
     setShowResults(true);
+    const dateText = daysAgo === 0 ? "today" : `${daysAgo} days ago`;
     toast({
       title: "Results Updated",
-      description: `Showing ${todayResults?.length || 0} results from today's crawls`,
+      description: `Showing ${crawlResults?.length || 0} results from ${dateText}`,
     });
   };
 
@@ -119,14 +173,37 @@ export const CrawlTab = () => {
           className="border-aptiv text-aptiv hover:bg-aptiv hover:text-white transition-all duration-200"
         >
           <ClipboardList className="h-5 w-5 mr-2" />
-          Check Today's Results
+          Check Results
         </Button>
+      </div>
+
+      {/* Date Selection */}
+      <div className="flex gap-2">
+        {[0, 1, 2, 3, 4].map((days) => (
+          <Button
+            key={days}
+            variant={daysAgo === days ? "default" : "outline"}
+            onClick={() => {
+              setDaysAgo(days);
+              if (showResults) handleCheckResults();
+            }}
+            className={`${
+              daysAgo === days 
+                ? "bg-aptiv text-white" 
+                : "border-aptiv text-aptiv hover:bg-aptiv hover:text-white"
+            } transition-all duration-200`}
+          >
+            {days === 0 ? "Today" : `${days} days ago`}
+          </Button>
+        ))}
       </div>
 
       {/* Results Pane */}
       {showResults && (
         <div className="bg-white rounded-lg border border-aptiv/10 p-6">
-          <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">Today's Crawl Results</h2>
+          <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-4">
+            Crawl Results {daysAgo === 0 ? "Today" : `(${daysAgo} days ago)`}
+          </h2>
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
@@ -140,7 +217,7 @@ export const CrawlTab = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {todayResults?.map((result) => (
+                {crawlResults?.map((result) => (
                   <TableRow key={result.id}>
                     <TableCell>{result.name || 'N/A'}</TableCell>
                     <TableCell>{result.email || 'N/A'}</TableCell>
@@ -165,10 +242,10 @@ export const CrawlTab = () => {
                     </TableCell>
                   </TableRow>
                 ))}
-                {(!todayResults || todayResults.length === 0) && (
+                {(!crawlResults || crawlResults.length === 0) && (
                   <TableRow>
                     <TableCell colSpan={6} className="text-center text-gray-500">
-                      No results found for today
+                      No results found for {daysAgo === 0 ? "today" : `${daysAgo} days ago`}
                     </TableCell>
                   </TableRow>
                 )}

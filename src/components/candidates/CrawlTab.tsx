@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search } from "lucide-react";
+import { Search, Mail } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { searchTalent } from "@/services/talentSearch";
 import { useQuery } from "@tanstack/react-query";
@@ -61,7 +61,7 @@ export const CrawlTab = () => {
       };
 
       const result = await searchTalent(params);
-      await refetchResults(); // Refresh the results after new crawl
+      await refetchResults();
       toast({
         title: "Success",
         description: "CV crawl completed successfully",
@@ -76,6 +76,13 @@ export const CrawlTab = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleEnquiry = (candidate: any) => {
+    toast({
+      title: "Enquiry Sent",
+      description: `Your enquiry about ${candidate.name || 'this candidate'} has been sent. We'll get back to you soon.`,
+    });
   };
 
   return (
@@ -110,6 +117,7 @@ export const CrawlTab = () => {
                 <TableHead>Location</TableHead>
                 <TableHead>Experience</TableHead>
                 <TableHead>Time</TableHead>
+                <TableHead>Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -125,11 +133,22 @@ export const CrawlTab = () => {
                       : 'N/A'
                     }
                   </TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={() => handleEnquiry(result)}
+                      variant="outline"
+                      size="sm"
+                      className="text-aptiv hover:text-white hover:bg-aptiv"
+                    >
+                      <Mail className="h-4 w-4 mr-1" />
+                      Enquire
+                    </Button>
+                  </TableCell>
                 </TableRow>
               ))}
               {(!todayResults || todayResults.length === 0) && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-gray-500">
+                  <TableCell colSpan={6} className="text-center text-gray-500">
                     No results found for today
                   </TableCell>
                 </TableRow>

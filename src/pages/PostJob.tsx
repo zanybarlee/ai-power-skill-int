@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -21,6 +20,7 @@ import { FileUpload } from "@/components/job-descriptions/FileUpload";
 import { TextInput } from "@/components/job-descriptions/TextInput";
 import { JobDescriptionTable } from "@/components/job-descriptions/JobDescriptionTable";
 import { useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type JobInsert = Database['public']['Tables']['jobs']['Insert'];
 
@@ -51,6 +51,7 @@ const PostJob = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [textInput, setTextInput] = useState("");
+  const queryClient = useQueryClient();
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(formSchema),
@@ -102,6 +103,8 @@ const PostJob = () => {
       setFile(null);
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
+      
+      queryClient.invalidateQueries({ queryKey: ['jobDescriptions'] });
     } catch (error) {
       console.error('Upload error:', error);
       toast.error("Failed to upload file. Please try again.");
@@ -139,6 +142,8 @@ const PostJob = () => {
       toast.success("Job description submitted successfully!");
       setTextInput("");
       form.reset();
+      
+      queryClient.invalidateQueries({ queryKey: ['jobDescriptions'] });
     } catch (error) {
       console.error('Text submission error:', error);
       toast.error("Failed to submit job description. Please try again.");
@@ -149,23 +154,24 @@ const PostJob = () => {
 
   async function onSubmit(values: JobFormValues) {
     try {
-      const jobData: JobInsert = {
-        title: values.title,
-        company: values.company,
-        location: values.location,
-        salary: values.salary,
-        description: values.description,
-        requirements: values.requirements,
-      };
-
       const { error } = await supabase
-        .from('jobs')
-        .insert(jobData);
+        .from('job_descriptions')
+        .insert({
+          original_text: values.description,
+          job_title: values.title,
+          company_name: values.company,
+          location: values.location,
+          salary_range: values.salary,
+          job_requirements: values.requirements,
+          status: 'pending'
+        });
       
       if (error) throw error;
 
       toast.success("Job posted successfully!");
       form.reset();
+      
+      queryClient.invalidateQueries({ queryKey: ['jobDescriptions'] });
     } catch (error) {
       console.error('Error posting job:', error);
       toast.error("Failed to post job. Please try again.");
@@ -315,7 +321,6 @@ const PostJob = () => {
           </Form>
         </div>
 
-        {/* Add the JobDescriptionTable component */}
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
           <JobDescriptionTable />
         </div>

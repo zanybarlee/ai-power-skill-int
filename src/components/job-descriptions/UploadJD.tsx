@@ -72,7 +72,7 @@ export const UploadJD = () => {
         p_extracted_role: data.extractedRole,
         p_file_name: file?.name || 'manual-input.txt',
         p_file_type: file?.type || 'text/plain',
-        p_file_url: null as string | null
+        p_file_url: null as string | null // Explicitly cast null as string | null
       });
 
       if (dbError) throw dbError;

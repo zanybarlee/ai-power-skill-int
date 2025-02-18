@@ -154,6 +154,23 @@ const Shortlists = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
+              <div className="space-y-2">
+                <label className="text-aptiv-gray-600 text-sm font-medium">
+                  From Job Descriptions
+                </label>
+                <Select onValueChange={handleJobDescriptionSelect}>
+                  <SelectTrigger className="w-full bg-white border-aptiv/20">
+                    <SelectValue placeholder="Select from existing job descriptions" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white">
+                    {jobDescriptions?.map((job) => (
+                      <SelectItem key={job.id} value={job.id}>
+                        {job.job_title || 'Untitled Job'}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <label className="text-aptiv-gray-600 text-sm font-medium">
                 Job Description
               </label>

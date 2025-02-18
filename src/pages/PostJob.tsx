@@ -125,6 +125,11 @@ const PostJob = () => {
         .from('job_descriptions')
         .insert({
           original_text: textInput,
+          job_title: form.getValues('title') || null,
+          company_name: form.getValues('company') || null,
+          location: form.getValues('location') || null,
+          salary_range: form.getValues('salary') || null,
+          job_requirements: form.getValues('requirements') || null,
           status: 'pending'
         });
 
@@ -132,6 +137,7 @@ const PostJob = () => {
 
       toast.success("Job description submitted successfully!");
       setTextInput("");
+      form.reset();
     } catch (error) {
       console.error('Text submission error:', error);
       toast.error("Failed to submit job description. Please try again.");

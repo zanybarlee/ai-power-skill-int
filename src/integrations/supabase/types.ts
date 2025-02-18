@@ -640,6 +640,42 @@ export type Database = {
         }
         Relationships: []
       }
+      job_descriptions: {
+        Row: {
+          created_at: string | null
+          extracted_role: Json | null
+          file_name: string | null
+          file_type: string | null
+          file_url: string | null
+          id: string
+          original_text: string
+          status: string | null
+          title: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          extracted_role?: Json | null
+          file_name?: string | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          original_text: string
+          status?: string | null
+          title?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          extracted_role?: Json | null
+          file_name?: string | null
+          file_type?: string | null
+          file_url?: string | null
+          id?: string
+          original_text?: string
+          status?: string | null
+          title?: string | null
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           company: string

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -62,7 +63,7 @@ export const JobDescriptionTable = () => {
         .from('job_descriptions')
         .update({
           job_title: selectedJob.job_title,
-          company: selectedJob.company,
+          company_name: selectedJob.company_name,
           location: selectedJob.location,
           original_text: selectedJob.original_text,
           job_requirements: selectedJob.job_requirements,
@@ -164,7 +165,7 @@ export const JobDescriptionTable = () => {
               onClick={() => handleRowClick(jd)}
             >
               <TableCell>{jd.job_title}</TableCell>
-              <TableCell>{jd.company}</TableCell>
+              <TableCell>{jd.company_name}</TableCell>
               <TableCell>{jd.location}</TableCell>
               <TableCell>{new Date(jd.created_at).toLocaleDateString()}</TableCell>
               <TableCell>
@@ -232,8 +233,8 @@ export const JobDescriptionTable = () => {
                   <label className="block text-sm font-medium text-gray-700">Company</label>
                   <input
                     type="text"
-                    value={selectedJob?.company || ''}
-                    onChange={(e) => setSelectedJob(prev => prev ? { ...prev, company: e.target.value } : null)}
+                    value={selectedJob?.company_name || ''}
+                    onChange={(e) => setSelectedJob(prev => prev ? { ...prev, company_name: e.target.value } : null)}
                     className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                   />
                 </div>
@@ -270,7 +271,7 @@ export const JobDescriptionTable = () => {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <h3 className="font-medium text-gray-700">Company</h3>
-                    <p>{selectedJob?.company}</p>
+                    <p>{selectedJob?.company_name}</p>
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-700">Location</h3>

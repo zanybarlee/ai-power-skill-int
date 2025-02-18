@@ -11,11 +11,15 @@ export interface ProcessedData {
 
 export interface JobDescription {
   id: string;
-  job_title: string;
-  company: string;
-  location: string;
+  job_title: string | null;
+  company_name: string | null;
+  location: string | null;
   original_text: string;
-  job_requirements?: string;
+  job_requirements: string | null;
   created_at: string;
-  status: string;
+  status: string | null;
+  file_name: string | null;
+  file_type: string | null;
+  file_url: string | null;
+  salary_range: string | null;
 }

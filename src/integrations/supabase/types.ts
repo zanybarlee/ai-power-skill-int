@@ -1178,7 +1178,16 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      insert_job_description: {
+        Args: {
+          p_original_text: string
+          p_extracted_role: Json
+          p_file_name: string
+          p_file_type: string
+          p_file_url: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       card_priority: "low" | "medium" | "high"

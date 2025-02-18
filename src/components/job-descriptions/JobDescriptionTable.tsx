@@ -200,7 +200,7 @@ export const JobDescriptionTable = () => {
         setSelectedJob(null);
         setEditMode(false);
       }}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-[#F1F0FB]">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold">
               {editMode ? 'Edit Job Description' : (selectedJob?.job_title || 'Job Details')}
@@ -284,7 +284,7 @@ export const JobDescriptionTable = () => {
 
                 <div className="space-y-2">
                   <h3 className="font-medium text-gray-700">Job Description</h3>
-                  <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap">
+                  <div className="bg-white p-4 rounded-md whitespace-pre-wrap">
                     {selectedJob?.original_text || 'No description available'}
                   </div>
                 </div>
@@ -292,7 +292,7 @@ export const JobDescriptionTable = () => {
                 {selectedJob?.job_requirements && (
                   <div className="space-y-2">
                     <h3 className="font-medium text-gray-700">Requirements</h3>
-                    <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap">
+                    <div className="bg-white p-4 rounded-md whitespace-pre-wrap">
                       {selectedJob.job_requirements}
                     </div>
                   </div>

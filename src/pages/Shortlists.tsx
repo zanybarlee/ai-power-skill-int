@@ -1,3 +1,4 @@
+
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +11,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchedCandidatesTable } from "@/components/shortlists/MatchedCandidatesTable";
 import { normalizeSkills } from "@/utils/candidateUtils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const Shortlists = () => {
   const { toast } = useToast();
@@ -19,6 +27,20 @@ const Shortlists = () => {
   });
   const [isMatching, setIsMatching] = useState(false);
   const [matchingResults, setMatchingResults] = useState<Array<{ name: string; score: number; details: string }>>([]);
+
+  const { data: jobTitles } = useQuery({
+    queryKey: ['jobTitles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('job_descriptions')
+        .select('job_title')
+        .not('job_title', 'is', null)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return [...new Set(data.map(job => job.job_title))] as string[];
+    },
+  });
 
   const { data: matchedCandidates = [] } = useQuery({
     queryKey: ['matchedCandidates'],
@@ -59,7 +81,6 @@ const Shortlists = () => {
     }
   });
 
-  // Save to localStorage whenever values change
   useEffect(() => {
     localStorage.setItem("jobDescription", jobDescription);
   }, [jobDescription]);
@@ -87,7 +108,6 @@ const Shortlists = () => {
       
       setMatchingResults(parsedResults);
       
-      // Invalidate and refetch the matchedCandidates query
       await queryClient.invalidateQueries({ queryKey: ['matchedCandidates'] });
       
       toast({
@@ -111,6 +131,13 @@ const Shortlists = () => {
     queryClient.setQueryData(['matchedCandidates'], []);
   };
 
+  const handleJobTitleSelect = (title: string) => {
+    const selectedJob = jobTitles?.find(job => job === title);
+    if (selectedJob) {
+      setJobDescription(selectedJob);
+    }
+  };
+
   return (
     <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
@@ -131,20 +158,39 @@ const Shortlists = () => {
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
               />
-              <Button
-                onClick={handleMatch}
-                disabled={isMatching}
-                className="bg-aptiv text-white hover:bg-aptiv-dark"
-              >
-                {isMatching ? (
-                  "Finding Matches..."
-                ) : (
-                  <>
-                    <Search className="w-4 h-4 mr-2" />
-                    Find Best Matches
-                  </>
-                )}
-              </Button>
+              <div className="flex flex-col space-y-4">
+                <div className="space-y-2">
+                  <label className="text-aptiv-gray-600 text-sm font-medium">
+                    From Job Titles
+                  </label>
+                  <Select onValueChange={handleJobTitleSelect}>
+                    <SelectTrigger className="w-[300px] bg-white border-aptiv/20">
+                      <SelectValue placeholder="Select a job title" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-white">
+                      {jobTitles?.map((title) => (
+                        <SelectItem key={title} value={title}>
+                          {title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  onClick={handleMatch}
+                  disabled={isMatching}
+                  className="bg-aptiv text-white hover:bg-aptiv-dark w-fit"
+                >
+                  {isMatching ? (
+                    "Finding Matches..."
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4 mr-2" />
+                      Find Best Matches
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
             
             {matchingResults.length > 0 && (

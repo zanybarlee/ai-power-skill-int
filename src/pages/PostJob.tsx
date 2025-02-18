@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -16,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { FileUpload } from "@/components/job-descriptions/FileUpload";
+import { useState } from "react";
 
 type JobInsert = Database['public']['Tables']['jobs']['Insert'];
 
@@ -43,6 +46,9 @@ const formSchema = z.object({
 type JobFormValues = z.infer<typeof formSchema>;
 
 const PostJob = () => {
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+
   const form = useForm<JobFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -54,6 +60,52 @@ const PostJob = () => {
       requirements: "",
     },
   });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
+
+    const allowedTypes = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain'
+    ];
+
+    if (!allowedTypes.includes(selectedFile.type)) {
+      toast.error("Please upload a PDF, Word document, or text file");
+      return;
+    }
+
+    setFile(selectedFile);
+  };
+
+  const handleFileUpload = async () => {
+    if (!file) {
+      toast.error("Please select a file to upload");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const fileName = `${crypto.randomUUID()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('job_descriptions')
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      toast.success("File uploaded successfully!");
+      setFile(null);
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Upload error:', error);
+      toast.error("Failed to upload file. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   async function onSubmit(values: JobFormValues) {
     try {
@@ -85,6 +137,24 @@ const PostJob = () => {
       <div className="max-w-3xl mx-auto space-y-6">
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
           <h1 className="text-2xl font-semibold text-gray-700 mb-6">Post a New Job</h1>
+          
+          <div className="mb-8">
+            <FileUpload
+              isProcessing={isProcessing}
+              file={file}
+              onFileChange={handleFileChange}
+              onUpload={handleFileUpload}
+            />
+          </div>
+
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Or manually enter job details</span>
+            </div>
+          </div>
           
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">

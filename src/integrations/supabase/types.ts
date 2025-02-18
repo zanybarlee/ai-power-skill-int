@@ -642,35 +642,50 @@ export type Database = {
       }
       job_descriptions: {
         Row: {
+          company_name: string | null
           created_at: string | null
           extracted_role: Json | null
           file_name: string | null
           file_type: string | null
           file_url: string | null
           id: string
+          job_requirements: string | null
+          job_title: string | null
+          location: string | null
           original_text: string
+          salary_range: string | null
           status: string | null
           title: string | null
         }
         Insert: {
+          company_name?: string | null
           created_at?: string | null
           extracted_role?: Json | null
           file_name?: string | null
           file_type?: string | null
           file_url?: string | null
           id?: string
+          job_requirements?: string | null
+          job_title?: string | null
+          location?: string | null
           original_text: string
+          salary_range?: string | null
           status?: string | null
           title?: string | null
         }
         Update: {
+          company_name?: string | null
           created_at?: string | null
           extracted_role?: Json | null
           file_name?: string | null
           file_type?: string | null
           file_url?: string | null
           id?: string
+          job_requirements?: string | null
+          job_title?: string | null
+          location?: string | null
           original_text?: string
+          salary_range?: string | null
           status?: string | null
           title?: string | null
         }

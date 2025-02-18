@@ -18,7 +18,6 @@ interface JobDescription {
   file_name: string | null;
   status: string | null;
   job_title: string | null;
-  job_requirements: string | null;
   location: string | null;
   salary_range: string | null;
 }
@@ -55,7 +54,6 @@ export const JobDescriptionTable = () => {
             <TableHead>Company</TableHead>
             <TableHead>Location</TableHead>
             <TableHead>Salary Range</TableHead>
-            <TableHead>Requirements</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created At</TableHead>
           </TableRow>
@@ -69,11 +67,6 @@ export const JobDescriptionTable = () => {
               <TableCell>{jd.company_name || 'N/A'}</TableCell>
               <TableCell>{jd.location || 'N/A'}</TableCell>
               <TableCell>{jd.salary_range || 'N/A'}</TableCell>
-              <TableCell>
-                <div className="max-w-md overflow-hidden text-ellipsis">
-                  {jd.job_requirements || 'N/A'}
-                </div>
-              </TableCell>
               <TableCell>
                 <Badge 
                   variant={jd.status === 'processed' ? 'default' : 'secondary'}

@@ -7,8 +7,6 @@ import { CandidateTable } from "@/components/candidates/CandidateTable";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeSkills } from "@/utils/candidateUtils";
-import { UploadJD } from "@/components/job-descriptions/UploadJD";
-import { JobDescriptionTable } from "@/components/job-descriptions/JobDescriptionTable";
 
 const Candidates = () => {
   const { data: initialCandidates } = useQuery({
@@ -35,9 +33,7 @@ const Candidates = () => {
 
   return (
     <Layout>
-      <div className="container mx-auto py-6 space-y-6">
-        <UploadJD />
-        <JobDescriptionTable />
+      <div className="container mx-auto py-6">
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
           <h1 className="text-2xl font-semibold text-aptiv-gray-700 mb-6">Candidate Search</h1>
           

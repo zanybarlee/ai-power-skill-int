@@ -1,4 +1,3 @@
-
 import {
   Table,
   TableBody,
@@ -101,7 +100,12 @@ export const JobDescriptionTable = () => {
   };
 
   const handleDelete = async (jobId: string) => {
-    if (!confirm('Are you sure you want to delete this job description?')) return;
+    console.log('Attempting to delete job with ID:', jobId);
+    
+    if (!confirm('Are you sure you want to delete this job description?')) {
+      console.log('Delete cancelled by user');
+      return;
+    }
 
     try {
       const { error } = await supabase
@@ -109,14 +113,18 @@ export const JobDescriptionTable = () => {
         .delete()
         .eq('id', jobId);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase delete error:', error);
+        throw error;
+      }
 
+      console.log('Job deleted successfully');
       toast.success("Job description deleted successfully");
       queryClient.invalidateQueries({ queryKey: ['jobDescriptions'] });
       setSelectedJob(null);
     } catch (error) {
-      toast.error("Failed to delete job description");
       console.error('Error deleting job:', error);
+      toast.error("Failed to delete job description");
     }
   };
 
@@ -183,7 +191,10 @@ export const JobDescriptionTable = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       className="text-red-600"
-                      onClick={() => handleDelete(jd.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(jd.id);
+                      }}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       Delete
@@ -312,7 +323,14 @@ export const JobDescriptionTable = () => {
               </div>
             ) : (
               <div className="flex gap-2">
-                <Button variant="outline" onClick={() => handleDelete(selectedJob?.id!)}>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    if (selectedJob?.id) {
+                      handleDelete(selectedJob.id);
+                    }
+                  }}
+                >
                   Delete
                 </Button>
                 <Button onClick={handleEdit}>

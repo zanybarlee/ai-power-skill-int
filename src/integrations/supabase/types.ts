@@ -644,7 +644,6 @@ export type Database = {
         Row: {
           company_name: string | null
           created_at: string | null
-          extracted_role: Json | null
           file_name: string | null
           file_type: string | null
           file_url: string | null
@@ -655,12 +654,10 @@ export type Database = {
           original_text: string
           salary_range: string | null
           status: string | null
-          title: string | null
         }
         Insert: {
           company_name?: string | null
           created_at?: string | null
-          extracted_role?: Json | null
           file_name?: string | null
           file_type?: string | null
           file_url?: string | null
@@ -671,12 +668,10 @@ export type Database = {
           original_text: string
           salary_range?: string | null
           status?: string | null
-          title?: string | null
         }
         Update: {
           company_name?: string | null
           created_at?: string | null
-          extracted_role?: Json | null
           file_name?: string | null
           file_type?: string | null
           file_url?: string | null
@@ -687,7 +682,6 @@ export type Database = {
           original_text?: string
           salary_range?: string | null
           status?: string | null
-          title?: string | null
         }
         Relationships: []
       }

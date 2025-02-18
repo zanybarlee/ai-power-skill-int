@@ -161,7 +161,7 @@ const Shortlists = () => {
               <div className="flex flex-col space-y-4">
                 <div className="space-y-2">
                   <label className="text-aptiv-gray-600 text-sm font-medium">
-                    From Job Titles
+                    From CVs
                   </label>
                   <Select onValueChange={handleJobTitleSelect}>
                     <SelectTrigger className="w-[300px] bg-white border-aptiv/20">

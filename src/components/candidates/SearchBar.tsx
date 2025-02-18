@@ -76,7 +76,7 @@ export const SearchBar = ({
             <SelectTrigger className="w-[300px] bg-white border-aptiv/20">
               <SelectValue placeholder="Select a job title" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white">
               {jobTitles?.map((title) => (
                 <SelectItem key={title} value={title}>
                   {title}

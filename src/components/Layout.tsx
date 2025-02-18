@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Menu, X, FileText, Search, Users, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -83,7 +82,7 @@ const Layout = ({ children }: LayoutProps) => {
 
   const navigationItems = [
     {
-      name: "Post Job",
+      name: "Job Description (JD)",
       icon: FileText,
       path: "/post-job",
     },
@@ -224,4 +223,3 @@ const Layout = ({ children }: LayoutProps) => {
 };
 
 export default Layout;
-

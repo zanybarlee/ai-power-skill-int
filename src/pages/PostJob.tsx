@@ -19,6 +19,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { FileUpload } from "@/components/job-descriptions/FileUpload";
 import { TextInput } from "@/components/job-descriptions/TextInput";
+import { JobDescriptionTable } from "@/components/job-descriptions/JobDescriptionTable";
 import { useState } from "react";
 
 type JobInsert = Database['public']['Tables']['jobs']['Insert'];
@@ -312,6 +313,11 @@ const PostJob = () => {
               </Button>
             </form>
           </Form>
+        </div>
+
+        {/* Add the JobDescriptionTable component */}
+        <div className="bg-white rounded-lg p-6 border border-aptiv/10">
+          <JobDescriptionTable />
         </div>
       </div>
     </Layout>

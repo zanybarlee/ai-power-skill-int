@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Menu, X, FileText, Search, Users, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -87,7 +88,7 @@ const Layout = ({ children }: LayoutProps) => {
       path: "/post-job",
     },
     {
-      name: "Candidate Search",
+      name: "Candidate Search (CV)",
       icon: Search,
       path: "/candidates",
     },

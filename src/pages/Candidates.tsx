@@ -35,7 +35,7 @@ const Candidates = () => {
     <Layout>
       <div className="container mx-auto py-6">
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
-          <h1 className="text-2xl font-semibold text-aptiv-gray-700 mb-6">Candidate Search</h1>
+          <h1 className="text-2xl font-semibold text-aptiv-gray-700 mb-6">Candidate Search (CV)</h1>
           
           <Tabs defaultValue="crawl" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-white border border-aptiv/20 rounded-lg p-1">

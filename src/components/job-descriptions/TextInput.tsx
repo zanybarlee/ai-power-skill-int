@@ -1,7 +1,7 @@
 
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Send, Upload } from "lucide-react";
+import { Send } from "lucide-react";
 
 interface TextInputProps {
   isProcessing: boolean;
@@ -28,7 +28,7 @@ export const TextInput = ({ isProcessing, textInput, onTextChange, onSubmit }: T
       >
         {isProcessing ? (
           <>
-            <Upload className="mr-2 h-4 w-4 animate-spin" />
+            <Send className="mr-2 h-4 w-4 animate-spin" />
             Processing...
           </>
         ) : (

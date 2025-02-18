@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import { FileUpload } from "@/components/job-descriptions/FileUpload";
+import { TextInput } from "@/components/job-descriptions/TextInput";
 import { useState } from "react";
 
 type JobInsert = Database['public']['Tables']['jobs']['Insert'];
@@ -48,6 +49,7 @@ type JobFormValues = z.infer<typeof formSchema>;
 const PostJob = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [textInput, setTextInput] = useState("");
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(formSchema),
@@ -107,6 +109,37 @@ const PostJob = () => {
     }
   };
 
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextInput(e.target.value);
+  };
+
+  const handleTextSubmit = async () => {
+    if (!textInput.trim()) {
+      toast.error("Please enter job description text");
+      return;
+    }
+
+    setIsProcessing(true);
+    try {
+      const { error } = await supabase
+        .from('job_descriptions')
+        .insert({
+          original_text: textInput,
+          status: 'pending'
+        });
+
+      if (error) throw error;
+
+      toast.success("Job description submitted successfully!");
+      setTextInput("");
+    } catch (error) {
+      console.error('Text submission error:', error);
+      toast.error("Failed to submit job description. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   async function onSubmit(values: JobFormValues) {
     try {
       const jobData: JobInsert = {
@@ -144,6 +177,24 @@ const PostJob = () => {
               file={file}
               onFileChange={handleFileChange}
               onUpload={handleFileUpload}
+            />
+          </div>
+
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-gray-500">Or paste job description</span>
+            </div>
+          </div>
+
+          <div className="mb-8">
+            <TextInput
+              isProcessing={isProcessing}
+              textInput={textInput}
+              onTextChange={handleTextChange}
+              onSubmit={handleTextSubmit}
             />
           </div>
 

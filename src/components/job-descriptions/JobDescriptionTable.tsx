@@ -14,13 +14,13 @@ import { Badge } from "@/components/ui/badge";
 interface JobDescription {
   id: string;
   created_at: string;
-  title: string | null;
+  company_name: string | null;
   file_name: string | null;
   status: string | null;
-  extracted_role: {
-    skills?: string[];
-    requirements?: string[];
-  } | null;
+  job_title: string | null;
+  job_requirements: string | null;
+  location: string | null;
+  salary_range: string | null;
 }
 
 export const JobDescriptionTable = () => {
@@ -51,9 +51,10 @@ export const JobDescriptionTable = () => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
-            <TableHead>File Name</TableHead>
-            <TableHead>Skills</TableHead>
+            <TableHead>Job Title</TableHead>
+            <TableHead>Company</TableHead>
+            <TableHead>Location</TableHead>
+            <TableHead>Salary Range</TableHead>
             <TableHead>Requirements</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Created At</TableHead>
@@ -63,39 +64,14 @@ export const JobDescriptionTable = () => {
           {jobDescriptions.map((jd) => (
             <TableRow key={jd.id}>
               <TableCell className="font-medium">
-                {jd.title || 'Untitled'}
+                {jd.job_title || 'Untitled'}
               </TableCell>
-              <TableCell>{jd.file_name || 'N/A'}</TableCell>
+              <TableCell>{jd.company_name || 'N/A'}</TableCell>
+              <TableCell>{jd.location || 'N/A'}</TableCell>
+              <TableCell>{jd.salary_range || 'N/A'}</TableCell>
               <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {jd.extracted_role?.skills?.slice(0, 3).map((skill, index) => (
-                    <Badge 
-                      key={index}
-                      variant="secondary"
-                      className="bg-aptiv/10 text-aptiv"
-                    >
-                      {skill}
-                    </Badge>
-                  ))}
-                  {(jd.extracted_role?.skills?.length || 0) > 3 && (
-                    <Badge variant="secondary" className="bg-gray-100">
-                      +{(jd.extracted_role?.skills?.length || 0) - 3} more
-                    </Badge>
-                  )}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {jd.extracted_role?.requirements?.slice(0, 2).map((req, index) => (
-                    <div key={index} className="text-sm text-gray-600">
-                      {req.length > 50 ? `${req.substring(0, 50)}...` : req}
-                    </div>
-                  ))}
-                  {(jd.extracted_role?.requirements?.length || 0) > 2 && (
-                    <div className="text-sm text-gray-400">
-                      +{(jd.extracted_role?.requirements?.length || 0) - 2} more
-                    </div>
-                  )}
+                <div className="max-w-md overflow-hidden text-ellipsis">
+                  {jd.job_requirements || 'N/A'}
                 </div>
               </TableCell>
               <TableCell>

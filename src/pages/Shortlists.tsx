@@ -28,17 +28,17 @@ const Shortlists = () => {
   const [isMatching, setIsMatching] = useState(false);
   const [matchingResults, setMatchingResults] = useState<Array<{ name: string; score: number; details: string }>>([]);
 
-  const { data: jobTitles } = useQuery({
-    queryKey: ['jobTitles'],
+  const { data: jobDescriptions } = useQuery({
+    queryKey: ['jobDescriptions'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('job_descriptions')
-        .select('job_title')
-        .not('job_title', 'is', null)
+        .select('id, job_title, original_text, job_requirements')
+        .not('original_text', 'is', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return [...new Set(data.map(job => job.job_title))] as string[];
+      return data;
     },
   });
 
@@ -131,10 +131,15 @@ const Shortlists = () => {
     queryClient.setQueryData(['matchedCandidates'], []);
   };
 
-  const handleJobTitleSelect = (title: string) => {
-    const selectedJob = jobTitles?.find(job => job === title);
+  const handleJobDescriptionSelect = (id: string) => {
+    const selectedJob = jobDescriptions?.find(job => job.id === id);
     if (selectedJob) {
-      setJobDescription(selectedJob);
+      const fullDescription = [
+        selectedJob.original_text,
+        selectedJob.job_requirements
+      ].filter(Boolean).join('\n\n');
+      
+      setJobDescription(fullDescription);
     }
   };
 
@@ -163,14 +168,14 @@ const Shortlists = () => {
                   <label className="text-aptiv-gray-600 text-sm font-medium">
                     From CVs
                   </label>
-                  <Select onValueChange={handleJobTitleSelect}>
+                  <Select onValueChange={handleJobDescriptionSelect}>
                     <SelectTrigger className="w-[300px] bg-white border-aptiv/20">
                       <SelectValue placeholder="Select from these CVs" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
-                      {jobTitles?.map((title) => (
-                        <SelectItem key={title} value={title}>
-                          {title}
+                      {jobDescriptions?.map((job) => (
+                        <SelectItem key={job.id} value={job.id}>
+                          {job.job_title || 'Untitled Job'}
                         </SelectItem>
                       ))}
                     </SelectContent>

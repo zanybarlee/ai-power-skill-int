@@ -2,14 +2,16 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Upload, FileText } from "lucide-react";
+import { Upload, FileText, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 export const UploadJD = () => {
   const { toast } = useToast();
-  const [isUploading, setIsUploading] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [textInput, setTextInput] = useState("");
 
   const allowedFileTypes = [
     'application/pdf',
@@ -32,6 +34,59 @@ export const UploadJD = () => {
     }
 
     setFile(selectedFile);
+    setTextInput(""); // Clear text input when file is selected
+  };
+
+  const handleTextInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setTextInput(e.target.value);
+    setFile(null); // Clear file when text is input
+    const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
+  };
+
+  const processJobDescription = async (content: string) => {
+    setIsProcessing(true);
+    try {
+      // Process JD with OpenAI
+      const { data: processedData, error: processError } = await supabase.functions
+        .invoke('process-job-description', {
+          body: { jobDescription: content }
+        });
+
+      if (processError) throw processError;
+
+      // Save to database using raw query to bypass type checking
+      const { error: dbError } = await supabase
+        .rpc('insert_job_description', {
+          p_original_text: content,
+          p_extracted_role: processedData.extractedRole,
+          p_file_name: file?.name || 'manual-input.txt',
+          p_file_type: file?.type || 'text/plain',
+          p_file_url: null
+        });
+
+      if (dbError) throw dbError;
+
+      toast({
+        title: "Success",
+        description: "Job description processed successfully",
+      });
+
+      // Clear inputs
+      setFile(null);
+      setTextInput("");
+      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (fileInput) fileInput.value = '';
+    } catch (error) {
+      console.error('Processing error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to process job description",
+        variant: "destructive",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleUpload = async () => {
@@ -44,7 +99,7 @@ export const UploadJD = () => {
       return;
     }
 
-    setIsUploading(true);
+    setIsProcessing(true);
     try {
       // Upload file to storage
       const fileName = `${crypto.randomUUID()}-${file.name}`;
@@ -56,37 +111,7 @@ export const UploadJD = () => {
 
       // Read file content
       const fileContent = await file.text();
-
-      // Process JD with OpenAI
-      const { data: processedData, error: processError } = await supabase.functions
-        .invoke('process-job-description', {
-          body: { jobDescription: fileContent }
-        });
-
-      if (processError) throw processError;
-
-      // Save to database using raw query to bypass type checking
-      // This is a temporary solution until the database types are updated
-      const { error: dbError } = await supabase
-        .rpc('insert_job_description', {
-          p_original_text: fileContent,
-          p_extracted_role: processedData.extractedRole,
-          p_file_name: file.name,
-          p_file_type: file.type,
-          p_file_url: fileData?.path
-        });
-
-      if (dbError) throw dbError;
-
-      toast({
-        title: "Success",
-        description: "Job description uploaded and processed successfully",
-      });
-
-      setFile(null);
-      // Reset file input
-      const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
-      if (fileInput) fileInput.value = '';
+      await processJobDescription(fileContent);
       
     } catch (error) {
       console.error('Upload error:', error);
@@ -95,52 +120,95 @@ export const UploadJD = () => {
         description: "Failed to upload and process job description",
         variant: "destructive",
       });
-    } finally {
-      setIsUploading(false);
+      setIsProcessing(false);
     }
+  };
+
+  const handleTextSubmit = async () => {
+    if (!textInput.trim()) {
+      toast({
+        title: "No text entered",
+        description: "Please enter a job description",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    await processJobDescription(textInput);
   };
 
   return (
     <div className="space-y-6 p-6 bg-white rounded-lg border border-gray-200">
       <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-gray-900">Upload Job Description</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Add Job Description</h2>
         <p className="text-sm text-gray-500">
-          Upload a job description file (PDF, Word, or text) to process and analyze.
+          Upload a file or enter your job description text directly.
         </p>
       </div>
 
-      <div className="flex items-center gap-4">
-        <Input
-          type="file"
-          accept=".pdf,.doc,.docx,.txt"
-          onChange={handleFileChange}
-          className="bg-white"
-        />
-        <Button
-          onClick={handleUpload}
-          disabled={isUploading || !file}
-          className="bg-aptiv hover:bg-aptiv/90"
-        >
-          {isUploading ? (
-            <>
-              <Upload className="mr-2 h-4 w-4 animate-spin" />
-              Uploading...
-            </>
-          ) : (
-            <>
-              <FileText className="mr-2 h-4 w-4" />
-              Upload JD
-            </>
-          )}
-        </Button>
-      </div>
-
-      {file && (
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <FileText className="h-4 w-4" />
-          <span>Selected file: {file.name}</span>
+      <div className="space-y-4">
+        <div className="flex items-center gap-4">
+          <Input
+            type="file"
+            accept=".pdf,.doc,.docx,.txt"
+            onChange={handleFileChange}
+            className="bg-white"
+            disabled={isProcessing}
+          />
+          <Button
+            onClick={handleUpload}
+            disabled={isProcessing || !file}
+            className="bg-aptiv hover:bg-aptiv/90"
+          >
+            {isProcessing ? (
+              <>
+                <Upload className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <FileText className="mr-2 h-4 w-4" />
+                Upload File
+              </>
+            )}
+          </Button>
         </div>
-      )}
+
+        <div className="space-y-2">
+          <p className="text-sm text-gray-500">Or enter job description text:</p>
+          <Textarea
+            placeholder="Enter job description here..."
+            value={textInput}
+            onChange={handleTextInputChange}
+            className="min-h-[200px]"
+            disabled={isProcessing}
+          />
+          <Button
+            onClick={handleTextSubmit}
+            disabled={isProcessing || !textInput.trim()}
+            className="bg-aptiv hover:bg-aptiv/90 w-full sm:w-auto"
+          >
+            {isProcessing ? (
+              <>
+                <Upload className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Send className="mr-2 h-4 w-4" />
+                Process Text
+              </>
+            )}
+          </Button>
+        </div>
+
+        {file && (
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <FileText className="h-4 w-4" />
+            <span>Selected file: {file.name}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

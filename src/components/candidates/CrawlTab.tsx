@@ -54,7 +54,7 @@ export const CrawlTab = () => {
     if (!searchQuery.trim()) {
       toast({
         title: "Error",
-        description: "Please enter a search query",
+        description: "Please select a job title or enter a search query",
         variant: "destructive",
       });
       return;
@@ -114,7 +114,7 @@ export const CrawlTab = () => {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center gap-4">
+      <div className="flex flex-col gap-4">
         <SearchBar
           searchQuery={searchQuery}
           isLoading={isLoading}
@@ -124,7 +124,7 @@ export const CrawlTab = () => {
         <Button
           onClick={handleCheckResults}
           variant="outline"
-          className="border-aptiv text-aptiv hover:bg-aptiv hover:text-white transition-all duration-200"
+          className="border-aptiv text-aptiv hover:bg-aptiv hover:text-white transition-all duration-200 w-fit"
         >
           <ClipboardList className="h-5 w-5 mr-2" />
           Check Results

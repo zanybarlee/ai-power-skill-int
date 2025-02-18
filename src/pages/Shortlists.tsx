@@ -165,7 +165,7 @@ const Shortlists = () => {
                   </label>
                   <Select onValueChange={handleJobTitleSelect}>
                     <SelectTrigger className="w-[300px] bg-white border-aptiv/20">
-                      <SelectValue placeholder="Select a job title" />
+                      <SelectValue placeholder="Select from these CVs" />
                     </SelectTrigger>
                     <SelectContent className="bg-white">
                       {jobTitles?.map((title) => (

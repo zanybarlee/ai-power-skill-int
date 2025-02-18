@@ -185,7 +185,7 @@ const Shortlists = () => {
                   <label className="text-aptiv-gray-600 text-sm font-medium">
                     From CVs
                   </label>
-                  <Select onValueChange={handleJobDescriptionSelect}>
+                  <Select>
                     <SelectTrigger className="w-[300px] bg-white border-aptiv/20">
                       <SelectValue placeholder="Select from these CVs" />
                     </SelectTrigger>

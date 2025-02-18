@@ -1,11 +1,13 @@
 
 import { useState, useEffect } from "react";
-import { Menu, X, FileText, Search, Users, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import Footer from "./Footer";
+import { useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { navigationItems } from "@/config/navigation";
+import { SidebarHeader } from "./layout/SidebarHeader";
+import { Navigation } from "./layout/Navigation";
+import { LogoutButton } from "./layout/LogoutButton";
+import Footer from "./Footer";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,7 +18,6 @@ const Layout = ({ children }: LayoutProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
     const checkUser = async () => {
@@ -59,51 +60,6 @@ const Layout = ({ children }: LayoutProps) => {
     };
   }, [navigate]);
 
-  const handleLogout = async () => {
-    try {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        toast({
-          title: "Error signing out",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-      navigate("/auth", { replace: true });
-    } catch (error) {
-      console.error('Logout error:', error);
-      toast({
-        title: "Error",
-        description: "Failed to sign out. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const navigationItems = [
-    {
-      name: "Job Description (JD)",
-      icon: FileText,
-      path: "/post-job",
-    },
-    {
-      name: "Candidate Search (CV)",
-      icon: Search,
-      path: "/candidates",
-    },
-    {
-      name: "Shortlists",
-      icon: Users,
-      path: "/shortlists",
-    },
-    {
-      name: "Settings",
-      icon: Settings,
-      path: "/settings",
-    },
-  ];
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -121,79 +77,12 @@ const Layout = ({ children }: LayoutProps) => {
           isSidebarOpen ? "w-64" : "w-0 lg:w-20"
         )}
       >
-        {/* Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-aptiv/10">
-          <div className="flex items-center">
-            <img 
-              src="/lovable-uploads/5d0792c7-11b1-4e59-af76-3c687201c682.png" 
-              alt="Aptiv8 Logo" 
-              className={cn(
-                "h-8",
-                isSidebarOpen ? "w-32" : "w-12 lg:w-12"
-              )}
-            />
-          </div>
-          <button
-            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-            className="p-2 hover:bg-aptiv-gray-600 rounded-md text-white"
-          >
-            {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className={cn(
-          "flex-1 p-4 flex flex-col gap-2",
-          !isSidebarOpen && "lg:items-center"
-        )}>
-          {navigationItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-md",
-                "hover:bg-aptiv hover:text-white",
-                location.pathname === item.path
-                  ? "bg-aptiv text-white"
-                  : "text-aptiv-gray-200",
-                !isSidebarOpen && "lg:justify-center"
-              )}
-            >
-              <item.icon size={20} />
-              <span 
-                className={cn(
-                  "font-medium text-sm",
-                  !isSidebarOpen && "lg:hidden"
-                )}
-              >
-                {item.name}
-              </span>
-            </Link>
-          ))}
-        </nav>
-
-        {/* Logout button */}
-        <div className={cn(
-          "p-4 border-t border-aptiv/10",
-          !isSidebarOpen && "lg:flex lg:justify-center"
-        )}>
-          <button 
-            onClick={handleLogout}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-md w-full",
-              "text-aptiv-gray-200 hover:bg-aptiv hover:text-white",
-              !isSidebarOpen && "lg:justify-center lg:w-auto"
-            )}
-          >
-            <LogOut size={20} />
-            <span className={cn(
-              "font-medium text-sm",
-              !isSidebarOpen && "lg:hidden"
-            )}>
-              Logout
-            </span>
-          </button>
-        </div>
+        <SidebarHeader 
+          isSidebarOpen={isSidebarOpen} 
+          onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+        />
+        <Navigation isSidebarOpen={isSidebarOpen} />
+        <LogoutButton isSidebarOpen={isSidebarOpen} />
       </div>
 
       {/* Main content */}

@@ -7,6 +7,16 @@ import { useToast } from "@/hooks/use-toast";
 import { Upload, FileText, Send } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
+interface ProcessedData {
+  extractedRole: {
+    title?: string;
+    requirements?: string[];
+    skills?: string[];
+    experience?: string;
+    [key: string]: any;
+  };
+}
+
 export const UploadJD = () => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -48,22 +58,22 @@ export const UploadJD = () => {
     setIsProcessing(true);
     try {
       // Process JD with OpenAI
-      const { data: processedData, error: processError } = await supabase.functions
-        .invoke('process-job-description', {
+      const { data, error: processError } = await supabase.functions
+        .invoke<ProcessedData>('process-job-description', {
           body: { jobDescription: content }
         });
 
       if (processError) throw processError;
+      if (!data) throw new Error('No data returned from processing');
 
-      // Save to database using raw query to bypass type checking
-      const { error: dbError } = await supabase
-        .rpc('insert_job_description', {
-          p_original_text: content,
-          p_extracted_role: processedData.extractedRole,
-          p_file_name: file?.name || 'manual-input.txt',
-          p_file_type: file?.type || 'text/plain',
-          p_file_url: null
-        });
+      // Save to database
+      const { error: dbError } = await supabase.rpc('insert_job_description', {
+        p_original_text: content,
+        p_extracted_role: data.extractedRole,
+        p_file_name: file?.name || 'manual-input.txt',
+        p_file_type: file?.type || 'text/plain',
+        p_file_url: null
+      });
 
       if (dbError) throw dbError;
 

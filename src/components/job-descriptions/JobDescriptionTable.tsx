@@ -181,16 +181,22 @@ export const JobDescriptionTable = () => {
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => {
-                      handleRowClick(jd);
-                      handleEdit();
-                    }}>
+                  <DropdownMenuContent 
+                    align="end" 
+                    className="bg-[#F1F0FB] border border-purple-100 shadow-lg"
+                  >
+                    <DropdownMenuItem 
+                      onClick={() => {
+                        handleRowClick(jd);
+                        handleEdit();
+                      }}
+                      className="hover:bg-purple-100 focus:bg-purple-100"
+                    >
                       <Pencil className="mr-2 h-4 w-4" />
                       Edit
                     </DropdownMenuItem>
                     <DropdownMenuItem
-                      className="text-red-600"
+                      className="text-red-600 hover:bg-red-50 focus:bg-red-50"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleDelete(jd.id);

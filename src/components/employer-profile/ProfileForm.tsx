@@ -78,15 +78,25 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
   });
 
   const onSubmit = async (values: z.infer<typeof profileSchema>) => {
+    console.log("Form submission started", { values });
+    
     try {
       const timestamp = new Date().toISOString();
       
       // Get the current user
-      const { data: { user } } = await supabase.auth.getUser();
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError) {
+        console.error("Error getting user:", userError);
+        throw userError;
+      }
       
       if (!user) {
+        console.error("No user found");
         throw new Error("No authenticated user found");
       }
+
+      console.log("Current user:", user.id);
 
       // Prepare the data object with all required fields
       const profileData = {
@@ -105,9 +115,11 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         user_id: user.id,
       };
 
+      console.log("Prepared profile data:", profileData);
+
       if (profile?.id) {
-        // Update existing profile
-        const { error } = await supabase
+        console.log("Updating existing profile:", profile.id);
+        const { data: updateData, error: updateError } = await supabase
           .from('employer_profiles')
           .update({
             ...profileData,
@@ -115,13 +127,14 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
           })
           .eq('id', profile.id);
 
-        if (error) {
-          console.error('Update error:', error);
-          throw error;
+        if (updateError) {
+          console.error('Update error:', updateError);
+          throw updateError;
         }
+        console.log("Update successful:", updateData);
       } else {
-        // Create new profile
-        const { error } = await supabase
+        console.log("Creating new profile");
+        const { data: insertData, error: insertError } = await supabase
           .from('employer_profiles')
           .insert({
             ...profileData,
@@ -129,26 +142,34 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
             updated_at: timestamp,
           });
 
-        if (error) {
-          console.error('Insert error:', error);
-          throw error;
+        if (insertError) {
+          console.error('Insert error:', insertError);
+          throw insertError;
         }
+        console.log("Insert successful:", insertData);
       }
 
-      // Invalidate and refetch
+      console.log("Invalidating queries");
       await queryClient.invalidateQueries({ queryKey: ['employerProfiles'] });
 
       toast({
         title: "Success",
         description: profile?.id ? "Profile updated successfully" : "Profile created successfully",
       });
+      
+      console.log("Form submission completed successfully");
       onCancel();
     } catch (error) {
-      console.error('Error saving profile:', error);
+      console.error('Detailed error:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to save profile. Please try again.",
       });
     }
   };
@@ -402,4 +423,3 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     </Form>
   );
 };
-

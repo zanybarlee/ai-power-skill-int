@@ -106,6 +106,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
       // Prepare the data object with all required fields
       const profileData = {
+        user_id: user.id,
         company_name: values.company_name,
         registration_number: values.registration_number,
         country: values.country,
@@ -118,10 +119,9 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         email: values.email,
         phone: values.phone,
         alternate_contact: values.alternate_contact || null,
-        user_id: user.id,
         is_verified: false,
         is_approved: false,
-        profile_completion: 100, // Since all required fields are filled
+        profile_completion: 100,
       };
 
       console.log("Step 5: Prepared profile data:", profileData);

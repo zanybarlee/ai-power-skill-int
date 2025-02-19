@@ -29,9 +29,12 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
   const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: getDefaultFormValues(profile),
+    mode: "onChange"
   });
 
-  const onSubmit = async (values: ProfileFormData) => {
+  const onSubmit = form.handleSubmit(async (values: ProfileFormData) => {
+    console.log("Form submitted with values:", values);
+    
     try {
       const result = await saveProfile(values, profile);
 
@@ -56,7 +59,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         description: error instanceof Error ? error.message : "Failed to save profile. Please try again.",
       });
     }
-  };
+  });
 
   if (!isEditing && !profile) {
     return (
@@ -70,7 +73,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={onSubmit} className="space-y-8">
         <CompanyInfoSection form={form} />
         <IndustryInfoSection form={form} />
         <ContactInfoSection form={form} />

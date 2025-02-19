@@ -21,6 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { EmployerProfile } from "./types";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 const profileSchema = z.object({
   company_name: z.string().min(2, "Company name must be at least 2 characters"),
@@ -50,6 +52,8 @@ interface ProfileFormProps {
 
 export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),
     defaultValues: profile || {
@@ -75,14 +79,40 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
   const onSubmit = async (values: z.infer<typeof profileSchema>) => {
     try {
-      // TODO: Implement profile update logic
-      console.log('Form values:', values);
+      if (profile?.id) {
+        // Update existing profile
+        const { error } = await supabase
+          .from('employer_profiles')
+          .update({
+            ...values,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', profile.id);
+
+        if (error) throw error;
+      } else {
+        // Create new profile
+        const { error } = await supabase
+          .from('employer_profiles')
+          .insert([{
+            ...values,
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+          }]);
+
+        if (error) throw error;
+      }
+
+      // Invalidate and refetch
+      await queryClient.invalidateQueries(['employerProfile']);
+
       toast({
         title: "Success",
         description: "Profile updated successfully",
       });
       onCancel();
     } catch (error) {
+      console.error('Error saving profile:', error);
       toast({
         variant: "destructive",
         title: "Error",

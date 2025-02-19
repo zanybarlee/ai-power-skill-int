@@ -79,13 +79,26 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
   const onSubmit = async (values: z.infer<typeof profileSchema>) => {
     try {
+      const timestamp = new Date().toISOString();
+      
       if (profile?.id) {
         // Update existing profile
         const { error } = await supabase
           .from('employer_profiles')
           .update({
-            ...values,
-            updated_at: new Date().toISOString(),
+            company_name: values.company_name,
+            registration_number: values.registration_number,
+            country: values.country,
+            state: values.state,
+            industry: values.industry,
+            sub_industry: values.sub_industry,
+            sub_sub_industry: values.sub_sub_industry,
+            contact_person: values.contact_person,
+            designation: values.designation,
+            email: values.email,
+            phone: values.phone,
+            alternate_contact: values.alternate_contact,
+            updated_at: timestamp
           })
           .eq('id', profile.id);
 
@@ -94,17 +107,28 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         // Create new profile
         const { error } = await supabase
           .from('employer_profiles')
-          .insert([{
-            ...values,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          }]);
+          .insert({
+            company_name: values.company_name,
+            registration_number: values.registration_number,
+            country: values.country,
+            state: values.state,
+            industry: values.industry,
+            sub_industry: values.sub_industry,
+            sub_sub_industry: values.sub_sub_industry,
+            contact_person: values.contact_person,
+            designation: values.designation,
+            email: values.email,
+            phone: values.phone,
+            alternate_contact: values.alternate_contact,
+            created_at: timestamp,
+            updated_at: timestamp
+          });
 
         if (error) throw error;
       }
 
       // Invalidate and refetch
-      await queryClient.invalidateQueries(['employerProfile']);
+      await queryClient.invalidateQueries({ queryKey: ['employerProfile'] });
 
       toast({
         title: "Success",

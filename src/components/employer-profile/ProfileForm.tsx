@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -78,25 +77,27 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
   });
 
   const onSubmit = async (values: z.infer<typeof profileSchema>) => {
-    console.log("Form submission started", { values });
+    console.log("Step 1: Form submission started with values:", values);
     
     try {
       const timestamp = new Date().toISOString();
+      console.log("Step 2: Generated timestamp:", timestamp);
       
       // Get the current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log("Step 3: Attempting to get current user");
       
       if (userError) {
-        console.error("Error getting user:", userError);
+        console.error("Step 3a: Error getting user:", userError);
         throw userError;
       }
       
       if (!user) {
-        console.error("No user found");
-        throw new Error("No authenticated user found");
+        console.error("Step 3b: No user found");
+        throw new Error("You must be logged in to create a profile");
       }
 
-      console.log("Current user:", user.id);
+      console.log("Step 4: Current user found:", user.id);
 
       // Prepare the data object with all required fields
       const profileData = {
@@ -111,47 +112,51 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         designation: values.designation,
         email: values.email,
         phone: values.phone,
-        alternate_contact: values.alternate_contact,
+        alternate_contact: values.alternate_contact || null,
         user_id: user.id,
+        is_verified: false,
+        is_approved: false,
+        profile_completion: 100, // Since all required fields are filled
       };
 
-      console.log("Prepared profile data:", profileData);
+      console.log("Step 5: Prepared profile data:", profileData);
 
+      let result;
+      
       if (profile?.id) {
-        console.log("Updating existing profile:", profile.id);
-        const { data: updateData, error: updateError } = await supabase
+        console.log("Step 6a: Updating existing profile:", profile.id);
+        result = await supabase
           .from('employer_profiles')
           .update({
             ...profileData,
             updated_at: timestamp,
           })
           .eq('id', profile.id)
-          .select();
+          .select('*');
 
-        if (updateError) {
-          console.error('Update error:', updateError);
-          throw updateError;
-        }
-        console.log("Update successful:", updateData);
+        console.log("Step 6a result:", result);
       } else {
-        console.log("Creating new profile");
-        const { data: insertData, error: insertError } = await supabase
+        console.log("Step 6b: Creating new profile");
+        result = await supabase
           .from('employer_profiles')
           .insert([{
             ...profileData,
             created_at: timestamp,
             updated_at: timestamp,
           }])
-          .select();
+          .select('*');
 
-        if (insertError) {
-          console.error('Insert error:', insertError);
-          throw insertError;
-        }
-        console.log("Insert successful:", insertData);
+        console.log("Step 6b result:", result);
       }
 
-      console.log("Invalidating queries");
+      if (result.error) {
+        console.error("Step 7: Database operation failed:", result.error);
+        throw result.error;
+      }
+
+      console.log("Step 8: Database operation successful:", result.data);
+
+      console.log("Step 9: Invalidating queries");
       await queryClient.invalidateQueries({ queryKey: ['employerProfiles'] });
 
       toast({
@@ -159,10 +164,10 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         description: profile?.id ? "Profile updated successfully" : "Profile created successfully",
       });
       
-      console.log("Form submission completed successfully");
+      console.log("Step 10: Form submission completed successfully");
       onCancel();
     } catch (error) {
-      console.error('Detailed error:', {
+      console.error('Step ERROR: Detailed error:', {
         error,
         message: error instanceof Error ? error.message : 'Unknown error',
         stack: error instanceof Error ? error.stack : undefined

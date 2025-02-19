@@ -26,6 +26,10 @@ function App() {
       <Route path="/shortlists" element={<Shortlists />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/employer-profile" element={<EmployerProfile />} />
+      {/* Add redirect from /dashboard to /post-job */}
+      <Route path="/dashboard" element={<Navigate to="/post-job" replace />} />
+      {/* Catch all other routes and redirect to /post-job */}
+      <Route path="*" element={<Navigate to="/post-job" replace />} />
     </Routes>
   );
 }

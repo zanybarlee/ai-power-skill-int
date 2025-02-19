@@ -58,7 +58,7 @@ const EmployerProfile = () => {
               >
                 <h3 className="text-lg font-semibold text-aptiv-gray-700">{profile.company_name}</h3>
                 <p className="text-sm text-aptiv-gray-500">{profile.industry}</p>
-                <p className="text-sm text-aptiv-gray-500">{profile.location}</p>
+                <p className="text-sm text-aptiv-gray-500">{`${profile.state}, ${profile.country}`}</p>
               </div>
             ))}
           </div>

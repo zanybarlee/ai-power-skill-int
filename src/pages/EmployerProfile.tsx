@@ -7,6 +7,14 @@ import { useEmployerProfile } from "@/components/employer-profile/hooks/useEmplo
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import { EmployerProfile as EmployerProfileType } from "@/components/employer-profile/types";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 const EmployerProfile = () => {
   const [isEditing, setIsEditing] = useState(false);
@@ -45,22 +53,45 @@ const EmployerProfile = () => {
         </div>
 
         {profiles && profiles.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {profiles.map((profile) => (
-              <div
-                key={profile.id}
-                className={`bg-white rounded-lg p-6 border cursor-pointer transition-all ${
-                  selectedProfile?.id === profile.id
-                    ? "border-aptiv"
-                    : "border-aptiv/10 hover:border-aptiv/30"
-                }`}
-                onClick={() => handleSelectProfile(profile)}
-              >
-                <h3 className="text-lg font-semibold text-aptiv-gray-700">{profile.company_name}</h3>
-                <p className="text-sm text-aptiv-gray-500">{profile.industry}</p>
-                <p className="text-sm text-aptiv-gray-500">{`${profile.state}, ${profile.country}`}</p>
-              </div>
-            ))}
+          <div className="bg-white rounded-lg border border-aptiv/10 overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Company Name</TableHead>
+                  <TableHead>Industry</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Contact Person</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {profiles.map((profile) => (
+                  <TableRow
+                    key={profile.id}
+                    className={`cursor-pointer ${
+                      selectedProfile?.id === profile.id ? "bg-aptiv/5" : ""
+                    }`}
+                    onClick={() => handleSelectProfile(profile)}
+                  >
+                    <TableCell className="font-medium">{profile.company_name}</TableCell>
+                    <TableCell>{profile.industry}</TableCell>
+                    <TableCell>{`${profile.state}, ${profile.country}`}</TableCell>
+                    <TableCell>{profile.contact_person}</TableCell>
+                    <TableCell>
+                      <span
+                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          profile.is_verified
+                            ? "bg-green-100 text-green-800"
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}
+                      >
+                        {profile.is_verified ? "Verified" : "Pending"}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
         ) : !isEditing ? (
           <div className="bg-white rounded-lg p-6 border border-aptiv/10 text-center">

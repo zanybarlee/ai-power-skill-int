@@ -1,6 +1,5 @@
 
 import {
-  BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
@@ -17,19 +16,17 @@ import EmployerProfile from "./pages/EmployerProfile";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/auth" element={<Auth />} />
-        <Route path="/post-job" element={<PostJob />} />
-        <Route path="/candidates" element={<Candidates />} />
-        <Route path="/shortlists" element={<Shortlists />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/employer-profile" element={<EmployerProfile />} />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route path="/" element={<Landing />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/post-job" element={<PostJob />} />
+      <Route path="/candidates" element={<Candidates />} />
+      <Route path="/shortlists" element={<Shortlists />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/employer-profile" element={<EmployerProfile />} />
+    </Routes>
   );
 }
 

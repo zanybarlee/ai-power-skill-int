@@ -81,6 +81,13 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     try {
       const timestamp = new Date().toISOString();
       
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("No authenticated user found");
+      }
+
       if (profile?.id) {
         // Update existing profile
         const { error } = await supabase
@@ -98,11 +105,15 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
             email: values.email,
             phone: values.phone,
             alternate_contact: values.alternate_contact,
-            updated_at: timestamp
+            updated_at: timestamp,
+            user_id: user.id
           })
           .eq('id', profile.id);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Update error:', error);
+          throw error;
+        }
       } else {
         // Create new profile
         const { error } = await supabase
@@ -121,10 +132,14 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
             phone: values.phone,
             alternate_contact: values.alternate_contact,
             created_at: timestamp,
-            updated_at: timestamp
+            updated_at: timestamp,
+            user_id: user.id
           });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Insert error:', error);
+          throw error;
+        }
       }
 
       // Invalidate and refetch
@@ -140,7 +155,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update profile",
+        description: "Failed to update profile. Please try again.",
       });
     }
   };

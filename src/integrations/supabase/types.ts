@@ -563,6 +563,78 @@ export type Database = {
         }
         Relationships: []
       }
+      employer_profiles: {
+        Row: {
+          alternate_contact: Json | null
+          company_name: string
+          contact_person: string
+          country: string
+          created_at: string | null
+          designation: string
+          email: string
+          id: string
+          industry: string
+          is_approved: boolean | null
+          is_verified: boolean | null
+          phone: string
+          profile_completion: number | null
+          registration_number: string
+          state: string
+          sub_industry: string
+          sub_sub_industry: string
+          updated_at: string | null
+          user_id: string | null
+          verification_expires_at: string | null
+          verification_token: string | null
+        }
+        Insert: {
+          alternate_contact?: Json | null
+          company_name: string
+          contact_person: string
+          country: string
+          created_at?: string | null
+          designation: string
+          email: string
+          id?: string
+          industry: string
+          is_approved?: boolean | null
+          is_verified?: boolean | null
+          phone: string
+          profile_completion?: number | null
+          registration_number: string
+          state: string
+          sub_industry: string
+          sub_sub_industry: string
+          updated_at?: string | null
+          user_id?: string | null
+          verification_expires_at?: string | null
+          verification_token?: string | null
+        }
+        Update: {
+          alternate_contact?: Json | null
+          company_name?: string
+          contact_person?: string
+          country?: string
+          created_at?: string | null
+          designation?: string
+          email?: string
+          id?: string
+          industry?: string
+          is_approved?: boolean | null
+          is_verified?: boolean | null
+          phone?: string
+          profile_completion?: number | null
+          registration_number?: string
+          state?: string
+          sub_industry?: string
+          sub_sub_industry?: string
+          updated_at?: string | null
+          user_id?: string | null
+          verification_expires_at?: string | null
+          verification_token?: string | null
+        }
+        Relationships: []
+      }
       feature_engineering_jobs: {
         Row: {
           completed_at: string | null
@@ -1202,6 +1274,7 @@ export type Database = {
       card_priority: "low" | "medium" | "high"
       data_process_status: "pending" | "in_progress" | "completed" | "failed"
       model_type: "rag" | "classification" | "generation" | "embedding"
+      profile_status: "pending" | "verified" | "rejected"
       user_role:
         | "data_engineer"
         | "data_scientist"

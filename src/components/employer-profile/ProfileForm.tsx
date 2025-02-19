@@ -198,7 +198,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" autoComplete="off">
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
           <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-6">
             Company Information
@@ -211,7 +211,11 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
                 <FormItem>
                   <FormLabel>Company Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter company name" {...field} />
+                    <Input 
+                      placeholder="Enter company name" 
+                      {...field} 
+                      autoComplete="off"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

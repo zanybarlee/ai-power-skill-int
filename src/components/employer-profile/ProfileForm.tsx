@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -93,18 +92,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         const { error } = await supabase
           .from('employer_profiles')
           .update({
-            company_name: values.company_name,
-            registration_number: values.registration_number,
-            country: values.country,
-            state: values.state,
-            industry: values.industry,
-            sub_industry: values.sub_industry,
-            sub_sub_industry: values.sub_sub_industry,
-            contact_person: values.contact_person,
-            designation: values.designation,
-            email: values.email,
-            phone: values.phone,
-            alternate_contact: values.alternate_contact,
+            ...values,
             updated_at: timestamp,
             user_id: user.id
           })
@@ -119,18 +107,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         const { error } = await supabase
           .from('employer_profiles')
           .insert({
-            company_name: values.company_name,
-            registration_number: values.registration_number,
-            country: values.country,
-            state: values.state,
-            industry: values.industry,
-            sub_industry: values.sub_industry,
-            sub_sub_industry: values.sub_sub_industry,
-            contact_person: values.contact_person,
-            designation: values.designation,
-            email: values.email,
-            phone: values.phone,
-            alternate_contact: values.alternate_contact,
+            ...values,
             created_at: timestamp,
             updated_at: timestamp,
             user_id: user.id
@@ -143,11 +120,11 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
       }
 
       // Invalidate and refetch
-      await queryClient.invalidateQueries({ queryKey: ['employerProfile'] });
+      await queryClient.invalidateQueries({ queryKey: ['employerProfiles'] });
 
       toast({
         title: "Success",
-        description: "Profile updated successfully",
+        description: profile?.id ? "Profile updated successfully" : "Profile created successfully",
       });
       onCancel();
     } catch (error) {
@@ -155,7 +132,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to update profile. Please try again.",
+        description: "Failed to save profile. Please try again.",
       });
     }
   };

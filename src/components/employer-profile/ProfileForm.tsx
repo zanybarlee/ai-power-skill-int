@@ -390,7 +390,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
         {isEditing && (
           <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={onCancel}>
+            <Button variant="outline" onClick={onCancel} type="button">
               Cancel
             </Button>
             <Button type="submit">
@@ -402,3 +402,4 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     </Form>
   );
 };
+

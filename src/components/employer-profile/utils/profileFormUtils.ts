@@ -58,9 +58,20 @@ export const saveProfile = async (
   if (userError) throw userError;
   if (!user) throw new Error("You must be logged in to create a profile");
 
+  // Ensure all required fields are present
   const profileData = {
     user_id: user.id,
-    ...values,
+    company_name: values.company_name,
+    registration_number: values.registration_number,
+    country: values.country,
+    state: values.state,
+    industry: values.industry,
+    sub_industry: values.sub_industry,
+    sub_sub_industry: values.sub_sub_industry,
+    contact_person: values.contact_person,
+    designation: values.designation,
+    email: values.email,
+    phone: values.phone,
     alternate_contact: values.alternate_contact || null,
     is_verified: false,
     is_approved: false,
@@ -75,15 +86,17 @@ export const saveProfile = async (
         updated_at: timestamp,
       })
       .eq('id', profile.id)
-      .select('*');
+      .select('*')
+      .single();
   } else {
     return await supabase
       .from('employer_profiles')
-      .insert([{
+      .insert({
         ...profileData,
         created_at: timestamp,
         updated_at: timestamp,
-      }])
-      .select('*');
+      })
+      .select('*')
+      .single();
   }
 };

@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { CompanyInfoSection } from "./components/CompanyInfoSection";
 import { IndustryInfoSection } from "./components/IndustryInfoSection";
 import { ContactInfoSection } from "./components/ContactInfoSection";
-import { profileSchema, getDefaultFormValues, saveProfile } from "./utils/profileFormUtils";
+import { profileSchema, getDefaultFormValues, saveProfile, ProfileFormData } from "./utils/profileFormUtils";
 
 interface ProfileFormProps {
   profile: EmployerProfile | null;
@@ -26,12 +26,12 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     console.log("ProfileForm mounted", { isEditing, profile });
   }, [isEditing, profile]);
   
-  const form = useForm({
+  const form = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: getDefaultFormValues(profile),
   });
 
-  const onSubmit = async (values: typeof form.getValues) => {
+  const onSubmit = async (values: ProfileFormData) => {
     console.log("Step 1: Form submission started with values:", values);
     
     try {

@@ -7,14 +7,26 @@ export const useEmployerProfile = () => {
   const { data: profile, isLoading } = useQuery({
     queryKey: ['employerProfile'],
     queryFn: async () => {
-      const { data: profiles, error } = await supabase
+      const { data: profile, error } = await supabase
         .from('employer_profiles')
         .select('*')
         .limit(1)
         .maybeSingle();
 
       if (error) throw error;
-      return profiles as EmployerProfile | null;
+
+      if (!profile) return null;
+
+      // Transform the raw database response to match our type
+      return {
+        ...profile,
+        alternate_contact: profile.alternate_contact ? JSON.parse(JSON.stringify(profile.alternate_contact)) : null,
+        created_at: profile.created_at || new Date().toISOString(),
+        updated_at: profile.updated_at || new Date().toISOString(),
+        profile_completion: profile.profile_completion || 0,
+        is_verified: profile.is_verified || false,
+        is_approved: profile.is_approved || false,
+      } as EmployerProfile;
     },
   });
 

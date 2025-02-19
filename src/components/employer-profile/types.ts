@@ -1,6 +1,7 @@
 
 export interface EmployerProfile {
   id: string;
+  user_id: string | null;
   company_name: string;
   registration_number: string;
   country: string;
@@ -12,17 +13,19 @@ export interface EmployerProfile {
   designation: string;
   email: string;
   phone: string;
-  alternate_contact?: {
+  alternate_contact: {
     name: string;
     designation: string;
     email: string;
     phone: string;
-  };
+  } | null;
   is_verified: boolean;
   is_approved: boolean;
+  profile_completion: number;
+  verification_token: string | null;
+  verification_expires_at: string | null;
   created_at: string;
   updated_at: string;
-  profile_completion: number;
 }
 
 export interface Industry {

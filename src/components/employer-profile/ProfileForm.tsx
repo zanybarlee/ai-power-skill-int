@@ -186,6 +186,11 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     }
   };
 
+  const handleFormSubmit = form.handleSubmit((data) => {
+    console.log("Form handleSubmit triggered");
+    onSubmit(data);
+  });
+
   if (!isEditing && !profile) {
     return (
       <div className="bg-white rounded-lg p-6 border border-aptiv/10 text-center">
@@ -198,7 +203,14 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" autoComplete="off">
+      <form 
+        onSubmit={(e) => {
+          console.log("Raw form submit event triggered");
+          handleFormSubmit(e);
+        }} 
+        className="space-y-8" 
+        autoComplete="off"
+      >
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
           <h2 className="text-lg font-semibold text-aptiv-gray-700 mb-6">
             Company Information

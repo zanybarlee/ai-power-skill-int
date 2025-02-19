@@ -22,6 +22,7 @@ import { EmployerProfile } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 const profileSchema = z.object({
   company_name: z.string().min(2, "Company name must be at least 2 characters"),
@@ -52,6 +53,10 @@ interface ProfileFormProps {
 export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    console.log("ProfileForm mounted", { isEditing, profile });
+  }, [isEditing, profile]);
   
   const form = useForm<z.infer<typeof profileSchema>>({
     resolver: zodResolver(profileSchema),

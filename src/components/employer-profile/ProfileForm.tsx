@@ -125,7 +125,8 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
             ...profileData,
             updated_at: timestamp,
           })
-          .eq('id', profile.id);
+          .eq('id', profile.id)
+          .select();
 
         if (updateError) {
           console.error('Update error:', updateError);
@@ -136,11 +137,12 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
         console.log("Creating new profile");
         const { data: insertData, error: insertError } = await supabase
           .from('employer_profiles')
-          .insert({
+          .insert([{
             ...profileData,
             created_at: timestamp,
             updated_at: timestamp,
-          });
+          }])
+          .select();
 
         if (insertError) {
           console.error('Insert error:', insertError);

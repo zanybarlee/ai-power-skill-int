@@ -32,8 +32,6 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
   });
 
   const onSubmit = async (values: ProfileFormData) => {
-    console.log("Step 1: Form submission started with values:", values);
-    
     try {
       const result = await saveProfile(values, profile);
 
@@ -72,11 +70,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
   return (
     <Form {...form}>
-      <form 
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-8" 
-        autoComplete="off"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <CompanyInfoSection form={form} />
         <IndustryInfoSection form={form} />
         <ContactInfoSection form={form} />

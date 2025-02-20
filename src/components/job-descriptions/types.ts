@@ -22,4 +22,5 @@ export interface JobDescription {
   file_type: string | null;
   file_url: string | null;
   salary_range: string | null;
+  benefits: string | null;  // Added this line
 }

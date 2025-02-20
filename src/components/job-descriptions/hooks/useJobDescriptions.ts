@@ -17,6 +17,7 @@ export const useJobDescriptions = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      console.log('Fetched job descriptions:', data); // Debug log
       return data as JobDescription[];
     },
   });
@@ -61,18 +62,25 @@ export const useJobDescriptions = () => {
   };
 
   const handleUpdate = async (jobDescription: JobDescription) => {
+    console.log('Updating job description:', jobDescription); // Debug log
     try {
-      const { error } = await supabase
+      const updateData = {
+        job_title: jobDescription.job_title,
+        company_name: jobDescription.company_name,
+        location: jobDescription.location,
+        original_text: jobDescription.original_text,
+        job_requirements: jobDescription.job_requirements,
+        benefits: jobDescription.benefits,
+      };
+      console.log('Update data:', updateData); // Debug log
+
+      const { data, error } = await supabase
         .from('job_descriptions')
-        .update({
-          job_title: jobDescription.job_title,
-          company_name: jobDescription.company_name,
-          location: jobDescription.location,
-          original_text: jobDescription.original_text,
-          job_requirements: jobDescription.job_requirements,
-          benefits: jobDescription.benefits,  // Added this line
-        })
-        .eq('id', jobDescription.id);
+        .update(updateData)
+        .eq('id', jobDescription.id)
+        .select();
+
+      console.log('Update response:', { data, error }); // Debug log
 
       if (error) {
         console.error('Update error:', error);

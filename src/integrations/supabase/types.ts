@@ -714,6 +714,7 @@ export type Database = {
       }
       job_descriptions: {
         Row: {
+          benefits: string | null
           company_name: string | null
           created_at: string | null
           file_name: string | null
@@ -728,6 +729,7 @@ export type Database = {
           status: string | null
         }
         Insert: {
+          benefits?: string | null
           company_name?: string | null
           created_at?: string | null
           file_name?: string | null
@@ -742,6 +744,7 @@ export type Database = {
           status?: string | null
         }
         Update: {
+          benefits?: string | null
           company_name?: string | null
           created_at?: string | null
           file_name?: string | null

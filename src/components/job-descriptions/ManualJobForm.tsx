@@ -34,19 +34,26 @@ export const ManualJobForm = () => {
   });
 
   async function onSubmit(values: JobFormValues) {
+    console.log('Submitting form with values:', values); // Debug log
     try {
-      const { error } = await supabase
+      const jobData = {
+        original_text: values.description,
+        job_title: values.title,
+        company_name: values.company,
+        location: values.location,
+        salary_range: values.salary,
+        job_requirements: values.requirements,
+        benefits: values.benefits,
+        status: 'pending'
+      };
+      console.log('Inserting job data:', jobData); // Debug log
+
+      const { data, error } = await supabase
         .from('job_descriptions')
-        .insert({
-          original_text: values.description,
-          job_title: values.title,
-          company_name: values.company,
-          location: values.location,
-          salary_range: values.salary,
-          job_requirements: values.requirements,
-          benefits: values.benefits,  // Added this line
-          status: 'pending'
-        });
+        .insert(jobData)
+        .select();
+
+      console.log('Supabase response:', { data, error }); // Debug log
       
       if (error) throw error;
 

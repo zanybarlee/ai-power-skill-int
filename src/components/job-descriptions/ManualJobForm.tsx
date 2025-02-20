@@ -29,6 +29,7 @@ export const ManualJobForm = () => {
       salary: "",
       description: "",
       requirements: "",
+      benefits: "",
     },
   });
 
@@ -144,6 +145,24 @@ export const ManualJobForm = () => {
               <FormControl>
                 <Textarea
                   placeholder="List the required skills and qualifications"
+                  className="min-h-[120px]"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="benefits"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-gray-700">Benefits</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="List the benefits and perks offered"
                   className="min-h-[120px]"
                   {...field}
                 />

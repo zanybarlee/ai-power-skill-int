@@ -44,6 +44,7 @@ export const ManualJobForm = () => {
           location: values.location,
           salary_range: values.salary,
           job_requirements: values.requirements,
+          benefits: values.benefits,  // Added this line
           status: 'pending'
         });
       

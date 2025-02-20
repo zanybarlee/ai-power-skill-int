@@ -70,6 +70,7 @@ export const useJobDescriptions = () => {
           location: jobDescription.location,
           original_text: jobDescription.original_text,
           job_requirements: jobDescription.job_requirements,
+          benefits: jobDescription.benefits,  // Added this line
         })
         .eq('id', jobDescription.id);
 

@@ -103,6 +103,15 @@ export const JobDetailsDialog = ({
                   className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
                 />
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Benefits</label>
+                <textarea
+                  value={editedJob?.benefits || ''}
+                  onChange={(e) => setEditedJob(prev => prev ? { ...prev, benefits: e.target.value } : null)}
+                  rows={4}
+                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2"
+                />
+              </div>
             </div>
           ) : (
             <>
@@ -129,6 +138,15 @@ export const JobDetailsDialog = ({
                   <h3 className="font-medium text-gray-700">Requirements</h3>
                   <div className="bg-white p-4 rounded-md whitespace-pre-wrap">
                     {job.job_requirements}
+                  </div>
+                </div>
+              )}
+
+              {job?.benefits && (
+                <div className="space-y-2">
+                  <h3 className="font-medium text-gray-700">Benefits</h3>
+                  <div className="bg-white p-4 rounded-md whitespace-pre-wrap">
+                    {job.benefits}
                   </div>
                 </div>
               )}

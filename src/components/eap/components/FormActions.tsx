@@ -26,7 +26,7 @@ export const FormActions: React.FC<FormActionsProps> = ({
       <Button 
         type="submit" 
         disabled={isSubmitting}
-        className="bg-aptiv hover:bg-aptiv-dark"
+        variant="aptiv"
       >
         {isSubmitting ? "Saving..." : (isUpdate ? "Update Agent" : "Create Agent")}
       </Button>

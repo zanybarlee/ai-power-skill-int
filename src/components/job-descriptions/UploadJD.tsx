@@ -1,10 +1,9 @@
-
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { FileText } from "lucide-react";
 import { FileUpload } from "./FileUpload";
 import { TextInput } from "./TextInput";
-import { processJobDescription, uploadFileToStorage } from "./jobDescriptionService";
+import { processJobDescription, uploadFileToStorage } from "@/services/jobDescriptionService";
 import { supabase } from "@/integrations/supabase/client";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -68,7 +67,7 @@ export const UploadJD = () => {
         .from('job_descriptions')
         .insert({
           original_text: fileContent,
-          job_title: processedData.extractedRole.title,
+          job_title: processedData?.extractedRole?.title || null,
           file_name: file.name,
           file_type: file.type,
           file_url: fileStorageName,
@@ -122,7 +121,7 @@ export const UploadJD = () => {
         .from('job_descriptions')
         .insert({
           original_text: textInput,
-          job_title: processedData.extractedRole.title,
+          job_title: processedData?.extractedRole?.title || null,
           status: 'processed'
           // Removed user_id field since it doesn't exist in the database
         });

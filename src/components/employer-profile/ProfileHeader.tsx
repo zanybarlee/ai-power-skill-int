@@ -42,7 +42,7 @@ export const ProfileHeader = ({ profile, isEditing, onEdit }: ProfileHeaderProps
           </div>
         </div>
         {!isEditing && (
-          <Button onClick={onEdit} className="bg-aptiv hover:bg-aptiv-dark">
+          <Button onClick={onEdit} variant="aptiv">
             Edit Profile
           </Button>
         )}

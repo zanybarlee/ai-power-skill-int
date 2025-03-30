@@ -1,15 +1,8 @@
 
-import { Button } from "@/components/ui/button";
-import { FileText, Upload } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useEmployerProfiles } from "./hooks/useEmployerProfiles";
 import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { UploadCloud, FileUp } from "lucide-react";
 
 interface FileUploadProps {
   isProcessing: boolean;
@@ -19,62 +12,75 @@ interface FileUploadProps {
 }
 
 export const FileUpload = ({ isProcessing, file, onFileChange, onUpload }: FileUploadProps) => {
-  const { profiles, isLoading: isLoadingProfiles } = useEmployerProfiles();
-  const [selectedEmployerProfileId, setSelectedEmployerProfileId] = useState<string | undefined>(undefined);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const inputElement = document.createElement('input');
+      inputElement.type = 'file';
+      const event = {
+        target: {
+          files: e.dataTransfer.files
+        }
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      onFileChange(event);
+    }
+  };
 
   return (
     <div className="space-y-4">
-      <p className="text-sm text-gray-500">Upload a job description file (PDF, Word, or text):</p>
-      
-      <div className="space-y-4">
-        <input
-          type="file"
-          onChange={onFileChange}
-          accept=".pdf,.doc,.docx,.txt"
-          className="file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-aptiv/10 file:text-aptiv hover:file:bg-aptiv/20 text-sm text-gray-700"
-          disabled={isProcessing}
-        />
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="w-full">
-            <p className="text-xs text-gray-500 mb-1">Select Employer Profile</p>
-            <Select 
-              value={selectedEmployerProfileId} 
-              onValueChange={setSelectedEmployerProfileId}
-              disabled={isLoadingProfiles || isProcessing}
-            >
-              <SelectTrigger className="w-full bg-white border-aptiv/20">
-                <SelectValue placeholder="Select employer profile" />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                {profiles?.map((profile) => (
-                  <SelectItem key={profile.id} value={profile.id}>
-                    {profile.company_name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-
-          <Button
-            onClick={() => onUpload(selectedEmployerProfileId)}
-            disabled={isProcessing || !file}
-            className="bg-aptiv hover:bg-aptiv/90 w-full"
-          >
-            {isProcessing ? (
-              <>
-                <Upload className="mr-2 h-4 w-4 animate-spin" />
-                Processing...
-              </>
-            ) : (
-              <>
-                <FileText className="mr-2 h-4 w-4" />
-                Upload & Process
-              </>
-            )}
-          </Button>
+      <div 
+        className={`border-2 border-dashed rounded-md p-8 text-center ${isDragging ? 'border-aptiv bg-aptiv/5' : 'border-gray-200'}`}
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+      >
+        <div className="flex flex-col items-center justify-center gap-2">
+          <UploadCloud className="h-10 w-10 text-aptiv-gray-400" />
+          <h3 className="text-lg font-medium">Drag & Drop File</h3>
+          <p className="text-sm text-aptiv-gray-500">or select a file from your computer</p>
+          <Input
+            type="file"
+            onChange={onFileChange}
+            accept=".pdf,.doc,.docx,.txt"
+            className="hidden"
+            id="file-upload"
+          />
+          <label htmlFor="file-upload">
+            <div className="bg-white text-aptiv border border-aptiv rounded-md py-1.5 px-3 text-sm font-medium cursor-pointer hover:bg-aptiv/5 transition">
+              Browse Files
+            </div>
+          </label>
         </div>
       </div>
+      {file && (
+        <div className="flex justify-between items-center p-3 bg-gray-50 rounded-md">
+          <div className="flex items-center gap-2">
+            <FileUp className="h-5 w-5 text-aptiv" />
+            <span className="text-sm font-medium">{file.name}</span>
+            <span className="text-xs text-aptiv-gray-500">({Math.round(file.size / 1024)} KB)</span>
+          </div>
+          <Button
+            onClick={() => onUpload()}
+            disabled={isProcessing}
+            variant="aptiv"
+            size="sm"
+          >
+            {isProcessing ? "Processing..." : "Process File"}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

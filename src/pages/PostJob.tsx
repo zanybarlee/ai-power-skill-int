@@ -1,4 +1,3 @@
-
 import Layout from "@/components/Layout";
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -18,7 +17,6 @@ const PostJob = () => {
     userId
   } = useUserSession();
 
-  // For debugging purposes
   useEffect(() => {
     if (userId) {
       console.log("Current User ID:", userId);
@@ -38,7 +36,6 @@ const PostJob = () => {
 
   const handleFileUpload = async (employerProfileId?: string) => {
     if (!file) {
-      // This is called from the crawler tab without a file, so we just refresh the job list
       queryClient.invalidateQueries({
         queryKey: ['jobDescriptions']
       });
@@ -53,13 +50,9 @@ const PostJob = () => {
       } = await supabase.storage.from('job_descriptions').upload(fileName, file);
       if (uploadError) throw uploadError;
 
-      // Read file content for processing
       const fileContent = await file.text();
-
-      // Process with LLM and store in database
       const processedData = await processJobDescription(fileContent);
 
-      // Create record in job_descriptions table
       const {
         error: insertError
       } = await supabase.from('job_descriptions').insert({
@@ -100,10 +93,8 @@ const PostJob = () => {
     }
     setIsProcessing(true);
     try {
-      // Process with LLM
       const processedData = await processJobDescription(textInput);
 
-      // Create record in job_descriptions table
       const {
         error
       } = await supabase.from('job_descriptions').insert({

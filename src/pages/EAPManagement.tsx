@@ -38,7 +38,7 @@ const EAPManagement = () => {
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-aptiv-gray-700">EAP Management</h1>
             {!isEditing && (
-              <Button onClick={handleCreateAgent} className="flex items-center gap-2 bg-aptiv hover:bg-aptiv-dark">
+              <Button onClick={handleCreateAgent} variant="aptiv" className="flex items-center gap-2">
                 <PlusCircle className="w-4 h-4" />
                 Create New Agent
               </Button>

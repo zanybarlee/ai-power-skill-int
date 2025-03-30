@@ -184,6 +184,7 @@ export function JobDetailsEditForm({ job, onSave, onCancel, isSaving }: JobDetai
           <Button 
             type="submit" 
             disabled={isSaving}
+            variant="aptiv"
             className="flex items-center gap-1"
           >
             <Save className="h-4 w-4" />
@@ -193,4 +194,4 @@ export function JobDetailsEditForm({ job, onSave, onCancel, isSaving }: JobDetai
       </form>
     </Form>
   );
-}
+};

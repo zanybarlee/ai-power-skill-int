@@ -88,7 +88,8 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
           <Button
             onClick={() => handleMatch(selectedJobId)}
             disabled={isMatching}
-            className="bg-aptiv text-white hover:bg-aptiv-dark w-fit"
+            variant="aptiv"
+            className="w-fit"
           >
             {isMatching ? (
               "Finding Matches..."

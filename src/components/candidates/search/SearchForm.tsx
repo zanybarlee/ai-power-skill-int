@@ -55,7 +55,8 @@ export const SearchForm = ({
             <Button 
               onClick={onSearch}
               disabled={isLoading || isSearching}
-              className="bg-aptiv hover:bg-aptiv/90 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-200 text-base py-6 flex-1"
+              variant="aptiv"
+              className="shadow-lg hover:shadow-xl transition-all duration-200 text-base py-6 flex-1"
             >
               {(isLoading || isSearching) ? (
                 <>

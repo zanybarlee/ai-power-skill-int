@@ -1,20 +1,18 @@
 interface MatchingQuery {
   description: string;
-  num_candidates: number;
 }
 
 export const queryBestMatch = async (jobDescription: string) => {
   try {
     const response = await fetch(
-      "http://localhost:8005/api/match-candidates",
+      "http://localhost:9000/match-job",
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          description: jobDescription,
-          num_candidates: 5 
+          job_description: jobDescription
         }),
       }
     );

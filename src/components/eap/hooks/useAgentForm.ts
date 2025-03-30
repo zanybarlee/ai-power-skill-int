@@ -45,17 +45,20 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
         throw new Error("User not authenticated");
       }
 
+      // Create a flat structure for agent data to match the database columns
       const agentData = {
         name: values.name,
         email: values.email,
         phone: values.phone,
+        user_id: userId,
         agency_details: {
           name: values.agency_name,
           location: values.agency_location,
           specialization: values.specialization,
-        },
-        user_id: userId,
+        }
       };
+
+      console.log("Saving agent profile with data:", agentData);
 
       let result;
 
@@ -72,7 +75,10 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
           .insert([agentData]);
       }
 
-      if (result.error) throw result.error;
+      if (result.error) {
+        console.error("Supabase error:", result.error);
+        throw result.error;
+      }
 
       toast({
         title: "Success",

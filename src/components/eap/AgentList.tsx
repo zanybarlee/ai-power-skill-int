@@ -42,9 +42,9 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
         id: agent.id,
         user_id: agent.user_id,
         name: agent.name,
-        email: agent.email,
-        phone: agent.phone,
-        agency_details: agent.agency_details as Record<string, any> || {},
+        email: agent.email || "",
+        phone: agent.phone || "",
+        agency_details: agent.agency_details || {},
         created_at: agent.created_at,
         updated_at: agent.updated_at
       }));

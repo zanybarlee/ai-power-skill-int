@@ -24,13 +24,17 @@ export const JobPostingTabs = ({
   onTextSubmit,
 }: JobPostingTabsProps) => {
   return (
-    <Tabs defaultValue="upload" className="mb-8">
+    <Tabs defaultValue="manual" className="mb-8">
       <TabsList className="grid w-full grid-cols-3 mb-6">
+        <TabsTrigger value="manual">Manual Entry</TabsTrigger>
         <TabsTrigger value="upload">Upload JD</TabsTrigger>
         <TabsTrigger value="text">Paste Text</TabsTrigger>
-        <TabsTrigger value="manual">Manual Entry</TabsTrigger>
       </TabsList>
       
+      <TabsContent value="manual">
+        <JobManualTab />
+      </TabsContent>
+
       <TabsContent value="upload">
         <JobUploadTab 
           isProcessing={isProcessing} 
@@ -47,10 +51,6 @@ export const JobPostingTabs = ({
           onTextChange={onTextChange} 
           onSubmit={onTextSubmit} 
         />
-      </TabsContent>
-      
-      <TabsContent value="manual">
-        <JobManualTab />
       </TabsContent>
     </Tabs>
   );

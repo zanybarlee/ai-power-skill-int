@@ -26,6 +26,7 @@ interface CandidateDetails {
   cv_content: string;
   match_score: number;
   job_description: string;
+  job_title?: string;
   matched_at: string;
   nationality?: string;
   current_salary?: number;
@@ -53,8 +54,9 @@ export const CandidateDetailsDialog = ({
           <DialogTitle className="text-2xl font-semibold text-aptiv-gray-700">
             {candidate.name}
           </DialogTitle>
-          <DialogDescription className="text-aptiv-gray-500">
-            Match Score: {candidate.match_score}%
+          <DialogDescription className="text-aptiv-gray-500 space-y-1">
+            <div>Match Score: {candidate.match_score}%</div>
+            {candidate.job_title && <div>Job: {candidate.job_title}</div>}
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-full max-h-[calc(80vh-140px)] pr-4">

@@ -26,6 +26,8 @@ interface MatchedCandidate {
   skills: string[];
   email: string;
   match_score: number;
+  job_title?: string;
+  job_id?: string;
 }
 
 export function useShortlists() {
@@ -55,7 +57,7 @@ export function useShortlists() {
     },
   });
 
-  const { data: matchedCandidates = [] } = useQuery({
+  const { data: matchedCandidates = [], refetch: refetchMatchedCandidates } = useQuery({
     queryKey: ['matchedCandidates'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -63,6 +65,7 @@ export function useShortlists() {
         .select(`
           id,
           match_score,
+          job_description,
           cv_metadata:cv_metadata_id (
             id,
             name,
@@ -70,6 +73,10 @@ export function useShortlists() {
             experience,
             location,
             skills
+          ),
+          job_descriptions:job_description_id (
+            id,
+            job_title
           )
         `)
         .order('match_score', { ascending: false });
@@ -89,12 +96,14 @@ export function useShortlists() {
           : 'Not specified',
         skills: normalizeSkills(match.cv_metadata?.skills),
         email: match.cv_metadata?.email || '',
-        match_score: Math.round(match.match_score || 0)
+        match_score: Math.round(match.match_score || 0),
+        job_title: match.job_descriptions?.job_title || 'Unknown Job',
+        job_id: match.job_descriptions?.id
       }));
     }
   });
 
-  const handleMatch = async () => {
+  const handleMatch = async (jobDescriptionId?: string) => {
     if (!jobDescription.trim()) {
       toast({
         title: "Error",
@@ -106,7 +115,8 @@ export function useShortlists() {
 
     setIsMatching(true);
     try {
-      const result = await queryBestMatch(jobDescription);
+      // Pass job description ID if available
+      const result = await queryBestMatch(jobDescription, jobDescriptionId);
       
       const parsedResults = Array.isArray(result.matches) 
         ? result.matches.map((match) => ({
@@ -123,7 +133,7 @@ export function useShortlists() {
       
       setMatchingResults(parsedResults);
       
-      await queryClient.invalidateQueries({ queryKey: ['matchedCandidates'] });
+      await refetchMatchedCandidates();
       
       toast({
         title: "Match Complete",

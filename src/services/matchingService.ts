@@ -1,6 +1,7 @@
 
 interface MatchingQuery {
   description: string;
+  job_description_id?: string;
 }
 
 interface Candidate {
@@ -20,6 +21,7 @@ interface MatchRecord {
   id: string;
   cv_metadata_id: string;
   job_description: string;
+  job_description_id?: string;
   matched_at: string;
   match_score: number;
   status: string;
@@ -34,7 +36,10 @@ interface MatchResponse {
   }>;
 }
 
-export const queryBestMatch = async (jobDescription: string): Promise<MatchResponse> => {
+export const queryBestMatch = async (
+  jobDescription: string, 
+  jobDescriptionId?: string
+): Promise<MatchResponse> => {
   try {
     const response = await fetch(
       "http://localhost:9000/match-job",
@@ -44,7 +49,8 @@ export const queryBestMatch = async (jobDescription: string): Promise<MatchRespo
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          job_description: jobDescription
+          job_description: jobDescription,
+          job_description_id: jobDescriptionId
         }),
       }
     );

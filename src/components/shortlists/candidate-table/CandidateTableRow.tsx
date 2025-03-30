@@ -14,6 +14,8 @@ interface Candidate {
   skills: string[];
   email: string;
   match_score: number;
+  job_title?: string;
+  job_id?: string;
 }
 
 interface CandidateTableRowProps {
@@ -38,7 +40,7 @@ export const CandidateTableRow = ({
       <TableCell className="text-aptiv-gray-700 font-medium">
         {candidate.name}
       </TableCell>
-      <TableCell className="text-aptiv-gray-600">{candidate.role}</TableCell>
+      <TableCell className="text-aptiv-gray-600">{candidate.job_title || "Unknown Job"}</TableCell>
       <TableCell className="text-aptiv-gray-600">{candidate.location}</TableCell>
       <TableCell className="text-aptiv-gray-600">{candidate.experience}</TableCell>
       <TableCell>

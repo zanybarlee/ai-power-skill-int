@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
@@ -23,7 +23,7 @@ interface JobDescriptionInputProps {
   setJobDescription: (value: string) => void;
   jobDescriptions?: JobDescription[];
   isMatching: boolean;
-  handleMatch: () => void;
+  handleMatch: (jobDescriptionId?: string) => void;
 }
 
 export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
@@ -33,6 +33,8 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
   isMatching,
   handleMatch,
 }) => {
+  const [selectedJobId, setSelectedJobId] = useState<string | undefined>(undefined);
+
   const handleJobDescriptionSelect = (id: string) => {
     const selectedJob = jobDescriptions?.find(job => job.id === id);
     if (selectedJob) {
@@ -42,6 +44,7 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
       ].filter(Boolean).join('\n\n');
       
       setJobDescription(fullDescription);
+      setSelectedJobId(id);
     }
   };
 
@@ -93,7 +96,7 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
             </Select>
           </div>
           <Button
-            onClick={handleMatch}
+            onClick={() => handleMatch(selectedJobId)}
             disabled={isMatching}
             className="bg-aptiv text-white hover:bg-aptiv-dark w-fit"
           >

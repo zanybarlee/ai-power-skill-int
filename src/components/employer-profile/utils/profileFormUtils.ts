@@ -1,4 +1,3 @@
-
 import { z } from "zod";
 import { EmployerProfile } from "../types";
 import { supabase } from "@/integrations/supabase/client";
@@ -14,13 +13,13 @@ export const profileSchema = z.object({
   contact_person: z.string().min(2, "Contact person name is required"),
   designation: z.string().min(2, "Designation is required"),
   email: z.string().email("Invalid email address"),
-  phone: z.string().min(10, "Invalid phone number"),
+  phone: z.string().min(8, "Phone number must be at least 8 digits"),
   alternate_contact: z.object({
     name: z.string().optional(),
     designation: z.string().optional(),
-    email: z.string().email("Invalid email address").optional(),
-    phone: z.string().min(10, "Invalid phone number").optional(),
-  }).optional(),
+    email: z.string().email("Invalid email address").optional().or(z.literal("")),
+    phone: z.string().min(8, "Phone number must be at least 8 digits").optional().or(z.literal("")),
+  }).optional().default({}),
 });
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
@@ -52,9 +51,11 @@ export const saveProfile = async (
   profile: EmployerProfile | null
 ): Promise<{ data?: EmployerProfile; error?: Error }> => {
   try {
+    console.log("Starting saveProfile with values:", values);
     const timestamp = new Date().toISOString();
     
     const { data: { user }, error: userError } = await supabase.auth.getUser();
+    console.log("Auth check result:", { user, userError });
     
     if (userError) throw userError;
     if (!user) throw new Error("You must be logged in to create a profile");
@@ -79,10 +80,11 @@ export const saveProfile = async (
       profile_completion: 100,
     };
 
-    console.log("Saving profile data:", profileData);
+    console.log("Prepared profile data:", profileData);
 
     let result;
     if (profile?.id) {
+      console.log("Updating existing profile with ID:", profile.id);
       // Update existing profile
       result = await supabase
         .from('employer_profiles')
@@ -92,6 +94,7 @@ export const saveProfile = async (
         })
         .eq('id', profile.id);
     } else {
+      console.log("Creating new profile");
       // Check if a profile already exists for this user to handle the unique constraint
       const { data: existingProfile } = await supabase
         .from('employer_profiles')
@@ -99,7 +102,10 @@ export const saveProfile = async (
         .eq('user_id', user.id)
         .maybeSingle();
       
+      console.log("Existing profile check:", existingProfile);
+      
       if (existingProfile) {
+        console.log("Updating existing profile found for user");
         // Update the existing profile if one exists
         result = await supabase
           .from('employer_profiles')
@@ -109,6 +115,7 @@ export const saveProfile = async (
           })
           .eq('id', existingProfile.id);
       } else {
+        console.log("Inserting new profile");
         // Insert a new profile
         result = await supabase
           .from('employer_profiles')
@@ -119,6 +126,8 @@ export const saveProfile = async (
           });
       }
     }
+
+    console.log("Database operation result:", result);
 
     if (result.error) {
       console.error("Error saving profile:", result.error);
@@ -131,6 +140,8 @@ export const saveProfile = async (
       .select('*')
       .eq('user_id', user.id)
       .single();
+
+    console.log("Fetch updated profile result:", { updatedProfile, fetchError });
 
     if (fetchError) {
       console.error("Error fetching updated profile:", fetchError);

@@ -1,4 +1,3 @@
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -34,7 +33,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
   });
 
   const onSubmit = async (values: ProfileFormData) => {
-    console.log("Form submitted with values:", values);
+    console.log("Form onSubmit triggered with values:", values);
     
     if (isSubmitting) {
       console.log("Submission already in progress, skipping");
@@ -43,7 +42,9 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     
     try {
       setIsSubmitting(true);
+      console.log("Calling saveProfile...");
       const result = await saveProfile(values, profile);
+      console.log("saveProfile result:", result);
 
       if (result.error) {
         throw result.error;
@@ -71,6 +72,15 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
   };
 
   const handleSubmit = form.handleSubmit(onSubmit);
+
+  useEffect(() => {
+    console.log("Form state:", {
+      isValid: form.formState.isValid,
+      errors: form.formState.errors,
+      isDirty: form.formState.isDirty,
+      isSubmitting: form.formState.isSubmitting,
+    });
+  }, [form.formState]);
 
   if (!isEditing && !profile) {
     return (

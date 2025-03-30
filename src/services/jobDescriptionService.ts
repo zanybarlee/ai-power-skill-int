@@ -47,11 +47,11 @@ export const processJobDescription = async (content: string): Promise<ProcessedJ
 };
 
 export const uploadFileToStorage = async (file: File) => {
-  const fileName = `${crypto.randomUUID()}-${file.name}`;
+  const fileStorageName = `${crypto.randomUUID()}-${file.name}`;
   const { data, error } = await supabase.storage
     .from('job_descriptions')
-    .upload(fileName, file);
+    .upload(fileStorageName, file);
 
   if (error) throw error;
-  return { data, fileName };
+  return { data, fileStorageName };  // Changed from fileName to fileStorageName for consistency
 };

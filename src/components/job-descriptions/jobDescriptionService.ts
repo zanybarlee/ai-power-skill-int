@@ -37,5 +37,5 @@ export const uploadFileToStorage = async (file: File) => {
     .upload(fileStorageName, file);
 
   if (error) throw error;
-  return { data, fileStorageName };  // Return fileStorageName instead of fileName
+  return { data, fileStorageName };  // Return consistent naming
 };

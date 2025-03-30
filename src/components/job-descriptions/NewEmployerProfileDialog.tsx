@@ -10,7 +10,6 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { EmployerProfileData } from "./types";
 import { toast } from "sonner";
 import { FormContent } from "./employer-profile/FormContent";
 import { EmployerProfileFormValues, EmployerProfile } from "./employer-profile/types";

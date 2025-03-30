@@ -26,36 +26,41 @@ export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps
   const { data: job, isLoading, isError } = useQuery({
     queryKey: ["jobDetails", jobId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // First fetch the job description
+      const { data: jobData, error: jobError } = await supabase
         .from("job_descriptions")
-        .select(`
-          *,
-          employer_profiles:employer_profile_id (
-            company_name,
-            contact_person,
-            email,
-            phone,
-            country,
-            state
-          )
-        `)
+        .select('*')
         .eq("id", jobId)
         .eq("agent_id", userId || '')
         .single();
 
-      if (error) throw error;
+      if (jobError) throw jobError;
       
-      // Map the data to our JobDescription type
+      // If there's an employer_profile_id, fetch the employer profile
+      let employerProfile = undefined;
+      if (jobData.employer_profile_id) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('employer_profiles')
+          .select('*')
+          .eq('id', jobData.employer_profile_id)
+          .single();
+          
+        if (!profileError && profileData) {
+          employerProfile = {
+            company_name: profileData.company_name,
+            contact_person: profileData.contact_person,
+            email: profileData.email,
+            phone: profileData.phone,
+            country: profileData.country,
+            state: profileData.state
+          };
+        }
+      }
+      
+      // Return job with employer profile
       return {
-        ...data,
-        employer_profiles: data.employer_profiles ? {
-          company_name: data.employer_profiles.company_name,
-          contact_person: data.employer_profiles.contact_person,
-          email: data.employer_profiles.email,
-          phone: data.employer_profiles.phone,
-          country: data.employer_profiles.country,
-          state: data.employer_profiles.state
-        } : undefined
+        ...jobData,
+        employer_profiles: employerProfile
       } as JobDescription;
     },
     enabled: !!jobId && open && !!userId,

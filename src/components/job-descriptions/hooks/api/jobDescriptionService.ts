@@ -8,27 +8,51 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
   }
 
   try {
-    // Filter by agent_id (using userId as agent_id)
+    // Fetch job descriptions and handle employer profiles separately
     const { data, error } = await supabase
       .from('job_descriptions')
-      .select(`
-        *,
-        employer_profiles:employer_profile_id (
-          company_name,
-          contact_person,
-          email,
-          phone
-        )
-      `)
+      .select('*')
       .eq('agent_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
     
-    console.log('Fetched job descriptions:', data);
+    // For each job description that has an employer_profile_id, fetch the employer profile
+    const enhancedData = await Promise.all((data || []).map(async (item) => {
+      // If there's an employer_profile_id, fetch the profile
+      if (item.employer_profile_id) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('employer_profiles')
+          .select('*')
+          .eq('id', item.employer_profile_id)
+          .single();
+        
+        if (!profileError && profileData) {
+          return {
+            ...item,
+            employer_profiles: {
+              company_name: profileData.company_name,
+              contact_person: profileData.contact_person,
+              email: profileData.email,
+              phone: profileData.phone,
+              country: profileData.country,
+              state: profileData.state
+            }
+          };
+        }
+      }
+      
+      // Return the item without employer_profiles if no profile found
+      return {
+        ...item,
+        employer_profiles: undefined
+      };
+    }));
+    
+    console.log('Fetched job descriptions:', enhancedData);
     
     // Convert the raw data to our JobDescription type
-    return (data || []).map(item => ({
+    return enhancedData.map(item => ({
       id: item.id,
       job_title: item.job_title,
       company_name: item.company_name,
@@ -44,12 +68,7 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
       benefits: item.benefits,
       employer_profile_id: item.employer_profile_id,
       agent_id: item.agent_id,
-      employer_profiles: item.employer_profiles ? {
-        company_name: item.employer_profiles.company_name,
-        contact_person: item.employer_profiles.contact_person,
-        email: item.employer_profiles.email,
-        phone: item.employer_profiles.phone
-      } : undefined
+      employer_profiles: item.employer_profiles
     }));
   } catch (err) {
     console.error('Error fetching job descriptions:', err);

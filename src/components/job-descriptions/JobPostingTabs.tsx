@@ -26,11 +26,31 @@ export const JobPostingTabs = ({
 }: JobPostingTabsProps) => {
   return (
     <Tabs defaultValue="manual" className="mb-8">
-      <TabsList className="grid w-full grid-cols-4 mb-6">
-        <TabsTrigger value="manual">Manual Entry</TabsTrigger>
-        <TabsTrigger value="upload">Upload JD</TabsTrigger>
-        <TabsTrigger value="text">Paste Text</TabsTrigger>
-        <TabsTrigger value="crawler">Crawl JD</TabsTrigger>
+      <TabsList className="grid w-full grid-cols-4 mb-6 bg-white border border-aptiv/20 rounded-lg p-1">
+        <TabsTrigger 
+          value="manual"
+          className="data-[state=active]:bg-aptiv data-[state=active]:text-white data-[state=active]:shadow-none text-aptiv-gray-600 hover:text-aptiv px-8 py-2.5"
+        >
+          Manual Entry
+        </TabsTrigger>
+        <TabsTrigger 
+          value="upload"
+          className="data-[state=active]:bg-aptiv data-[state=active]:text-white data-[state=active]:shadow-none text-aptiv-gray-600 hover:text-aptiv px-8 py-2.5"
+        >
+          Upload JD
+        </TabsTrigger>
+        <TabsTrigger 
+          value="text"
+          className="data-[state=active]:bg-aptiv data-[state=active]:text-white data-[state=active]:shadow-none text-aptiv-gray-600 hover:text-aptiv px-8 py-2.5"
+        >
+          Paste Text
+        </TabsTrigger>
+        <TabsTrigger 
+          value="crawler"
+          className="data-[state=active]:bg-aptiv data-[state=active]:text-white data-[state=active]:shadow-none text-aptiv-gray-600 hover:text-aptiv px-8 py-2.5"
+        >
+          Crawl JD
+        </TabsTrigger>
       </TabsList>
       
       <TabsContent value="manual">

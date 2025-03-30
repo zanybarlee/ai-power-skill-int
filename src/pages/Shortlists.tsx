@@ -1,4 +1,3 @@
-
 import Layout from "@/components/Layout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,7 +25,16 @@ const Shortlists = () => {
     return localStorage.getItem("jobDescription") || "";
   });
   const [isMatching, setIsMatching] = useState(false);
-  const [matchingResults, setMatchingResults] = useState<Array<{ name: string; score: number; details: string }>>([]);
+  const [matchingResults, setMatchingResults] = useState<Array<{
+    name: string;
+    score: number;
+    details: string;
+    email?: string;
+    phone?: string;
+    location?: string;
+    skills?: string[];
+    experience?: number;
+  }>>([]);
 
   const { data: jobDescriptions } = useQuery({
     queryKey: ['jobDescriptions'],
@@ -98,11 +106,17 @@ const Shortlists = () => {
     setIsMatching(true);
     try {
       const result = await queryBestMatch(jobDescription);
+      
       const parsedResults = Array.isArray(result.matches) 
-        ? result.matches.map((match: any) => ({
-            name: match.name || 'Unknown',
-            score: Math.round(match.score * 100),
-            details: match.details || ''
+        ? result.matches.map((match) => ({
+            name: match.candidate.name || 'Unknown',
+            score: Math.round(match.match_record.match_score * 100),
+            details: match.match_record.job_description || '',
+            email: match.candidate.email,
+            phone: match.candidate.phone,
+            location: match.candidate.location,
+            skills: match.candidate.skills,
+            experience: match.candidate.experience
           }))
         : [];
       
@@ -112,7 +126,7 @@ const Shortlists = () => {
       
       toast({
         title: "Match Complete",
-        description: "Best matches have been found based on the job description.",
+        description: result.message || "Best matches have been found based on the job description.",
       });
     } catch (error) {
       console.error('Matching error:', error);

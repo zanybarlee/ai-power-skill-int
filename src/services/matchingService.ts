@@ -1,8 +1,40 @@
+
 interface MatchingQuery {
   description: string;
 }
 
-export const queryBestMatch = async (jobDescription: string) => {
+interface Candidate {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  skills: string[];
+  experience: number;
+  location: string;
+  current_salary?: number;
+  expected_salary?: number;
+  notice_period?: string;
+}
+
+interface MatchRecord {
+  id: string;
+  cv_metadata_id: string;
+  job_description: string;
+  matched_at: string;
+  match_score: number;
+  status: string;
+  created_at: string;
+}
+
+interface MatchResponse {
+  message: string;
+  matches: Array<{
+    candidate: Candidate;
+    match_record: MatchRecord;
+  }>;
+}
+
+export const queryBestMatch = async (jobDescription: string): Promise<MatchResponse> => {
   try {
     const response = await fetch(
       "http://localhost:9000/match-job",

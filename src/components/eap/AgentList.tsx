@@ -37,19 +37,32 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
 
       if (error) throw error;
       
-      // Transform the data to match the Agent type, ensuring agency_details is an object
-      const transformedData: Agent[] = data.map(agent => ({
-        id: agent.id,
-        user_id: agent.user_id,
-        name: agent.name,
-        email: agent.email || "",
-        phone: agent.phone || "",
-        agency_details: typeof agent.agency_details === 'object' && agent.agency_details !== null 
-          ? agent.agency_details 
-          : { name: "", location: "", specialization: "" },
-        created_at: agent.created_at,
-        updated_at: agent.updated_at
-      }));
+      // Transform the data to match the Agent type
+      const transformedData: Agent[] = data.map(agent => {
+        // Parse agency_details if it's a string
+        let agencyDetails;
+        try {
+          agencyDetails = agent.agency_details ? 
+            (typeof agent.agency_details === 'string' 
+              ? JSON.parse(agent.agency_details) 
+              : agent.agency_details)
+            : { name: "", location: "", specialization: "" };
+        } catch (e) {
+          console.error("Error parsing agency_details:", e);
+          agencyDetails = { name: "", location: "", specialization: "" };
+        }
+
+        return {
+          id: agent.id,
+          user_id: agent.user_id,
+          name: agent.name,
+          contact_email: agent.contact_email || "",
+          contact_phone: agent.contact_phone || "",
+          agency_details: agencyDetails,
+          created_at: agent.created_at,
+          updated_at: agent.updated_at
+        };
+      });
       
       setAgents(transformedData);
     } catch (error) {
@@ -115,24 +128,30 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {agents.map((agent) => (
-          <TableRow key={agent.id}>
-            <TableCell className="font-medium">{agent.name}</TableCell>
-            <TableCell>{agent.email || "—"}</TableCell>
-            <TableCell>{agent.phone || "—"}</TableCell>
-            <TableCell>{agent.agency_details?.name || "—"}</TableCell>
-            <TableCell className="text-right space-x-2">
-              <Button variant="ghost" size="sm" onClick={() => onEdit(agent)}>
-                <Pencil size={16} />
-                <span className="sr-only">Edit</span>
-              </Button>
-              <Button variant="ghost" size="sm" onClick={() => handleDelete(agent.id)}>
-                <Trash2 size={16} className="text-red-500" />
-                <span className="sr-only">Delete</span>
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
+        {agents.map((agent) => {
+          const agencyName = typeof agent.agency_details === 'object' && agent.agency_details 
+            ? agent.agency_details.name 
+            : '';
+            
+          return (
+            <TableRow key={agent.id}>
+              <TableCell className="font-medium">{agent.name}</TableCell>
+              <TableCell>{agent.contact_email || "—"}</TableCell>
+              <TableCell>{agent.contact_phone || "—"}</TableCell>
+              <TableCell>{agencyName || "—"}</TableCell>
+              <TableCell className="text-right space-x-2">
+                <Button variant="ghost" size="sm" onClick={() => onEdit(agent)}>
+                  <Pencil size={16} />
+                  <span className="sr-only">Edit</span>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => handleDelete(agent.id)}>
+                  <Trash2 size={16} className="text-red-500" />
+                  <span className="sr-only">Delete</span>
+                </Button>
+              </TableCell>
+            </TableRow>
+          );
+        })}
       </TableBody>
     </Table>
   );

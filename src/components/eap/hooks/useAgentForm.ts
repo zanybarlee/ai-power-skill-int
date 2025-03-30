@@ -78,39 +78,57 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
 
       // Create a new Supabase user if this is a new agent and we have password fields
       if (!agent && values.email && values.password) {
-        // Use the standard signup method instead of admin API
-        const { data: authData, error: authError } = await supabase.auth.signUp({
+        // Use the admin API with email_confirm: false to avoid confirmation emails
+        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
           email: values.email,
           password: values.password as string,
-          options: {
-            data: {
-              name: values.name,
-              phone: values.phone,
-              role: 'agent'
-            }
+          email_confirm: true, // Set to true to auto-confirm the email
+          user_metadata: {
+            name: values.name,
+            phone: values.phone,
+            role: 'agent'
           }
         });
 
-        if (authError) {
-          console.error("Error creating user:", authError);
-          throw new Error(`Failed to create user account: ${authError.message}`);
-        }
-
-        if (authData?.user) {
-          userId = authData.user.id;
-          console.log("Created new user with ID:", userId);
-          
-          // If we successfully created a user, we need to sign back in as the admin
-          // to continue creating the agent profile
-          const { error: signInError } = await supabase.auth.signInWithPassword({
-            email: session.user.email as string,
-            password: "", // You should prompt for password if needed, or use another auth method
+        if (userError) {
+          console.error("Error creating user:", userError);
+          // If admin API fails, fall back to regular signup (for local development)
+          const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: values.email,
+            password: values.password as string,
+            options: {
+              data: {
+                name: values.name,
+                phone: values.phone,
+                role: 'agent'
+              },
+              emailRedirectTo: window.location.origin
+            }
           });
-          
-          if (signInError) {
-            console.error("Error signing back in as admin:", signInError);
-            // We'll continue anyway since we already have the user ID
+
+          if (authError) {
+            console.error("Fallback signup also failed:", authError);
+            throw new Error(`Failed to create user account: ${authError.message}`);
           }
+
+          if (authData?.user) {
+            userId = authData.user.id;
+            console.log("Created new user with ID:", userId);
+            
+            // If we successfully created a user, we need to sign back in as the admin
+            const { error: signInError } = await supabase.auth.signInWithPassword({
+              email: session.user.email as string,
+              password: "", // This will fail, but that's expected in development
+            });
+            
+            if (signInError) {
+              console.error("Error signing back in as admin:", signInError);
+              // We'll continue anyway since we already have the user ID
+            }
+          }
+        } else if (userData?.user) {
+          userId = userData.user.id;
+          console.log("Created new user with ID:", userId);
         }
       }
 

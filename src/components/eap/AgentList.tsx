@@ -36,7 +36,20 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setAgents(data || []);
+      
+      // Transform the data to match the Agent type
+      const transformedData: Agent[] = data.map(agent => ({
+        id: agent.id,
+        user_id: agent.user_id,
+        name: agent.name,
+        email: agent.email,
+        phone: agent.phone,
+        agency_details: agent.agency_details as Record<string, any> || {},
+        created_at: agent.created_at,
+        updated_at: agent.updated_at
+      }));
+      
+      setAgents(transformedData);
     } catch (error) {
       console.error("Error fetching agents:", error);
       toast({

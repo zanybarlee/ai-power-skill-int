@@ -14,6 +14,7 @@ import Shortlists from "./pages/Shortlists";
 import Settings from "./pages/Settings";
 import EmployerProfile from "./pages/EmployerProfile";
 import EAPManagement from "./pages/EAPManagement";
+import EADivision from "./pages/EADivision";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
       <Route path="/settings" element={<Settings />} />
       <Route path="/employer-profile" element={<EmployerProfile />} />
       <Route path="/eap-management" element={<EAPManagement />} />
+      <Route path="/ea-division" element={<EADivision />} />
       {/* Add redirect from /dashboard to /post-job */}
       <Route path="/dashboard" element={<Navigate to="/post-job" replace />} />
       {/* Catch all other routes and redirect to /post-job */}

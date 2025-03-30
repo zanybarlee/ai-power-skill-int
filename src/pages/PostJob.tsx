@@ -7,6 +7,7 @@ import { processJobDescription } from "@/services/jobDescriptionService";
 import { JobPostingTabs } from "@/components/job-descriptions/JobPostingTabs";
 import { JobDescriptionHistory } from "@/components/job-descriptions/JobDescriptionHistory";
 import { useUserSession } from "@/components/job-descriptions/hooks/useUserSession";
+
 const PostJob = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
@@ -20,9 +21,9 @@ const PostJob = () => {
   useEffect(() => {
     if (userId) {
       console.log("Current User ID:", userId);
-      toast.info(`Current User ID: ${userId}`);
     }
   }, [userId]);
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (!selectedFile) return;
@@ -33,6 +34,7 @@ const PostJob = () => {
     }
     setFile(selectedFile);
   };
+
   const handleFileUpload = async (employerProfileId?: string) => {
     if (!file) {
       toast.error("Please select a file to upload");
@@ -82,9 +84,11 @@ const PostJob = () => {
       setIsProcessing(false);
     }
   };
+
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setTextInput(e.target.value);
   };
+
   const handleTextSubmit = async (employerProfileId?: string) => {
     if (!textInput.trim()) {
       toast.error("Please enter job description text");
@@ -120,11 +124,10 @@ const PostJob = () => {
       setIsProcessing(false);
     }
   };
+
   return <Layout>
       <div className="container px-4 py-6 mx-auto max-w-5xl">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Job Descriptions</h1>
-        
-        {userId}
         
         <JobPostingTabs isProcessing={isProcessing} file={file} textInput={textInput} onFileChange={handleFileChange} onFileUpload={handleFileUpload} onTextChange={handleTextChange} onTextSubmit={handleTextSubmit} />
         
@@ -132,4 +135,5 @@ const PostJob = () => {
       </div>
     </Layout>;
 };
+
 export default PostJob;

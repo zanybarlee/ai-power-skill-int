@@ -1,16 +1,12 @@
 
 import Layout from "@/components/Layout";
-import { FileUpload } from "@/components/job-descriptions/FileUpload";
-import { TextInput } from "@/components/job-descriptions/TextInput";
-import { JobDescriptionTable } from "@/components/job-descriptions/JobDescriptionTable";
-import { ManualJobForm } from "@/components/job-descriptions/ManualJobForm";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { processJobDescription } from "@/services/jobDescriptionService";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { JobPostingTabs } from "@/components/job-descriptions/JobPostingTabs";
+import { JobDescriptionHistory } from "@/components/job-descriptions/JobDescriptionHistory";
 
 const PostJob = () => {
   const [isProcessing, setIsProcessing] = useState(false);
@@ -131,70 +127,17 @@ const PostJob = () => {
       <div className="container px-4 py-6 mx-auto max-w-5xl">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Job Descriptions</h1>
         
-        <Tabs defaultValue="upload" className="mb-8">
-          <TabsList className="grid w-full grid-cols-3 mb-6">
-            <TabsTrigger value="upload">Upload JD</TabsTrigger>
-            <TabsTrigger value="text">Paste Text</TabsTrigger>
-            <TabsTrigger value="manual">Manual Entry</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="upload">
-            <Card>
-              <CardHeader>
-                <CardTitle>Upload Job Description</CardTitle>
-                <CardDescription>
-                  Upload a PDF, Word document, or text file containing a job description.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <FileUpload
-                  isProcessing={isProcessing}
-                  file={file}
-                  onFileChange={handleFileChange}
-                  onUpload={handleFileUpload}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="text">
-            <Card>
-              <CardHeader>
-                <CardTitle>Paste Job Description</CardTitle>
-                <CardDescription>
-                  Paste the job description text directly.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <TextInput
-                  isProcessing={isProcessing}
-                  textInput={textInput}
-                  onTextChange={handleTextChange}
-                  onSubmit={handleTextSubmit}
-                />
-              </CardContent>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="manual">
-            <Card>
-              <CardHeader>
-                <CardTitle>Manual Job Entry</CardTitle>
-                <CardDescription>
-                  Create a job description by filling in the form fields.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <ManualJobForm />
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        <JobPostingTabs
+          isProcessing={isProcessing}
+          file={file}
+          textInput={textInput}
+          onFileChange={handleFileChange}
+          onFileUpload={handleFileUpload}
+          onTextChange={handleTextChange}
+          onTextSubmit={handleTextSubmit}
+        />
         
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Your Job Descriptions</h2>
-          <JobDescriptionTable />
-        </div>
+        <JobDescriptionHistory />
       </div>
     </Layout>
   );

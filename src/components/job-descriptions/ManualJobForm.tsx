@@ -263,7 +263,7 @@ export const ManualJobForm = () => {
       </Form>
       
       <NewEmployerProfileDialog 
-        isOpen={isNewProfileDialogOpen} 
+        open={isNewProfileDialogOpen} 
         onClose={() => setIsNewProfileDialogOpen(false)}
         onProfileCreated={handleProfileCreated}
       />

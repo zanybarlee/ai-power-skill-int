@@ -33,7 +33,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     mode: "onChange"
   });
 
-  const onSubmit = form.handleSubmit(async (values: ProfileFormData) => {
+  const onSubmit = async (values: ProfileFormData) => {
     console.log("Form submitted with values:", values);
     
     if (isSubmitting) {
@@ -68,7 +68,9 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
     } finally {
       setIsSubmitting(false);
     }
-  });
+  };
+
+  const handleSubmit = form.handleSubmit(onSubmit);
 
   if (!isEditing && !profile) {
     return (
@@ -82,7 +84,7 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8">
         <CompanyInfoSection form={form} />
         <IndustryInfoSection form={form} />
         <ContactInfoSection form={form} />

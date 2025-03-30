@@ -50,7 +50,7 @@ export const getDefaultFormValues = (profile: EmployerProfile | null): ProfileFo
 export const saveProfile = async (
   values: ProfileFormData,
   profile: EmployerProfile | null
-) => {
+): Promise<{ data?: EmployerProfile; error?: Error }> => {
   try {
     const timestamp = new Date().toISOString();
     
@@ -83,6 +83,7 @@ export const saveProfile = async (
 
     let result;
     if (profile?.id) {
+      // Update existing profile
       result = await supabase
         .from('employer_profiles')
         .update({
@@ -91,13 +92,32 @@ export const saveProfile = async (
         })
         .eq('id', profile.id);
     } else {
-      result = await supabase
+      // Check if a profile already exists for this user to handle the unique constraint
+      const { data: existingProfile } = await supabase
         .from('employer_profiles')
-        .insert({
-          ...profileData,
-          created_at: timestamp,
-          updated_at: timestamp,
-        });
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (existingProfile) {
+        // Update the existing profile if one exists
+        result = await supabase
+          .from('employer_profiles')
+          .update({
+            ...profileData,
+            updated_at: timestamp,
+          })
+          .eq('id', existingProfile.id);
+      } else {
+        // Insert a new profile
+        result = await supabase
+          .from('employer_profiles')
+          .insert({
+            ...profileData,
+            created_at: timestamp,
+            updated_at: timestamp,
+          });
+      }
     }
 
     if (result.error) {
@@ -118,10 +138,10 @@ export const saveProfile = async (
     }
 
     console.log("Profile saved successfully:", updatedProfile);
-    return { data: updatedProfile };
+    return { data: updatedProfile as EmployerProfile };
 
   } catch (error) {
     console.error("Error in saveProfile:", error);
-    return { error };
+    return { error: error as Error };
   }
 };

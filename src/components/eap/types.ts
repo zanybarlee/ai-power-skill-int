@@ -3,8 +3,8 @@ export interface Agent {
   id: string;
   user_id?: string;
   name: string;
-  contact_email: string | null;
-  contact_phone: string | null;
+  email: string | null;
+  phone: string | null;
   agency_details: string | { 
     name?: string;
     location?: string;
@@ -17,8 +17,8 @@ export interface Agent {
 
 export interface AgentFormData {
   name: string;
-  contact_email: string;
-  contact_phone: string;
+  email: string;
+  phone: string;
   agency_name?: string;
   agency_location?: string;
   specialization?: string;

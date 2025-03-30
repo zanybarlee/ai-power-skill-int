@@ -56,8 +56,8 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
           id: agent.id,
           user_id: agent.user_id,
           name: agent.name,
-          contact_email: agent.contact_email || "",
-          contact_phone: agent.contact_phone || "",
+          email: agent.email || "",
+          phone: agent.phone || "",
           agency_details: agencyDetails,
           created_at: agent.created_at,
           updated_at: agent.updated_at
@@ -136,8 +136,8 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
           return (
             <TableRow key={agent.id}>
               <TableCell className="font-medium">{agent.name}</TableCell>
-              <TableCell>{agent.contact_email || "—"}</TableCell>
-              <TableCell>{agent.contact_phone || "—"}</TableCell>
+              <TableCell>{agent.email || "—"}</TableCell>
+              <TableCell>{agent.phone || "—"}</TableCell>
               <TableCell>{agencyName || "—"}</TableCell>
               <TableCell className="text-right space-x-2">
                 <Button variant="ghost" size="sm" onClick={() => onEdit(agent)}>

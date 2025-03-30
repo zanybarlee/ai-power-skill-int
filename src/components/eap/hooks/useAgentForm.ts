@@ -9,8 +9,8 @@ import { Agent, AgentFormData } from "../types";
 
 const agentSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  contact_email: z.string().email("Please enter a valid email address"),
-  contact_phone: z.string().min(5, "Please enter a valid phone number"),
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().min(5, "Please enter a valid phone number"),
   agency_name: z.string().optional(),
   agency_location: z.string().optional(),
   specialization: z.string().optional(),
@@ -31,8 +31,8 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
     resolver: zodResolver(agentSchema),
     defaultValues: {
       name: agent?.name || "",
-      contact_email: agent?.contact_email || "",
-      contact_phone: agent?.contact_phone || "",
+      email: agent?.email || "",
+      phone: agent?.phone || "",
       agency_name: agencyDetails?.name || "",
       agency_location: agencyDetails?.location || "",
       specialization: agencyDetails?.specialization || "",
@@ -62,8 +62,8 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
       // Create a properly structured object for agent data
       const agentData = {
         name: values.name,
-        contact_email: values.contact_email,
-        contact_phone: values.contact_phone,
+        email: values.email,
+        phone: values.phone,
         user_id: userId,
         agency_details: JSON.stringify(agencyDetails), // Convert to string for database storage
       };

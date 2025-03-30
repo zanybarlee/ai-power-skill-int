@@ -29,7 +29,7 @@ export const AgentBasicInfoFields = ({ form }: FormFieldsProps) => {
       
       <FormField
         control={form.control}
-        name="contact_email"
+        name="email"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Email</FormLabel>
@@ -43,7 +43,7 @@ export const AgentBasicInfoFields = ({ form }: FormFieldsProps) => {
       
       <FormField
         control={form.control}
-        name="contact_phone"
+        name="phone"
         render={({ field }) => (
           <FormItem>
             <FormLabel>Phone</FormLabel>

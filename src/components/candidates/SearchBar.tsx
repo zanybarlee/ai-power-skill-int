@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SearchBarProps {
   searchQuery: string;
@@ -27,19 +27,44 @@ export const SearchBar = ({
   onSearch 
 }: SearchBarProps) => {
   const [inputType, setInputType] = useState<"select" | "text">("select");
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Track the current user's ID
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        setUserId(data.session.user.id);
+      }
+    };
+
+    fetchUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id || null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   const { data: jobTitles } = useQuery({
-    queryKey: ['jobTitles'],
+    queryKey: ['jobTitles', userId],
     queryFn: async () => {
+      if (!userId) return [];
+      
       const { data, error } = await supabase
         .from('job_descriptions')
         .select('job_title')
+        .eq('user_id', userId)  // Filter by the current user's ID
         .not('job_title', 'is', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return [...new Set(data.map(job => job.job_title))] as string[];
     },
+    enabled: !!userId,  // Only run the query when we have a userId
   });
 
   return (
@@ -77,11 +102,17 @@ export const SearchBar = ({
               <SelectValue placeholder="Select a job title" />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              {jobTitles?.map((title) => (
-                <SelectItem key={title} value={title}>
-                  {title}
+              {jobTitles && jobTitles.length > 0 ? (
+                jobTitles.map((title) => (
+                  <SelectItem key={title} value={title}>
+                    {title}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="no-jobs" disabled>
+                  No job titles found
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
         ) : (

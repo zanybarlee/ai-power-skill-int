@@ -1,3 +1,4 @@
+
 import {
   Dialog,
   DialogContent,
@@ -6,7 +7,12 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Badge } from "@/components/ui/badge";
+import { CandidateContactInfo } from "./candidate-details/CandidateContactInfo";
+import { CandidateSkills } from "./candidate-details/CandidateSkills";
+import { CandidateExperienceEducation } from "./candidate-details/CandidateExperienceEducation";
+import { CandidateCertifications } from "./candidate-details/CandidateCertifications";
+import { CandidateAdditionalInfo } from "./candidate-details/CandidateAdditionalInfo";
+import { CandidateContent } from "./candidate-details/CandidateContent";
 
 interface CandidateDetails {
   name: string;
@@ -53,98 +59,32 @@ export const CandidateDetailsDialog = ({
         </DialogHeader>
         <ScrollArea className="h-full max-h-[calc(80vh-140px)] pr-4">
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4 p-4 bg-aptiv/5 rounded-lg">
-              <div className="space-y-2">
-                <h3 className="font-medium text-aptiv-gray-700">Contact Information</h3>
-                <p className="text-sm text-aptiv-gray-600">Email: {candidate.email}</p>
-                <p className="text-sm text-aptiv-gray-600">Phone: {candidate.phone}</p>
-                <p className="text-sm text-aptiv-gray-600">Location: {candidate.location}</p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium text-aptiv-gray-700">Match Details</h3>
-                <p className="text-sm text-aptiv-gray-600">
-                  Matched At: {new Date(candidate.matched_at).toLocaleDateString()}
-                </p>
-              </div>
-            </div>
+            <CandidateContactInfo
+              email={candidate.email}
+              phone={candidate.phone}
+              location={candidate.location}
+              matched_at={candidate.matched_at}
+            />
 
-            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
-              <h3 className="font-medium text-aptiv-gray-700">Skills</h3>
-              <div className="flex flex-wrap gap-2">
-                {candidate.skills.map((skill, index) => (
-                  <Badge
-                    key={index}
-                    variant="outline"
-                    className="text-aptiv border-aptiv/20 bg-aptiv/5"
-                  >
-                    {skill}
-                  </Badge>
-                ))}
-              </div>
-            </div>
+            <CandidateSkills skills={candidate.skills} />
 
-            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
-              <h3 className="font-medium text-aptiv-gray-700">Experience & Education</h3>
-              <p className="text-sm text-aptiv-gray-600">
-                Experience: {candidate.experience} years
-              </p>
-              <p className="text-sm text-aptiv-gray-600">Education: {candidate.education}</p>
-            </div>
+            <CandidateExperienceEducation
+              experience={candidate.experience}
+              education={candidate.education}
+            />
 
-            {candidate.certifications && candidate.certifications.length > 0 && (
-              <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
-                <h3 className="font-medium text-aptiv-gray-700">Certifications</h3>
-                <div className="flex flex-wrap gap-2">
-                  {candidate.certifications.map((cert, index) => (
-                    <Badge
-                      key={index}
-                      variant="outline"
-                      className="text-aptiv border-aptiv/20 bg-aptiv/5"
-                    >
-                      {cert}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
+            <CandidateCertifications certifications={candidate.certifications} />
 
-            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
-              <h3 className="font-medium text-aptiv-gray-700">Additional Information</h3>
-              {candidate.nationality && (
-                <p className="text-sm text-aptiv-gray-600">
-                  Nationality: {candidate.nationality}
-                </p>
-              )}
-              {candidate.current_salary && (
-                <p className="text-sm text-aptiv-gray-600">
-                  Current Salary: ${candidate.current_salary.toLocaleString()}
-                </p>
-              )}
-              {candidate.expected_salary && (
-                <p className="text-sm text-aptiv-gray-600">
-                  Expected Salary: ${candidate.expected_salary.toLocaleString()}
-                </p>
-              )}
-              {candidate.notice_period && (
-                <p className="text-sm text-aptiv-gray-600">
-                  Notice Period: {candidate.notice_period}
-                </p>
-              )}
-            </div>
+            <CandidateAdditionalInfo
+              nationality={candidate.nationality}
+              current_salary={candidate.current_salary}
+              expected_salary={candidate.expected_salary}
+              notice_period={candidate.notice_period}
+            />
 
-            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
-              <h3 className="font-medium text-aptiv-gray-700">CV Content</h3>
-              <p className="text-sm text-aptiv-gray-600 whitespace-pre-wrap">
-                {candidate.cv_content}
-              </p>
-            </div>
-
-            <div className="space-y-2 p-4 bg-white rounded-lg border border-aptiv/10">
-              <h3 className="font-medium text-aptiv-gray-700">Job Description</h3>
-              <p className="text-sm text-aptiv-gray-600 whitespace-pre-wrap">
-                {candidate.job_description}
-              </p>
-            </div>
+            <CandidateContent title="CV Content" content={candidate.cv_content} />
+            
+            <CandidateContent title="Job Description" content={candidate.job_description} />
           </div>
         </ScrollArea>
       </DialogContent>

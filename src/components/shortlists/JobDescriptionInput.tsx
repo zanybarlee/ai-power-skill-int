@@ -77,24 +77,7 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
         />
-        <div className="flex flex-col space-y-4">
-          <div className="space-y-2">
-            <label className="text-aptiv-gray-600 text-sm font-medium">
-              From CVs
-            </label>
-            <Select>
-              <SelectTrigger className="w-[300px] bg-white border-aptiv/20">
-                <SelectValue placeholder="Select from these CVs" />
-              </SelectTrigger>
-              <SelectContent className="bg-white">
-                {jobDescriptions?.map((job) => (
-                  <SelectItem key={job.id} value={job.id}>
-                    {job.job_title || 'Untitled Job'}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="flex justify-end mt-4">
           <Button
             onClick={() => handleMatch(selectedJobId)}
             disabled={isMatching}

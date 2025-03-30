@@ -757,9 +757,11 @@ export type Database = {
       }
       job_descriptions: {
         Row: {
+          agent_id: string | null
           benefits: string | null
           company_name: string | null
           created_at: string | null
+          employer_profile_id: string | null
           file_name: string | null
           file_type: string | null
           file_url: string | null
@@ -772,9 +774,11 @@ export type Database = {
           status: string | null
         }
         Insert: {
+          agent_id?: string | null
           benefits?: string | null
           company_name?: string | null
           created_at?: string | null
+          employer_profile_id?: string | null
           file_name?: string | null
           file_type?: string | null
           file_url?: string | null
@@ -787,9 +791,11 @@ export type Database = {
           status?: string | null
         }
         Update: {
+          agent_id?: string | null
           benefits?: string | null
           company_name?: string | null
           created_at?: string | null
+          employer_profile_id?: string | null
           file_name?: string | null
           file_type?: string | null
           file_url?: string | null
@@ -801,7 +807,15 @@ export type Database = {
           salary_range?: string | null
           status?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "job_descriptions_employer_profile_id_fkey"
+            columns: ["employer_profile_id"]
+            isOneToOne: false
+            referencedRelation: "employer_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       jobs: {
         Row: {

@@ -141,11 +141,11 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
                 <TableCell>{agent.phone || "—"}</TableCell>
                 <TableCell>{agencyName || "—"}</TableCell>
                 <TableCell className="text-right space-x-2">
-                  <Button variant="ghost" size="sm" onClick={() => onEdit(agent)}>
+                  <Button variant="ghost" size="sm" onClick={() => onEdit(agent)} className="hover:bg-aptiv/10 hover:text-aptiv">
                     <Pencil size={16} />
                     <span className="sr-only">Edit</span>
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => handleDelete(agent.id)}>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(agent.id)} className="hover:bg-red-50 hover:text-red-500">
                     <Trash2 size={16} className="text-red-500" />
                     <span className="sr-only">Delete</span>
                   </Button>

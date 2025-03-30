@@ -104,7 +104,11 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
             <Button variant="outline" onClick={onCancel} type="button" disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button 
+              type="submit" 
+              disabled={isSubmitting}
+              className="bg-aptiv hover:bg-aptiv-dark"
+            >
               {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>

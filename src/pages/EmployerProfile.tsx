@@ -47,7 +47,7 @@ const EmployerProfile = () => {
         <div className="bg-white rounded-lg p-6 border border-aptiv/10">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-semibold text-aptiv-gray-700">Employer Profiles</h1>
-            <Button onClick={handleCreateNew} className="flex items-center gap-2">
+            <Button onClick={handleCreateNew} className="flex items-center gap-2 bg-aptiv hover:bg-aptiv-dark">
               <PlusCircle className="w-4 h-4" />
               Add New Profile
             </Button>

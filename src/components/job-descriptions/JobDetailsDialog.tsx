@@ -1,5 +1,6 @@
 
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
@@ -7,12 +8,15 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from "@/components/ui/dialog";
-import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2, Edit, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { JobDescription } from "./types";
 import { useUserSession } from "./hooks/useUserSession";
+import { useJobDescriptions } from "./hooks/useJobDescriptions";
 
 interface JobDetailsDialogProps {
   jobId: string;
@@ -22,6 +26,8 @@ interface JobDetailsDialogProps {
 
 export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps) => {
   const { userId } = useUserSession();
+  const { handleDelete } = useJobDescriptions();
+  const [isEditing, setIsEditing] = useState(false);
 
   const { data: job, isLoading, isError } = useQuery({
     queryKey: ["jobDetails", jobId],
@@ -65,10 +71,28 @@ export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps
     },
     enabled: !!jobId && open && !!userId,
   });
+  
+  const handleEdit = () => {
+    if (job) {
+      setIsEditing(true);
+      // In a real implementation, you would navigate to an edit form
+      // or open an edit modal here
+      window.location.href = `/edit-job/${job.id}`;
+    }
+  };
+
+  const handleDeleteJob = async () => {
+    if (job && job.id) {
+      const success = await handleDelete(job.id);
+      if (success) {
+        onClose();
+      }
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-white">
         {isLoading && (
           <div className="py-8 text-center">
             <Loader2 className="h-8 w-8 animate-spin mx-auto text-aptiv" />
@@ -194,6 +218,27 @@ export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps
                 )}
               </div>
             </div>
+            
+            <DialogFooter className="mt-6">
+              <div className="flex items-center justify-end gap-2 w-full">
+                <Button 
+                  variant="outline" 
+                  onClick={handleEdit}
+                  className="flex items-center gap-1"
+                >
+                  <Edit className="h-4 w-4" />
+                  Edit
+                </Button>
+                <Button 
+                  variant="destructive" 
+                  onClick={handleDeleteJob}
+                  className="flex items-center gap-1"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Delete
+                </Button>
+              </div>
+            </DialogFooter>
           </>
         )}
       </DialogContent>

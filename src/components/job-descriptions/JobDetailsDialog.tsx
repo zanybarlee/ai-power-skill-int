@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -12,6 +11,7 @@ import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { JobDescription } from "./types";
+import { DatabaseJobDescription } from "./hooks/types";
 
 interface JobDetailsDialogProps {
   jobId: string;
@@ -40,7 +40,7 @@ export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps
         .single();
 
       if (error) throw error;
-      return data as JobDescription & { employer_profiles: any };
+      return data as unknown as DatabaseJobDescription & { employer_profiles: any };
     },
     enabled: !!jobId && open,
   });

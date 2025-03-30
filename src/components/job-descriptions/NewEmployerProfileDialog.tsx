@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Dialog,
@@ -76,13 +75,30 @@ export const NewEmployerProfileDialog = ({
     try {
       const { data, error } = await supabase
         .from("employer_profiles")
-        .insert(values)
+        .insert({
+          company_name: values.company_name,
+          registration_number: values.registration_number,
+          country: values.country,
+          state: values.state, 
+          industry: values.industry,
+          sub_industry: values.sub_industry,
+          sub_sub_industry: values.sub_sub_industry,
+          contact_person: values.contact_person,
+          designation: values.designation,
+          email: values.email,
+          phone: values.phone,
+          is_verified: false,
+          is_approved: false,
+          profile_completion: 100
+        })
         .select()
         .single();
 
       if (error) throw error;
       
       onProfileCreated(data as EmployerProfile);
+      toast.success("Employer profile created successfully");
+      onClose();
     } catch (error) {
       console.error("Error creating employer profile:", error);
       toast.error("Failed to create employer profile");

@@ -8,12 +8,20 @@ export const useJobDescriptions = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: jobDescriptions = [], isLoading } = useQuery({
+  const { data: jobDescriptions = [], isLoading, isError } = useQuery({
     queryKey: ['jobDescriptions'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('job_descriptions')
-        .select('*')
+        .select(`
+          *,
+          employer_profiles:employer_profile_id (
+            company_name,
+            contact_person,
+            email,
+            phone
+          )
+        `)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -113,6 +121,7 @@ export const useJobDescriptions = () => {
   return {
     jobDescriptions,
     isLoading,
+    isError,
     handleDelete,
     handleUpdate,
   };

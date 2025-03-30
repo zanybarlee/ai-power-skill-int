@@ -55,8 +55,9 @@ export const useManualJobForm = () => {
         benefits: values.benefits,
         status: 'pending',
         employer_profile_id: values.employer_profile_id || null,
-        agent_id: userId || null,
-        user_id: userId || null // Add user_id field
+        // Remove agent_id to avoid foreign key constraint error
+        // agent_id: userId || null,
+        user_id: userId || null // Keep user_id field for ownership tracking
       };
       console.log('Inserting job data:', jobData);
 

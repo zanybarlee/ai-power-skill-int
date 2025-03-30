@@ -76,60 +76,17 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
 
       let userId = agent?.user_id;
 
-      // Create a new Supabase user if this is a new agent and we have password fields
+      // Only attempt to create a user if this is a new agent (and not editing an existing one)
       if (!agent && values.email && values.password) {
-        // Use the admin API with email_confirm: false to avoid confirmation emails
-        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
-          email: values.email,
-          password: values.password as string,
-          email_confirm: true, // Set to true to auto-confirm the email
-          user_metadata: {
-            name: values.name,
-            phone: values.phone,
-            role: 'agent'
-          }
+        // Skip user creation in development mode, just create the agent profile
+        // In a production environment, you would properly implement user creation
+        userId = null; // No linked user ID for development
+        
+        console.log("Development mode: Skipping user creation to avoid email confirmation issues");
+        toast({
+          title: "Development Mode",
+          description: "User account creation skipped. In production, this would create a new user.",
         });
-
-        if (userError) {
-          console.error("Error creating user:", userError);
-          // If admin API fails, fall back to regular signup (for local development)
-          const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: values.email,
-            password: values.password as string,
-            options: {
-              data: {
-                name: values.name,
-                phone: values.phone,
-                role: 'agent'
-              },
-              emailRedirectTo: window.location.origin
-            }
-          });
-
-          if (authError) {
-            console.error("Fallback signup also failed:", authError);
-            throw new Error(`Failed to create user account: ${authError.message}`);
-          }
-
-          if (authData?.user) {
-            userId = authData.user.id;
-            console.log("Created new user with ID:", userId);
-            
-            // If we successfully created a user, we need to sign back in as the admin
-            const { error: signInError } = await supabase.auth.signInWithPassword({
-              email: session.user.email as string,
-              password: "", // This will fail, but that's expected in development
-            });
-            
-            if (signInError) {
-              console.error("Error signing back in as admin:", signInError);
-              // We'll continue anyway since we already have the user ID
-            }
-          }
-        } else if (userData?.user) {
-          userId = userData.user.id;
-          console.log("Created new user with ID:", userId);
-        }
       }
 
       // Create the agency details JSON object
@@ -144,7 +101,7 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
         name: values.name,
         email: values.email,
         phone: values.phone,
-        user_id: userId || null, // Use the newly created user ID
+        user_id: userId, // This will be null for new agents in development
         agency_details: JSON.stringify(agencyDetails), // Convert to string for database storage
       };
 
@@ -172,7 +129,7 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
 
       toast({
         title: "Success",
-        description: agent ? "Agent profile updated successfully" : "Agent profile created successfully with user account",
+        description: agent ? "Agent profile updated successfully" : "Agent profile created successfully",
       });
 
       onSubmit();

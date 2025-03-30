@@ -3,14 +3,37 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { JobDescription } from "../types";
 import { useToast } from "@/hooks/use-toast";
+import { useState, useEffect } from "react";
 
 export const useJobDescriptions = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Get the current user's ID when the component mounts
+  useEffect(() => {
+    const fetchUserId = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error fetching user session:', error);
+        return;
+      }
+      
+      if (data.session) {
+        setUserId(data.session.user.id);
+      }
+    };
+    
+    fetchUserId();
+  }, []);
 
   const { data: jobDescriptions = [], isLoading, isError } = useQuery({
-    queryKey: ['jobDescriptions'],
+    queryKey: ['jobDescriptions', userId],
     queryFn: async () => {
+      if (!userId) {
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('job_descriptions')
         .select(`
@@ -22,10 +45,11 @@ export const useJobDescriptions = () => {
             phone
           )
         `)
+        .eq('user_id', userId) // Filter by the current user's ID
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      console.log('Fetched job descriptions:', data); // Debug log
+      console.log('Fetched job descriptions for user:', userId, data); // Debug log
       
       // Transform the data to match the JobDescription type
       const transformedData: JobDescription[] = data.map((item: any) => ({
@@ -37,6 +61,7 @@ export const useJobDescriptions = () => {
       
       return transformedData;
     },
+    enabled: !!userId, // Only run the query when we have a userId
   });
 
   const handleDelete = async (jobId: string) => {

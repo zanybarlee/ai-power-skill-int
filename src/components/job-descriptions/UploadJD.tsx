@@ -1,16 +1,37 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { FileText } from "lucide-react";
 import { FileUpload } from "./FileUpload";
 import { TextInput } from "./TextInput";
 import { processJobDescription, uploadFileToStorage } from "./jobDescriptionService";
+import { supabase } from "@/integrations/supabase/client";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const UploadJD = () => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [textInput, setTextInput] = useState("");
+  const [userId, setUserId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    // Get the current user's ID when the component mounts
+    const fetchUserId = async () => {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        console.error('Error fetching user session:', error);
+        return;
+      }
+      
+      if (data.session) {
+        setUserId(data.session.user.id);
+      }
+    };
+    
+    fetchUserId();
+  }, []);
 
   const allowedFileTypes = [
     'application/pdf',
@@ -53,11 +74,36 @@ export const UploadJD = () => {
       return;
     }
 
+    if (!userId) {
+      toast({
+        title: "Authentication required",
+        description: "You must be logged in to upload a file",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      await uploadFileToStorage(file);
+      const { fileName } = await uploadFileToStorage(file);
       const fileContent = await file.text();
-      await processJobDescription(fileContent, file.name, file.type);
+      
+      const processedData = await processJobDescription(fileContent);
+      
+      // Create record in job_descriptions table
+      const { error: insertError } = await supabase
+        .from('job_descriptions')
+        .insert({
+          original_text: fileContent,
+          job_title: processedData.extractedRole.title,
+          file_name: file.name,
+          file_type: file.type,
+          file_url: fileName,
+          status: 'processed',
+          user_id: userId // Add the user ID
+        });
+
+      if (insertError) throw insertError;
       
       toast({
         title: "Success",
@@ -69,6 +115,9 @@ export const UploadJD = () => {
       setTextInput("");
       const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
       if (fileInput) fileInput.value = '';
+      
+      // Refresh job descriptions list
+      queryClient.invalidateQueries({ queryKey: ['jobDescriptions'] });
     } catch (error) {
       console.error('Upload error:', error);
       toast({
@@ -91,9 +140,30 @@ export const UploadJD = () => {
       return;
     }
 
+    if (!userId) {
+      toast({
+        title: "Authentication required",
+        description: "You must be logged in to submit a job description",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProcessing(true);
     try {
-      await processJobDescription(textInput);
+      const processedData = await processJobDescription(textInput);
+      
+      // Create record in job_descriptions table
+      const { error } = await supabase
+        .from('job_descriptions')
+        .insert({
+          original_text: textInput,
+          job_title: processedData.extractedRole.title,
+          status: 'processed',
+          user_id: userId // Add the user ID
+        });
+
+      if (error) throw error;
       
       toast({
         title: "Success",
@@ -101,6 +171,9 @@ export const UploadJD = () => {
       });
 
       setTextInput("");
+      
+      // Refresh job descriptions list
+      queryClient.invalidateQueries({ queryKey: ['jobDescriptions'] });
     } catch (error) {
       console.error('Processing error:', error);
       toast({

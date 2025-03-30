@@ -1,6 +1,5 @@
 
 import { supabase } from "@/integrations/supabase/client";
-import { DatabaseJobDescription } from "../types";
 import { JobDescription } from "../../types";
 
 export async function fetchJobDescriptions(userId: string): Promise<JobDescription[]> {
@@ -9,7 +8,7 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
   }
 
   try {
-    // Remove the user_id filter since that column doesn't exist in job_descriptions table
+    // Filter by agent_id (using userId as agent_id)
     const { data, error } = await supabase
       .from('job_descriptions')
       .select(`
@@ -21,6 +20,7 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
           phone
         )
       `)
+      .eq('agent_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -44,7 +44,12 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
       benefits: item.benefits,
       employer_profile_id: item.employer_profile_id,
       agent_id: item.agent_id,
-      employer_profiles: item.employer_profiles || undefined
+      employer_profiles: item.employer_profiles ? {
+        company_name: item.employer_profiles.company_name,
+        contact_person: item.employer_profiles.contact_person,
+        email: item.employer_profiles.email,
+        phone: item.employer_profiles.phone
+      } : undefined
     }));
   } catch (err) {
     console.error('Error fetching job descriptions:', err);

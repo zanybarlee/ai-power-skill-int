@@ -1,3 +1,4 @@
+
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -11,7 +12,7 @@ import { Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { JobDescription } from "./types";
-import { DatabaseJobDescription } from "./hooks/types";
+import { useUserSession } from "./hooks/useUserSession";
 
 interface JobDetailsDialogProps {
   jobId: string;
@@ -20,6 +21,8 @@ interface JobDetailsDialogProps {
 }
 
 export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps) => {
+  const { userId } = useUserSession();
+
   const { data: job, isLoading, isError } = useQuery({
     queryKey: ["jobDetails", jobId],
     queryFn: async () => {
@@ -37,12 +40,25 @@ export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps
           )
         `)
         .eq("id", jobId)
+        .eq("agent_id", userId || '')
         .single();
 
       if (error) throw error;
-      return data as unknown as DatabaseJobDescription & { employer_profiles: any };
+      
+      // Map the data to our JobDescription type
+      return {
+        ...data,
+        employer_profiles: data.employer_profiles ? {
+          company_name: data.employer_profiles.company_name,
+          contact_person: data.employer_profiles.contact_person,
+          email: data.employer_profiles.email,
+          phone: data.employer_profiles.phone,
+          country: data.employer_profiles.country,
+          state: data.employer_profiles.state
+        } : undefined
+      } as JobDescription;
     },
-    enabled: !!jobId && open,
+    enabled: !!jobId && open && !!userId,
   });
 
   return (
@@ -58,6 +74,7 @@ export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps
         {isError && (
           <div className="py-8 text-center">
             <p className="text-red-500">Error loading job details.</p>
+            <p className="mt-2 text-gray-500">The job may not exist or you don't have permission to view it.</p>
           </div>
         )}
 

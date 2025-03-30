@@ -1,3 +1,4 @@
+
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { JobDescription } from "../types";
@@ -14,9 +15,9 @@ export const useJobDescriptions = () => {
     isLoading, 
     isError 
   } = useQuery({
-    queryKey: ['jobDescriptions'],
+    queryKey: ['jobDescriptions', userId],
     queryFn: () => fetchJobDescriptions(userId || ''),
-    // Even if userId is not used in the query currently, we'll keep it for future RLS implementation
+    enabled: !!userId,
   });
 
   const handleDelete = async (jobId: string) => {

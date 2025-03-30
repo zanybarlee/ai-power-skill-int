@@ -7,12 +7,14 @@ import { toast } from "sonner";
 import { processJobDescription } from "@/services/jobDescriptionService";
 import { JobPostingTabs } from "@/components/job-descriptions/JobPostingTabs";
 import { JobDescriptionHistory } from "@/components/job-descriptions/JobDescriptionHistory";
+import { useUserSession } from "@/components/job-descriptions/hooks/useUserSession";
 
 const PostJob = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [textInput, setTextInput] = useState("");
   const queryClient = useQueryClient();
+  const { userId } = useUserSession();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -64,8 +66,8 @@ const PostJob = () => {
           file_type: file.type,
           file_url: fileName,
           employer_profile_id: employerProfileId || null,
+          agent_id: userId || null,
           status: 'processed'
-          // Removed user_id field since it doesn't exist in the database
         });
 
       if (insertError) throw insertError;
@@ -106,8 +108,8 @@ const PostJob = () => {
           original_text: textInput,
           job_title: processedData?.extractedRole?.title || null,
           employer_profile_id: employerProfileId || null,
+          agent_id: userId || null,
           status: 'processed'
-          // Removed user_id field since it doesn't exist in the database
         });
 
       if (error) throw error;

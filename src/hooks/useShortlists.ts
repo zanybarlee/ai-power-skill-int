@@ -66,6 +66,7 @@ export function useShortlists() {
           id,
           match_score,
           job_description,
+          job_description_id,
           cv_metadata:cv_metadata_id (
             id,
             name,
@@ -82,32 +83,30 @@ export function useShortlists() {
         throw error;
       }
 
-      // Get all unique job descriptions to look up titles
-      const jobDescriptionTexts = [...new Set(data.map(match => match.job_description))];
+      // Collect job description IDs to fetch job titles
+      const jobDescriptionIds = data
+        .map(match => match.job_description_id)
+        .filter(Boolean) as string[];
       
-      // Fetch job descriptions to map them to titles
+      // Fetch job titles for the IDs we have
       const { data: jobsData } = await supabase
         .from('job_descriptions')
-        .select('id, job_title, original_text')
-        .in('original_text', jobDescriptionTexts);
+        .select('id, job_title')
+        .in('id', jobDescriptionIds.length > 0 ? jobDescriptionIds : ['00000000-0000-0000-0000-000000000000']);
       
-      // Create a map of job description text to job title and id
-      const jobMap = new Map();
+      // Create a map of job description ID to job title
+      const jobTitleMap = new Map();
       if (jobsData) {
         jobsData.forEach(job => {
-          jobMap.set(job.original_text, { 
-            title: job.job_title || 'Unknown Job', 
-            id: job.id 
-          });
+          jobTitleMap.set(job.id, job.job_title || 'Unknown Job');
         });
       }
 
       return data.map((match) => {
-        // Look up job title and id from the map
-        const jobInfo = jobMap.get(match.job_description) || { 
-          title: 'Unknown Job', 
-          id: null 
-        };
+        // Look up job title from the map using job_description_id
+        const jobTitle = match.job_description_id 
+          ? jobTitleMap.get(match.job_description_id) || 'Unknown Job'
+          : 'Unknown Job';
 
         return {
           id: match.id,
@@ -120,8 +119,8 @@ export function useShortlists() {
           skills: normalizeSkills(match.cv_metadata?.skills),
           email: match.cv_metadata?.email || '',
           match_score: Math.round(match.match_score || 0),
-          job_title: jobInfo.title,
-          job_id: jobInfo.id
+          job_title: jobTitle,
+          job_id: match.job_description_id
         };
       });
     }

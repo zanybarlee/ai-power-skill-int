@@ -223,6 +223,7 @@ export type Database = {
           cv_metadata_id: string | null
           id: string
           job_description: string
+          job_description_id: string | null
           match_score: number | null
           matched_at: string | null
           status: string | null
@@ -232,6 +233,7 @@ export type Database = {
           cv_metadata_id?: string | null
           id?: string
           job_description: string
+          job_description_id?: string | null
           match_score?: number | null
           matched_at?: string | null
           status?: string | null
@@ -241,6 +243,7 @@ export type Database = {
           cv_metadata_id?: string | null
           id?: string
           job_description?: string
+          job_description_id?: string | null
           match_score?: number | null
           matched_at?: string | null
           status?: string | null
@@ -251,6 +254,13 @@ export type Database = {
             columns: ["cv_metadata_id"]
             isOneToOne: false
             referencedRelation: "cv_metadata"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cv_match_job_description_id_fkey"
+            columns: ["job_description_id"]
+            isOneToOne: false
+            referencedRelation: "job_descriptions"
             referencedColumns: ["id"]
           },
         ]

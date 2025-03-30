@@ -1,6 +1,6 @@
 
 import Layout from "@/components/Layout";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -15,6 +15,14 @@ const PostJob = () => {
   const [textInput, setTextInput] = useState("");
   const queryClient = useQueryClient();
   const { userId } = useUserSession();
+
+  // Display the user ID when it's available
+  useEffect(() => {
+    if (userId) {
+      console.log("Current User ID (agent_id):", userId);
+      toast.info(`Current User ID: ${userId}`);
+    }
+  }, [userId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -130,6 +138,16 @@ const PostJob = () => {
     <Layout>
       <div className="container px-4 py-6 mx-auto max-w-5xl">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Job Descriptions</h1>
+        
+        {userId && (
+          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <p className="text-sm text-blue-700">
+              <strong>Current User ID:</strong> {userId}
+              <br />
+              <small>(This is used as your agent_id in the application)</small>
+            </p>
+          </div>
+        )}
         
         <JobPostingTabs
           isProcessing={isProcessing}

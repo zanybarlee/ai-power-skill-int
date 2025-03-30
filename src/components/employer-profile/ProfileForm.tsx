@@ -6,7 +6,7 @@ import { Form } from "@/components/ui/form";
 import { EmployerProfile } from "./types";
 import { useToast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { CompanyInfoSection } from "./components/CompanyInfoSection";
 import { IndustryInfoSection } from "./components/IndustryInfoSection";
 import { ContactInfoSection } from "./components/ContactInfoSection";
@@ -21,6 +21,7 @@ interface ProfileFormProps {
 export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     console.log("ProfileForm mounted", { isEditing, profile });
@@ -35,7 +36,13 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
   const onSubmit = form.handleSubmit(async (values: ProfileFormData) => {
     console.log("Form submitted with values:", values);
     
+    if (isSubmitting) {
+      console.log("Submission already in progress, skipping");
+      return;
+    }
+    
     try {
+      setIsSubmitting(true);
       const result = await saveProfile(values, profile);
 
       if (result.error) {
@@ -51,13 +58,15 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
       
       onCancel();
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error saving profile:', error);
       
       toast({
         variant: "destructive",
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to save profile. Please try again.",
       });
+    } finally {
+      setIsSubmitting(false);
     }
   });
 
@@ -80,11 +89,11 @@ export const ProfileForm = ({ profile, isEditing, onCancel }: ProfileFormProps) 
 
         {isEditing && (
           <div className="flex justify-end gap-4">
-            <Button variant="outline" onClick={onCancel} type="button">
+            <Button variant="outline" onClick={onCancel} type="button" disabled={isSubmitting}>
               Cancel
             </Button>
-            <Button type="submit">
-              Save Changes
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         )}

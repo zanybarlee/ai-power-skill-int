@@ -11,14 +11,15 @@ export const jobFormSchema = z.object({
   location: z.string().min(2, {
     message: "Location must be at least 2 characters.",
   }),
-  salary: z.string().optional(), // Made optional
+  salary: z.string().optional(),
   description: z.string().min(10, {
     message: "Job description must be at least 10 characters.",
   }),
   requirements: z.string().min(10, {
     message: "Job requirements must be at least 10 characters.",
   }),
-  benefits: z.string().optional(), // Made optional
+  benefits: z.string().optional(),
+  employer_profile_id: z.string().optional(),
 });
 
 export type JobFormValues = z.infer<typeof jobFormSchema>;

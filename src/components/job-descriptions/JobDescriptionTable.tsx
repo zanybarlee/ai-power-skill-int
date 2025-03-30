@@ -1,110 +1,115 @@
 
-import { useState } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
-import { JobDescription } from "./types";
 import { useJobDescriptions } from "./hooks/useJobDescriptions";
+import { formatDistanceToNow } from "date-fns";
+import { useState } from "react";
 import { JobDetailsDialog } from "./JobDetailsDialog";
+import { Button } from "@/components/ui/button";
+import { Eye, Loader2 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export const JobDescriptionTable = () => {
-  const [selectedJob, setSelectedJob] = useState<JobDescription | null>(null);
-  const { jobDescriptions, isLoading, handleDelete, handleUpdate } = useJobDescriptions();
-
-  const handleRowClick = (job: JobDescription) => {
-    setSelectedJob(job);
-  };
+  const { jobDescriptions, isLoading, isError } = useJobDescriptions();
+  const [selectedJobId, setSelectedJobId] = useState<string | null>(null);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex items-center justify-center py-10">
+        <Loader2 className="h-10 w-10 animate-spin text-aptiv" />
+      </div>
+    );
   }
 
-  if (!jobDescriptions.length) {
-    return <div>No job descriptions found.</div>;
+  if (isError) {
+    return (
+      <div className="py-10 text-center">
+        <p className="text-red-500">Error loading job descriptions.</p>
+      </div>
+    );
+  }
+
+  if (!jobDescriptions || jobDescriptions.length === 0) {
+    return (
+      <div className="py-10 text-center">
+        <p className="text-gray-500">No job descriptions found.</p>
+      </div>
+    );
   }
 
   return (
-    <div className="mt-8">
-      <h2 className="text-lg font-semibold mb-4">Uploaded Job Descriptions</h2>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Job Title</TableHead>
-            <TableHead>Company</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Posted Date</TableHead>
-            <TableHead>Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {jobDescriptions.map((jd) => (
-            <TableRow 
-              key={jd.id}
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => handleRowClick(jd)}
-            >
-              <TableCell>{jd.job_title}</TableCell>
-              <TableCell>{jd.company_name}</TableCell>
-              <TableCell>{jd.location}</TableCell>
-              <TableCell>{new Date(jd.created_at).toLocaleDateString()}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent 
-                    align="end" 
-                    className="bg-[#F1F0FB] border border-purple-100 shadow-lg"
+    <div>
+      <h3 className="text-lg font-medium mb-4">Recent Job Descriptions</h3>
+      <div className="overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Job Title
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Company
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Created
+              </th>
+              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {jobDescriptions.map((job) => (
+              <tr key={job.id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900">
+                    {job.job_title || "Untitled Job"}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-500">
+                    {job.company_name || "Unknown Company"}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <Badge 
+                    variant={
+                      job.status === 'processed' ? 'outline' :
+                      job.status === 'pending' ? 'secondary' :
+                      'default'
+                    }
                   >
-                    <DropdownMenuItem 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRowClick(jd);
-                      }}
-                      className="hover:bg-purple-100 focus:bg-purple-100"
-                    >
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Edit
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      className="text-red-600 hover:bg-red-50 focus:bg-red-50"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(jd.id);
-                      }}
-                    >
-                      <Trash2 className="mr-2 h-4 w-4" />
-                      Delete
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                    {job.status || "pending"}
+                  </Badge>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {job.created_at && formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSelectedJobId(job.id)}
+                    className="inline-flex items-center"
+                  >
+                    <Eye className="h-4 w-4 mr-1" />
+                    View
+                  </Button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
-      <JobDetailsDialog
-        job={selectedJob}
-        onClose={() => setSelectedJob(null)}
-        onDelete={handleDelete}
-        onUpdate={handleUpdate}
-      />
+      {selectedJobId && (
+        <JobDetailsDialog
+          jobId={selectedJobId}
+          open={!!selectedJobId}
+          onClose={() => setSelectedJobId(null)}
+        />
+      )}
     </div>
   );
 };

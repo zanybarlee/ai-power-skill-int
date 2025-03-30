@@ -22,5 +22,16 @@ export interface JobDescription {
   file_type: string | null;
   file_url: string | null;
   salary_range: string | null;
-  benefits: string | null;  // Added this line
+  benefits: string | null;
+  employer_profile_id: string | null;
+  agent_id: string | null;
+}
+
+export interface EmployerProfileData {
+  company_name: string;
+  contact_person?: string;
+  email?: string;
+  phone?: string;
+  country?: string;
+  state?: string;
 }

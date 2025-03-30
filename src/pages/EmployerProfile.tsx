@@ -43,83 +43,85 @@ const EmployerProfile = () => {
 
   return (
     <Layout>
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-aptiv-gray-700">Employer Profiles</h1>
-          <Button onClick={handleCreateNew} className="flex items-center gap-2">
-            <PlusCircle className="w-4 h-4" />
-            Add New Profile
-          </Button>
-        </div>
+      <div className="container mx-auto py-6">
+        <div className="bg-white rounded-lg p-6 border border-aptiv/10">
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-semibold text-aptiv-gray-700">Employer Profiles</h1>
+            <Button onClick={handleCreateNew} className="flex items-center gap-2">
+              <PlusCircle className="w-4 h-4" />
+              Add New Profile
+            </Button>
+          </div>
 
-        {profiles && profiles.length > 0 ? (
-          <div className="bg-white rounded-lg border border-aptiv/10 overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Company Name</TableHead>
-                  <TableHead>Industry</TableHead>
-                  <TableHead>Location</TableHead>
-                  <TableHead>Contact Person</TableHead>
-                  <TableHead>Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {profiles.map((profile) => (
-                  <TableRow
-                    key={profile.id}
-                    className={`cursor-pointer ${
-                      selectedProfile?.id === profile.id ? "bg-aptiv/5" : ""
-                    }`}
-                    onClick={() => handleSelectProfile(profile)}
-                  >
-                    <TableCell className="font-medium">{profile.company_name}</TableCell>
-                    <TableCell>{profile.industry}</TableCell>
-                    <TableCell>{`${profile.state}, ${profile.country}`}</TableCell>
-                    <TableCell>{profile.contact_person}</TableCell>
-                    <TableCell>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          profile.is_verified
-                            ? "bg-green-100 text-green-800"
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}
-                      >
-                        {profile.is_verified ? "Verified" : "Pending"}
-                      </span>
-                    </TableCell>
+          {profiles && profiles.length > 0 ? (
+            <div className="bg-white rounded-lg border border-aptiv/10 overflow-hidden mb-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Company Name</TableHead>
+                    <TableHead>Industry</TableHead>
+                    <TableHead>Location</TableHead>
+                    <TableHead>Contact Person</TableHead>
+                    <TableHead>Status</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        ) : !isEditing ? (
-          <div className="bg-white rounded-lg p-6 border border-aptiv/10 text-center">
-            <p className="text-aptiv-gray-500">
-              No employer profiles yet. Click 'Add New Profile' to create one.
-            </p>
-          </div>
-        ) : null}
+                </TableHeader>
+                <TableBody>
+                  {profiles.map((profile) => (
+                    <TableRow
+                      key={profile.id}
+                      className={`cursor-pointer ${
+                        selectedProfile?.id === profile.id ? "bg-aptiv/5" : ""
+                      }`}
+                      onClick={() => handleSelectProfile(profile)}
+                    >
+                      <TableCell className="font-medium">{profile.company_name}</TableCell>
+                      <TableCell>{profile.industry}</TableCell>
+                      <TableCell>{`${profile.state}, ${profile.country}`}</TableCell>
+                      <TableCell>{profile.contact_person}</TableCell>
+                      <TableCell>
+                        <span
+                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                            profile.is_verified
+                              ? "bg-green-100 text-green-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }`}
+                        >
+                          {profile.is_verified ? "Verified" : "Pending"}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : !isEditing ? (
+            <div className="bg-white rounded-lg p-6 border border-aptiv/10 text-center mb-6">
+              <p className="text-aptiv-gray-500">
+                No employer profiles yet. Click 'Add New Profile' to create one.
+              </p>
+            </div>
+          ) : null}
 
-        {(selectedProfile || isEditing) && (
-          <>
-            <ProfileHeader 
-              profile={selectedProfile} 
-              isEditing={isEditing}
-              onEdit={() => setIsEditing(true)}
-            />
-            <ProfileForm 
-              profile={selectedProfile}
-              isEditing={isEditing}
-              onCancel={() => {
-                setIsEditing(false);
-                if (!selectedProfile) {
-                  setSelectedProfile(null);
-                }
-              }}
-            />
-          </>
-        )}
+          {(selectedProfile || isEditing) && (
+            <>
+              <ProfileHeader 
+                profile={selectedProfile} 
+                isEditing={isEditing}
+                onEdit={() => setIsEditing(true)}
+              />
+              <ProfileForm 
+                profile={selectedProfile}
+                isEditing={isEditing}
+                onCancel={() => {
+                  setIsEditing(false);
+                  if (!selectedProfile) {
+                    setSelectedProfile(null);
+                  }
+                }}
+              />
+            </>
+          )}
+        </div>
       </div>
     </Layout>
   );

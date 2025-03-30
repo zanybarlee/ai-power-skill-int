@@ -117,42 +117,44 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
   }
 
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Phone</TableHead>
-          <TableHead>Agency</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {agents.map((agent) => {
-          const agencyName = typeof agent.agency_details === 'object' && agent.agency_details 
-            ? agent.agency_details.name 
-            : '';
-            
-          return (
-            <TableRow key={agent.id}>
-              <TableCell className="font-medium">{agent.name}</TableCell>
-              <TableCell>{agent.email || "—"}</TableCell>
-              <TableCell>{agent.phone || "—"}</TableCell>
-              <TableCell>{agencyName || "—"}</TableCell>
-              <TableCell className="text-right space-x-2">
-                <Button variant="ghost" size="sm" onClick={() => onEdit(agent)}>
-                  <Pencil size={16} />
-                  <span className="sr-only">Edit</span>
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => handleDelete(agent.id)}>
-                  <Trash2 size={16} className="text-red-500" />
-                  <span className="sr-only">Delete</span>
-                </Button>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="bg-white rounded-lg border border-aptiv/10 overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Name</TableHead>
+            <TableHead>Email</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Agency</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {agents.map((agent) => {
+            const agencyName = typeof agent.agency_details === 'object' && agent.agency_details 
+              ? agent.agency_details.name 
+              : '';
+              
+            return (
+              <TableRow key={agent.id}>
+                <TableCell className="font-medium">{agent.name}</TableCell>
+                <TableCell>{agent.email || "—"}</TableCell>
+                <TableCell>{agent.phone || "—"}</TableCell>
+                <TableCell>{agencyName || "—"}</TableCell>
+                <TableCell className="text-right space-x-2">
+                  <Button variant="ghost" size="sm" onClick={() => onEdit(agent)}>
+                    <Pencil size={16} />
+                    <span className="sr-only">Edit</span>
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={() => handleDelete(agent.id)}>
+                    <Trash2 size={16} className="text-red-500" />
+                    <span className="sr-only">Delete</span>
+                  </Button>
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 };

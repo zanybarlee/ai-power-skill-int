@@ -1,8 +1,7 @@
-
 import { useJobDescriptions } from "./hooks/useJobDescriptions";
 import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
-import { JobDetailsDialog } from "./JobDetailsDialog";
+import { JobDetailsDialog } from "./job-details/JobDetailsDialog";
 import { Button } from "@/components/ui/button";
 import { Eye, Loader2, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";

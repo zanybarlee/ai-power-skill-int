@@ -1,5 +1,5 @@
 
-import { FileText, Search, Users, Settings, Building } from "lucide-react";
+import { FileText, Search, Users, Settings, Building, User } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -21,6 +21,11 @@ export const navigationItems = [
     name: "Employer Profile",
     icon: Building,
     path: "/employer-profile",
+  },
+  {
+    name: "EAP Management",
+    icon: User,
+    path: "/eap-management",
   },
   {
     name: "Settings",

@@ -5,33 +5,36 @@ interface JobMainContentProps {
   job: JobDescription;
 }
 
-export const JobMainContent = ({ job }: JobMainContentProps) => {
+export function JobMainContent({ job }: JobMainContentProps) {
   return (
     <div className="col-span-2 space-y-6">
-      <div>
-        <h3 className="text-lg font-medium mb-2">Job Description</h3>
-        <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap max-h-72 overflow-y-auto text-gray-700">
-          {job.original_text || "No description available."}
+      {/* Job Description Section */}
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Job Description</h3>
+        <div className="whitespace-pre-wrap text-gray-700">
+          {job.original_text || "No description provided."}
         </div>
       </div>
 
+      {/* Requirements Section */}
       {job.job_requirements && (
-        <div>
-          <h3 className="text-lg font-medium mb-2">Requirements</h3>
-          <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap max-h-72 overflow-y-auto text-gray-700">
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold">Requirements</h3>
+          <div className="whitespace-pre-wrap text-gray-700">
             {job.job_requirements}
           </div>
         </div>
       )}
 
+      {/* Benefits Section */}
       {job.benefits && (
-        <div>
-          <h3 className="text-lg font-medium mb-2">Benefits</h3>
-          <div className="bg-gray-50 p-4 rounded-md whitespace-pre-wrap max-h-72 overflow-y-auto text-gray-700">
+        <div className="space-y-2">
+          <h3 className="text-lg font-semibold">Benefits</h3>
+          <div className="whitespace-pre-wrap text-gray-700">
             {job.benefits}
           </div>
         </div>
       )}
     </div>
   );
-};
+}

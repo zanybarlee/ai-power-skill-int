@@ -4,7 +4,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { JobDescription } from "../../types";
 
 export const useJobDetails = (jobId: string, open: boolean, userId: string | null) => {
-  const { data: job, isLoading, isError } = useQuery({
+  const { 
+    data: job, 
+    isLoading, 
+    isError,
+    refetch 
+  } = useQuery({
     queryKey: ["jobDetails", jobId],
     queryFn: async () => {
       // First fetch the job description
@@ -47,5 +52,5 @@ export const useJobDetails = (jobId: string, open: boolean, userId: string | nul
     enabled: !!jobId && open && !!userId,
   });
   
-  return { job, isLoading, isError };
+  return { job, isLoading, isError, refetch };
 };

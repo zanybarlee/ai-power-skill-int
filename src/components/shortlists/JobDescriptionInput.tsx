@@ -61,11 +61,17 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
               <SelectValue placeholder="Select from existing job descriptions" />
             </SelectTrigger>
             <SelectContent className="bg-white">
-              {jobDescriptions?.map((job) => (
-                <SelectItem key={job.id} value={job.id}>
-                  {job.job_title || 'Untitled Job'}
+              {jobDescriptions?.length ? (
+                jobDescriptions.map((job) => (
+                  <SelectItem key={job.id} value={job.id}>
+                    {job.job_title || 'Untitled Job'}
+                  </SelectItem>
+                ))
+              ) : (
+                <SelectItem value="no-jobs" disabled>
+                  No job descriptions found
                 </SelectItem>
-              ))}
+              )}
             </SelectContent>
           </Select>
         </div>

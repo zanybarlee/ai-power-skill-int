@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -39,23 +38,47 @@ export function useShortlists() {
   const [isMatching, setIsMatching] = useState(false);
   const [matchingResults, setMatchingResults] = useState<MatchResult[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string | undefined>(undefined);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      if (data.session?.user) {
+        setUserId(data.session.user.id);
+      }
+    };
+
+    fetchUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUserId(session?.user?.id || null);
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("jobDescription", jobDescription);
   }, [jobDescription]);
 
   const { data: jobDescriptions } = useQuery({
-    queryKey: ['jobDescriptions'],
+    queryKey: ['jobDescriptions', userId],
     queryFn: async () => {
+      if (!userId) return [];
+      
       const { data, error } = await supabase
         .from('job_descriptions')
         .select('id, job_title, original_text, job_requirements')
+        .eq('user_id', userId)
         .not('original_text', 'is', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       return data;
     },
+    enabled: !!userId,
   });
 
   const { data: matchedCandidates = [], refetch: refetchMatchedCandidates } = useQuery({
@@ -84,12 +107,10 @@ export function useShortlists() {
         throw error;
       }
 
-      // Collect job description IDs to fetch job titles
       const jobDescriptionIds = data
         .map(match => match.job_description_id)
         .filter(Boolean) as string[];
       
-      // Fetch job titles for the IDs we have
       let jobTitleMap = new Map();
       
       if (jobDescriptionIds.length > 0) {
@@ -98,7 +119,6 @@ export function useShortlists() {
           .select('id, job_title')
           .in('id', jobDescriptionIds);
         
-        // Create a map of job description ID to job title
         if (jobsData && jobsData.length > 0) {
           jobsData.forEach(job => {
             jobTitleMap.set(job.id, job.job_title || 'Unknown Job');
@@ -107,7 +127,6 @@ export function useShortlists() {
       }
 
       return data.map((match) => {
-        // Look up job title from the map using job_description_id
         const jobTitle = match.job_description_id && jobTitleMap.has(match.job_description_id)
           ? jobTitleMap.get(match.job_description_id)
           : 'Unknown Job';
@@ -144,7 +163,6 @@ export function useShortlists() {
     setSelectedJobId(jobDescriptionId);
     
     try {
-      // Pass job description ID if available
       console.log("Starting match with job ID:", jobDescriptionId);
       const result = await queryBestMatch(jobDescription, jobDescriptionId);
       
@@ -196,6 +214,7 @@ export function useShortlists() {
     handleMatch,
     handleClearMatches,
     selectedJobId,
-    setSelectedJobId
+    setSelectedJobId,
+    userId
   };
 }

@@ -772,6 +772,7 @@ export type Database = {
           original_text: string
           salary_range: string | null
           status: string | null
+          user_id: string | null
         }
         Insert: {
           agent_id?: string | null
@@ -789,6 +790,7 @@ export type Database = {
           original_text: string
           salary_range?: string | null
           status?: string | null
+          user_id?: string | null
         }
         Update: {
           agent_id?: string | null
@@ -806,6 +808,7 @@ export type Database = {
           original_text?: string
           salary_range?: string | null
           status?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {

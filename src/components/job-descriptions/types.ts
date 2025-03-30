@@ -34,5 +34,6 @@ export interface JobDescription {
   benefits: string | null;
   employer_profile_id: string | null;
   agent_id: string | null;
+  user_id: string | null;
   employer_profiles?: EmployerProfileData;
 }

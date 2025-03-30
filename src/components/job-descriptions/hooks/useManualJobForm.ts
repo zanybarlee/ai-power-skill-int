@@ -8,11 +8,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { EmployerProfile } from "../employer-profile/types";
 import { useEmployerProfiles } from "./useEmployerProfiles";
+import { useUserSession } from "./useUserSession";
 
 export const useManualJobForm = () => {
   const queryClient = useQueryClient();
   const [isNewProfileDialogOpen, setIsNewProfileDialogOpen] = useState(false);
   const { profiles, isLoading: isLoadingProfiles } = useEmployerProfiles();
+  const { userId } = useUserSession();
 
   const form = useForm<JobFormValues>({
     resolver: zodResolver(jobFormSchema),
@@ -52,7 +54,9 @@ export const useManualJobForm = () => {
         job_requirements: values.requirements,
         benefits: values.benefits,
         status: 'pending',
-        employer_profile_id: values.employer_profile_id || null
+        employer_profile_id: values.employer_profile_id || null,
+        agent_id: userId || null,
+        user_id: userId || null // Add user_id field
       };
       console.log('Inserting job data:', jobData);
 

@@ -19,7 +19,7 @@ const PostJob = () => {
   // Display the user ID when it's available
   useEffect(() => {
     if (userId) {
-      console.log("Current User ID (agent_id):", userId);
+      console.log("Current User ID:", userId);
       toast.info(`Current User ID: ${userId}`);
     }
   }, [userId]);
@@ -75,6 +75,7 @@ const PostJob = () => {
           file_url: fileName,
           employer_profile_id: employerProfileId || null,
           agent_id: userId || null,
+          user_id: userId || null,  // Add user_id field
           status: 'processed'
         });
 
@@ -117,6 +118,7 @@ const PostJob = () => {
           job_title: processedData?.extractedRole?.title || null,
           employer_profile_id: employerProfileId || null,
           agent_id: userId || null,
+          user_id: userId || null,  // Add user_id field
           status: 'processed'
         });
 
@@ -144,7 +146,7 @@ const PostJob = () => {
             <p className="text-sm text-blue-700">
               <strong>Current User ID:</strong> {userId}
               <br />
-              <small>(This is used as your agent_id in the application)</small>
+              <small>(This is used as both agent_id and user_id in the application)</small>
             </p>
           </div>
         )}

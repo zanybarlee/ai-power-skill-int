@@ -12,7 +12,7 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
     const { data, error } = await supabase
       .from('job_descriptions')
       .select('*')
-      .eq('agent_id', userId)
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
@@ -68,6 +68,7 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
       benefits: item.benefits,
       employer_profile_id: item.employer_profile_id,
       agent_id: item.agent_id,
+      user_id: item.user_id,
       employer_profiles: item.employer_profiles
     }));
   } catch (err) {

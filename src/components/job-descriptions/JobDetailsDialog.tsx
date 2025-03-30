@@ -31,7 +31,7 @@ export const JobDetailsDialog = ({ jobId, open, onClose }: JobDetailsDialogProps
         .from("job_descriptions")
         .select('*')
         .eq("id", jobId)
-        .eq("agent_id", userId || '')
+        .eq("user_id", userId || '')
         .single();
 
       if (jobError) throw jobError;

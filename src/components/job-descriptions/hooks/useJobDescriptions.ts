@@ -27,8 +27,8 @@ export const useJobDescriptions = () => {
     fetchUserId();
   }, []);
 
-  // Define a simpler type for database response to avoid deep type instantiation
-  interface JobDescriptionResponse {
+  // Define a simpler type for database response that matches exactly what we get from the database
+  type DatabaseJobDescription = {
     id: string;
     job_title: string | null;
     company_name: string | null;
@@ -50,7 +50,7 @@ export const useJobDescriptions = () => {
       email?: string;
       phone?: string;
     } | null;
-  }
+  };
 
   const { data: jobDescriptions = [], isLoading, isError } = useQuery({
     queryKey: ['jobDescriptions', userId],
@@ -59,29 +59,26 @@ export const useJobDescriptions = () => {
         return [];
       }
 
-      const { data, error } = await supabase
-        .from('job_descriptions')
-        .select(`
-          *,
-          employer_profiles:employer_profile_id (
-            company_name,
-            contact_person,
-            email,
-            phone
-          )
-        `)
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+      try {
+        const { data, error } = await supabase
+          .from('job_descriptions')
+          .select(`
+            *,
+            employer_profiles:employer_profile_id (
+              company_name,
+              contact_person,
+              email,
+              phone
+            )
+          `)
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      console.log('Fetched job descriptions for user:', userId, data); // Debug log
-      
-      // Type assertion to match our expected response type
-      const typedData = data as JobDescriptionResponse[];
-      
-      // Transform data to match JobDescription type
-      return typedData.map(item => {
-        const jobDesc: JobDescription = {
+        if (error) throw error;
+        console.log('Fetched job descriptions for user:', userId, data); // Debug log
+        
+        // Convert the raw data to our JobDescription type
+        return (data as DatabaseJobDescription[]).map(item => ({
           id: item.id,
           job_title: item.job_title,
           company_name: item.company_name,
@@ -97,15 +94,12 @@ export const useJobDescriptions = () => {
           benefits: item.benefits,
           employer_profile_id: item.employer_profile_id,
           agent_id: item.agent_id,
-        };
-        
-        // Add employer_profiles if available
-        if (item.employer_profiles) {
-          jobDesc.employer_profiles = item.employer_profiles;
-        }
-        
-        return jobDesc;
-      });
+          employer_profiles: item.employer_profiles || undefined
+        })) as JobDescription[];
+      } catch (err) {
+        console.error('Error fetching job descriptions:', err);
+        throw err;
+      }
     },
     enabled: !!userId, // Only run the query when we have a userId
   });

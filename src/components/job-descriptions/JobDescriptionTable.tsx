@@ -4,7 +4,7 @@ import { formatDistanceToNow } from "date-fns";
 import { useState } from "react";
 import { JobDetailsDialog } from "./JobDetailsDialog";
 import { Button } from "@/components/ui/button";
-import { Eye, Loader2 } from "lucide-react";
+import { Eye, Loader2, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 export const JobDescriptionTable = () => {
@@ -22,7 +22,13 @@ export const JobDescriptionTable = () => {
   if (isError) {
     return (
       <div className="py-10 text-center">
-        <p className="text-red-500">Error loading job descriptions.</p>
+        <div className="flex flex-col items-center gap-2">
+          <AlertCircle className="h-10 w-10 text-red-500" />
+          <p className="text-red-500 font-medium">Error loading job descriptions.</p>
+          <p className="text-gray-500 text-sm">
+            There might be an issue with your connection or the database. Please try again later.
+          </p>
+        </div>
       </div>
     );
   }
@@ -30,7 +36,7 @@ export const JobDescriptionTable = () => {
   if (!jobDescriptions || jobDescriptions.length === 0) {
     return (
       <div className="py-10 text-center">
-        <p className="text-gray-500">No job descriptions found.</p>
+        <p className="text-gray-500">No job descriptions found. Create one to get started!</p>
       </div>
     );
   }

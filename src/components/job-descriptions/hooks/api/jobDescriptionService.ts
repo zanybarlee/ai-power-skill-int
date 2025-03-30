@@ -9,6 +9,7 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
   }
 
   try {
+    // Remove the user_id filter since that column doesn't exist in job_descriptions table
     const { data, error } = await supabase
       .from('job_descriptions')
       .select(`
@@ -20,15 +21,14 @@ export async function fetchJobDescriptions(userId: string): Promise<JobDescripti
           phone
         )
       `)
-      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (error) throw error;
     
-    console.log('Fetched job descriptions for user:', userId, data);
+    console.log('Fetched job descriptions:', data);
     
     // Convert the raw data to our JobDescription type
-    return (data as unknown as DatabaseJobDescription[]).map(item => ({
+    return (data || []).map(item => ({
       id: item.id,
       job_title: item.job_title,
       company_name: item.company_name,

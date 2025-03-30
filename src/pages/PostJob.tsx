@@ -1,6 +1,6 @@
 
 import Layout from "@/components/Layout";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -12,25 +12,7 @@ const PostJob = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [textInput, setTextInput] = useState("");
-  const [userId, setUserId] = useState<string | null>(null);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    // Get the current user's ID when the component mounts
-    const fetchUserId = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Error fetching user session:', error);
-        return;
-      }
-      
-      if (data.session) {
-        setUserId(data.session.user.id);
-      }
-    };
-    
-    fetchUserId();
-  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -54,11 +36,6 @@ const PostJob = () => {
   const handleFileUpload = async (employerProfileId?: string) => {
     if (!file) {
       toast.error("Please select a file to upload");
-      return;
-    }
-
-    if (!userId) {
-      toast.error("You must be logged in to upload a file");
       return;
     }
 
@@ -87,8 +64,8 @@ const PostJob = () => {
           file_type: file.type,
           file_url: fileName,
           employer_profile_id: employerProfileId || null,
-          status: 'processed',
-          user_id: userId // Add the user ID to the job description
+          status: 'processed'
+          // Removed user_id field since it doesn't exist in the database
         });
 
       if (insertError) throw insertError;
@@ -117,11 +94,6 @@ const PostJob = () => {
       return;
     }
 
-    if (!userId) {
-      toast.error("You must be logged in to submit a job description");
-      return;
-    }
-
     setIsProcessing(true);
     try {
       // Process with LLM
@@ -134,8 +106,8 @@ const PostJob = () => {
           original_text: textInput,
           job_title: processedData?.extractedRole?.title || null,
           employer_profile_id: employerProfileId || null,
-          status: 'processed',
-          user_id: userId // Add the user ID to the job description
+          status: 'processed'
+          // Removed user_id field since it doesn't exist in the database
         });
 
       if (error) throw error;

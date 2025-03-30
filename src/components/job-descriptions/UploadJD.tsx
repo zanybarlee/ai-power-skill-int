@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { FileText } from "lucide-react";
 import { FileUpload } from "./FileUpload";
@@ -13,25 +13,7 @@ export const UploadJD = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [textInput, setTextInput] = useState("");
-  const [userId, setUserId] = useState<string | null>(null);
   const queryClient = useQueryClient();
-
-  useEffect(() => {
-    // Get the current user's ID when the component mounts
-    const fetchUserId = async () => {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        console.error('Error fetching user session:', error);
-        return;
-      }
-      
-      if (data.session) {
-        setUserId(data.session.user.id);
-      }
-    };
-    
-    fetchUserId();
-  }, []);
 
   const allowedFileTypes = [
     'application/pdf',
@@ -74,15 +56,6 @@ export const UploadJD = () => {
       return;
     }
 
-    if (!userId) {
-      toast({
-        title: "Authentication required",
-        description: "You must be logged in to upload a file",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsProcessing(true);
     try {
       const { fileStorageName } = await uploadFileToStorage(file);
@@ -99,8 +72,8 @@ export const UploadJD = () => {
           file_name: file.name,
           file_type: file.type,
           file_url: fileStorageName,
-          status: 'processed',
-          user_id: userId // Add the user ID
+          status: 'processed'
+          // Removed user_id field since it doesn't exist in the database
         });
 
       if (insertError) throw insertError;
@@ -140,15 +113,6 @@ export const UploadJD = () => {
       return;
     }
 
-    if (!userId) {
-      toast({
-        title: "Authentication required",
-        description: "You must be logged in to submit a job description",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsProcessing(true);
     try {
       const processedData = await processJobDescription(textInput);
@@ -159,8 +123,8 @@ export const UploadJD = () => {
         .insert({
           original_text: textInput,
           job_title: processedData.extractedRole.title,
-          status: 'processed',
-          user_id: userId // Add the user ID
+          status: 'processed'
+          // Removed user_id field since it doesn't exist in the database
         });
 
       if (error) throw error;

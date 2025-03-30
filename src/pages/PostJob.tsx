@@ -1,3 +1,4 @@
+
 import Layout from "@/components/Layout";
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -17,7 +18,7 @@ const PostJob = () => {
     userId
   } = useUserSession();
 
-  // Display the user ID when it's available
+  // For debugging purposes
   useEffect(() => {
     if (userId) {
       console.log("Current User ID:", userId);
@@ -37,9 +38,13 @@ const PostJob = () => {
 
   const handleFileUpload = async (employerProfileId?: string) => {
     if (!file) {
-      toast.error("Please select a file to upload");
+      // This is called from the crawler tab without a file, so we just refresh the job list
+      queryClient.invalidateQueries({
+        queryKey: ['jobDescriptions']
+      });
       return;
     }
+    
     setIsProcessing(true);
     try {
       const fileName = `${crypto.randomUUID()}-${file.name}`;
@@ -66,7 +71,6 @@ const PostJob = () => {
         employer_profile_id: employerProfileId || null,
         agent_id: userId || null,
         user_id: userId || null,
-        // Add user_id field
         status: 'processed'
       });
       if (insertError) throw insertError;
@@ -108,7 +112,6 @@ const PostJob = () => {
         employer_profile_id: employerProfileId || null,
         agent_id: userId || null,
         user_id: userId || null,
-        // Add user_id field
         status: 'processed'
       });
       if (error) throw error;
@@ -125,15 +128,25 @@ const PostJob = () => {
     }
   };
 
-  return <Layout>
+  return (
+    <Layout>
       <div className="container px-4 py-6 mx-auto max-w-5xl">
         <h1 className="text-2xl font-semibold text-gray-800 mb-6">Job Descriptions</h1>
         
-        <JobPostingTabs isProcessing={isProcessing} file={file} textInput={textInput} onFileChange={handleFileChange} onFileUpload={handleFileUpload} onTextChange={handleTextChange} onTextSubmit={handleTextSubmit} />
+        <JobPostingTabs 
+          isProcessing={isProcessing} 
+          file={file} 
+          textInput={textInput} 
+          onFileChange={handleFileChange} 
+          onFileUpload={handleFileUpload} 
+          onTextChange={handleTextChange} 
+          onTextSubmit={handleTextSubmit} 
+        />
         
         <JobDescriptionHistory />
       </div>
-    </Layout>;
+    </Layout>
+  );
 };
 
 export default PostJob;

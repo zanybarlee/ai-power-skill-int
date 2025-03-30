@@ -3,6 +3,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { JobUploadTab } from "./JobUploadTab";
 import { JobTextTab } from "./JobTextTab";
 import { JobManualTab } from "./JobManualTab";
+import { JobCrawlerTab } from "./JobCrawlerTab";
 
 interface JobPostingTabsProps {
   isProcessing: boolean;
@@ -25,10 +26,11 @@ export const JobPostingTabs = ({
 }: JobPostingTabsProps) => {
   return (
     <Tabs defaultValue="manual" className="mb-8">
-      <TabsList className="grid w-full grid-cols-3 mb-6">
+      <TabsList className="grid w-full grid-cols-4 mb-6">
         <TabsTrigger value="manual">Manual Entry</TabsTrigger>
         <TabsTrigger value="upload">Upload JD</TabsTrigger>
         <TabsTrigger value="text">Paste Text</TabsTrigger>
+        <TabsTrigger value="crawler">Crawl JD</TabsTrigger>
       </TabsList>
       
       <TabsContent value="manual">
@@ -50,6 +52,13 @@ export const JobPostingTabs = ({
           textInput={textInput} 
           onTextChange={onTextChange} 
           onSubmit={onTextSubmit} 
+        />
+      </TabsContent>
+      
+      <TabsContent value="crawler">
+        <JobCrawlerTab 
+          isProcessing={isProcessing}
+          onJobsImport={onFileUpload}
         />
       </TabsContent>
     </Tabs>

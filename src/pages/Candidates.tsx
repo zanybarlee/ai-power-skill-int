@@ -13,7 +13,11 @@ const Candidates = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('cv_metadata')
-        .select('id, name, experience, location, skills')
+        .select(`
+          id, name, experience, location, skills, email, phone,
+          education, cv_content, certifications, nationality,
+          current_salary, expected_salary, notice_period
+        `)
         .limit(10);
 
       if (error) throw error;
@@ -25,7 +29,16 @@ const Candidates = () => {
         experience: item.experience ? `${item.experience} years` : 'Not specified',
         location: item.location || 'Not specified',
         skills: normalizeSkills(item.skills),
-        availability: 'Not specified'
+        availability: 'Not specified',
+        email: item.email || 'Not specified',
+        phone: item.phone || 'Not specified',
+        education: item.education || 'Not specified',
+        cv_content: item.cv_content || 'Not available',
+        certifications: normalizeSkills(item.certifications),
+        nationality: item.nationality,
+        current_salary: item.current_salary,
+        expected_salary: item.expected_salary,
+        notice_period: item.notice_period
       }));
     },
   });

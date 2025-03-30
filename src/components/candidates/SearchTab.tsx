@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -8,13 +7,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { normalizeSkills } from "@/utils/candidateUtils";
 import { CandidateTable } from "./CandidateTable";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Form,
   FormControl,
@@ -30,6 +22,15 @@ interface DatabaseResult {
   experience: number | null;
   location: string | null;
   skills: unknown;
+  email: string | null;
+  phone: string | null;
+  education: string | null;
+  cv_content: string | null;
+  certifications: unknown;
+  nationality?: string | null;
+  current_salary?: number | null;
+  expected_salary?: number | null;
+  notice_period?: string | null;
 }
 
 interface Candidate {
@@ -40,6 +41,15 @@ interface Candidate {
   location: string;
   skills: string[];
   availability: string;
+  email: string;
+  phone: string;
+  education: string;
+  cv_content: string;
+  certifications: string[];
+  nationality?: string;
+  current_salary?: number;
+  expected_salary?: number;
+  notice_period?: string;
 }
 
 interface SearchFormValues {
@@ -72,10 +82,14 @@ export const SearchTab = () => {
 
     console.log("Searching with criteria:", data);
     
-    // Start with a query builder
+    // Start with a query builder - query for all needed fields
     let query = supabase
       .from('cv_metadata')
-      .select('id, name, experience, location, skills')
+      .select(`
+        id, name, experience, location, skills, email, phone,
+        education, cv_content, certifications, nationality,
+        current_salary, expected_salary, notice_period
+      `)
       .limit(20);
     
     // Add filters based on provided criteria
@@ -153,7 +167,16 @@ export const SearchTab = () => {
     experience: result.experience ? `${result.experience} years` : 'Not specified',
     location: result.location || 'Not specified',
     skills: normalizeSkills(result.skills),
-    availability: 'Not specified'
+    availability: 'Not specified',
+    email: result.email || 'Not specified',
+    phone: result.phone || 'Not specified',
+    education: result.education || 'Not specified',
+    cv_content: result.cv_content || 'Not available',
+    certifications: normalizeSkills(result.certifications),
+    nationality: result.nationality || undefined,
+    current_salary: result.current_salary || undefined,
+    expected_salary: result.expected_salary || undefined,
+    notice_period: result.notice_period || undefined
   })) || [];
 
   return (

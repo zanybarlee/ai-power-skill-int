@@ -11,16 +11,15 @@ export const useCandidateDetails = () => {
 
   const fetchCandidateDetails = async (candidateId: string) => {
     try {
+      // First try to get from cv_match table (for shortlisted candidates)
       const { data: matchData, error: matchError } = await supabase
         .from('cv_match')
         .select('*, cv_metadata(*), job_description_id')
         .eq('id', candidateId)
-        .single();
-
-      if (matchError) throw matchError;
+        .maybeSingle();
 
       if (matchData) {
-        // If we have a job_description_id, fetch the job title
+        // If we found data in cv_match, process it as before
         let jobTitle = 'Unknown Job';
         
         if (matchData.job_description_id) {
@@ -29,7 +28,7 @@ export const useCandidateDetails = () => {
             .from('job_descriptions')
             .select('job_title')
             .eq('id', matchData.job_description_id)
-            .single();
+            .maybeSingle();
           
           if (jobError) {
             console.error("Error fetching job title:", jobError);
@@ -39,8 +38,6 @@ export const useCandidateDetails = () => {
             console.log("Found job title:", jobData.job_title);
             jobTitle = jobData.job_title;
           }
-        } else {
-          console.log("No job_description_id found for candidate", candidateId);
         }
 
         const details = {
@@ -52,7 +49,32 @@ export const useCandidateDetails = () => {
           job_description_id: matchData.job_description_id,
         };
         
-        console.log("Candidate details prepared:", details);
+        console.log("Candidate details prepared from cv_match:", details);
+        setCandidateDetails(details);
+        setSelectedCandidateId(candidateId);
+        setIsDialogOpen(true);
+        return;
+      }
+
+      // If not found in cv_match, try directly in cv_metadata
+      const { data: cvData, error: cvError } = await supabase
+        .from('cv_metadata')
+        .select('*')
+        .eq('id', candidateId)
+        .single();
+
+      if (cvError) throw cvError;
+
+      if (cvData) {
+        const details = {
+          ...cvData,
+          match_score: null,
+          job_description: null,
+          job_title: null,
+          matched_at: null,
+        };
+        
+        console.log("Candidate details prepared from cv_metadata:", details);
         setCandidateDetails(details);
         setSelectedCandidateId(candidateId);
         setIsDialogOpen(true);

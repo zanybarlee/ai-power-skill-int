@@ -73,10 +73,6 @@ export function useShortlists() {
             experience,
             location,
             skills
-          ),
-          job_descriptions:job_description_id (
-            id,
-            job_title
           )
         `)
         .order('match_score', { ascending: false });
@@ -86,20 +82,48 @@ export function useShortlists() {
         throw error;
       }
 
-      return data.map((match) => ({
-        id: match.id,
-        name: match.cv_metadata?.name || 'Unknown',
-        role: 'Not specified',
-        location: match.cv_metadata?.location || 'Not specified',
-        experience: match.cv_metadata?.experience 
-          ? `${match.cv_metadata.experience} years` 
-          : 'Not specified',
-        skills: normalizeSkills(match.cv_metadata?.skills),
-        email: match.cv_metadata?.email || '',
-        match_score: Math.round(match.match_score || 0),
-        job_title: match.job_descriptions?.job_title || 'Unknown Job',
-        job_id: match.job_descriptions?.id
-      }));
+      // Get all unique job descriptions to look up titles
+      const jobDescriptionTexts = [...new Set(data.map(match => match.job_description))];
+      
+      // Fetch job descriptions to map them to titles
+      const { data: jobsData } = await supabase
+        .from('job_descriptions')
+        .select('id, job_title, original_text')
+        .in('original_text', jobDescriptionTexts);
+      
+      // Create a map of job description text to job title and id
+      const jobMap = new Map();
+      if (jobsData) {
+        jobsData.forEach(job => {
+          jobMap.set(job.original_text, { 
+            title: job.job_title || 'Unknown Job', 
+            id: job.id 
+          });
+        });
+      }
+
+      return data.map((match) => {
+        // Look up job title and id from the map
+        const jobInfo = jobMap.get(match.job_description) || { 
+          title: 'Unknown Job', 
+          id: null 
+        };
+
+        return {
+          id: match.id,
+          name: match.cv_metadata?.name || 'Unknown',
+          role: 'Not specified',
+          location: match.cv_metadata?.location || 'Not specified',
+          experience: match.cv_metadata?.experience 
+            ? `${match.cv_metadata.experience} years` 
+            : 'Not specified',
+          skills: normalizeSkills(match.cv_metadata?.skills),
+          email: match.cv_metadata?.email || '',
+          match_score: Math.round(match.match_score || 0),
+          job_title: jobInfo.title,
+          job_id: jobInfo.id
+        };
+      });
     }
   });
 

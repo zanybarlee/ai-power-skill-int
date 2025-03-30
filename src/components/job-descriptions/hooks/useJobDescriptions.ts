@@ -45,21 +45,13 @@ export const useJobDescriptions = () => {
             phone
           )
         `)
-        .eq('user_id', userId) // Filter by the current user's ID
+        .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
       console.log('Fetched job descriptions for user:', userId, data); // Debug log
       
-      // Transform the data to match the JobDescription type
-      const transformedData: JobDescription[] = data.map((item: any) => ({
-        ...item,
-        // Ensure required fields from JobDescription interface are present
-        employer_profile_id: item.employer_profile_id,
-        agent_id: item.agent_id
-      }));
-      
-      return transformedData;
+      return data as JobDescription[];
     },
     enabled: !!userId, // Only run the query when we have a userId
   });

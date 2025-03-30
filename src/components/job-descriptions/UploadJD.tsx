@@ -85,7 +85,7 @@ export const UploadJD = () => {
 
     setIsProcessing(true);
     try {
-      const { fileName } = await uploadFileToStorage(file);
+      const { fileStorageName } = await uploadFileToStorage(file);
       const fileContent = await file.text();
       
       const processedData = await processJobDescription(fileContent);
@@ -98,7 +98,7 @@ export const UploadJD = () => {
           job_title: processedData.extractedRole.title,
           file_name: file.name,
           file_type: file.type,
-          file_url: fileName,
+          file_url: fileStorageName,
           status: 'processed',
           user_id: userId // Add the user ID
         });

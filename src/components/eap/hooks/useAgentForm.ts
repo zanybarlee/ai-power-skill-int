@@ -14,6 +14,26 @@ const agentSchema = z.object({
   agency_name: z.string().optional(),
   agency_location: z.string().optional(),
   specialization: z.string().optional(),
+  password: z.string().optional(),
+  confirmPassword: z.string().optional(),
+}).refine((data) => {
+  // If it's a new agent (password is required) we need to check that both password fields match
+  if (data.password || data.confirmPassword) {
+    return data.password === data.confirmPassword;
+  }
+  return true;
+}, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
+}).refine((data) => {
+  // If it's a new agent (password is required) we need to check that password has a minimum length
+  if (data.password) {
+    return data.password.length >= 6;
+  }
+  return true;
+}, {
+  message: "Password must be at least 6 characters",
+  path: ["password"],
 });
 
 export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
@@ -36,6 +56,8 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
       agency_name: agencyDetails?.name || "",
       agency_location: agencyDetails?.location || "",
       specialization: agencyDetails?.specialization || "",
+      password: "",
+      confirmPassword: "",
     },
     mode: "onChange",
   });
@@ -46,10 +68,32 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
 
       // Get current user
       const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
+      const adminUserId = session?.user?.id;
 
-      if (!userId) {
+      if (!adminUserId) {
         throw new Error("User not authenticated");
+      }
+
+      let userId = agent?.user_id;
+
+      // Create a new Supabase user if this is a new agent and we have password fields
+      if (!agent && values.email && values.password) {
+        // Create the user account
+        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
+          email: values.email,
+          password: values.password as string,
+          email_confirm: true
+        });
+
+        if (userError) {
+          console.error("Error creating user:", userError);
+          throw new Error(`Failed to create user account: ${userError.message}`);
+        }
+
+        if (userData?.user) {
+          userId = userData.user.id;
+          console.log("Created new user with ID:", userId);
+        }
       }
 
       // Create the agency details JSON object
@@ -64,7 +108,7 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
         name: values.name,
         email: values.email,
         phone: values.phone,
-        user_id: userId,
+        user_id: userId || adminUserId, // Use the newly created user ID or the admin ID
         agency_details: JSON.stringify(agencyDetails), // Convert to string for database storage
       };
 
@@ -92,7 +136,7 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
 
       toast({
         title: "Success",
-        description: agent ? "Agent profile updated successfully" : "Agent profile created successfully",
+        description: agent ? "Agent profile updated successfully" : "Agent profile created successfully with user account",
       });
 
       onSubmit();
@@ -101,7 +145,7 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to save agent profile. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to save agent profile. Please try again.",
       });
     } finally {
       setIsSubmitting(false);

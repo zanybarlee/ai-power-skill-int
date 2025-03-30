@@ -22,4 +22,6 @@ export interface AgentFormData {
   agency_name?: string;
   agency_location?: string;
   specialization?: string;
+  password?: string;
+  confirmPassword?: string;
 }

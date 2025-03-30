@@ -3,7 +3,7 @@ import React from "react";
 import { Form } from "@/components/ui/form";
 import { Agent } from "./types";
 import { useAgentForm } from "./hooks/useAgentForm";
-import { AgentBasicInfoFields, AgentAgencyInfoFields } from "./components/AgentFormFields";
+import { AgentBasicInfoFields, AgentAgencyInfoFields, AgentUserCredentialsFields } from "./components/AgentFormFields";
 import { FormActions } from "./components/FormActions";
 
 interface AgentFormProps {
@@ -19,7 +19,10 @@ export const AgentForm: React.FC<AgentFormProps> = ({ agent, onSubmit, onCancel 
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <AgentBasicInfoFields form={form} />
+          <div className="space-y-6">
+            <AgentBasicInfoFields form={form} />
+            {!agent && <AgentUserCredentialsFields form={form} />}
+          </div>
           <AgentAgencyInfoFields form={form} />
         </div>
 

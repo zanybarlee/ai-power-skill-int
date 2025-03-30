@@ -45,6 +45,7 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
       
       setJobDescription(fullDescription);
       setSelectedJobId(id);
+      console.log("Selected job ID:", id);
     }
   };
 

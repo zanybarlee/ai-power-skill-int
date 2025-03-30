@@ -22,16 +22,25 @@ export const useCandidateDetails = () => {
       if (matchData) {
         // If we have a job_description_id, fetch the job title
         let jobTitle = 'Unknown Job';
+        
         if (matchData.job_description_id) {
-          const { data: jobData } = await supabase
+          console.log("Fetching job title for ID:", matchData.job_description_id);
+          const { data: jobData, error: jobError } = await supabase
             .from('job_descriptions')
             .select('job_title')
             .eq('id', matchData.job_description_id)
             .single();
           
+          if (jobError) {
+            console.error("Error fetching job title:", jobError);
+          }
+          
           if (jobData && jobData.job_title) {
+            console.log("Found job title:", jobData.job_title);
             jobTitle = jobData.job_title;
           }
+        } else {
+          console.log("No job_description_id found for candidate", candidateId);
         }
 
         const details = {
@@ -40,7 +49,10 @@ export const useCandidateDetails = () => {
           job_description: matchData.job_description,
           job_title: jobTitle,
           matched_at: matchData.matched_at,
+          job_description_id: matchData.job_description_id,
         };
+        
+        console.log("Candidate details prepared:", details);
         setCandidateDetails(details);
         setSelectedCandidateId(candidateId);
         setIsDialogOpen(true);

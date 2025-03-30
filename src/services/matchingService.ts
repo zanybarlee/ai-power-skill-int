@@ -41,6 +41,8 @@ export const queryBestMatch = async (
   jobDescriptionId?: string
 ): Promise<MatchResponse> => {
   try {
+    console.log("Sending match request with job_description_id:", jobDescriptionId);
+    
     const response = await fetch(
       "http://localhost:9000/match-job",
       {
@@ -60,6 +62,7 @@ export const queryBestMatch = async (
     }
     
     const result = await response.json();
+    console.log("Match response received:", result);
     return result;
   } catch (error) {
     console.error('Error querying best match:', error);

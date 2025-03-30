@@ -38,6 +38,7 @@ export function useShortlists() {
   });
   const [isMatching, setIsMatching] = useState(false);
   const [matchingResults, setMatchingResults] = useState<MatchResult[]>([]);
+  const [selectedJobId, setSelectedJobId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     localStorage.setItem("jobDescription", jobDescription);
@@ -89,23 +90,26 @@ export function useShortlists() {
         .filter(Boolean) as string[];
       
       // Fetch job titles for the IDs we have
-      const { data: jobsData } = await supabase
-        .from('job_descriptions')
-        .select('id, job_title')
-        .in('id', jobDescriptionIds.length > 0 ? jobDescriptionIds : ['00000000-0000-0000-0000-000000000000']);
+      let jobTitleMap = new Map();
       
-      // Create a map of job description ID to job title
-      const jobTitleMap = new Map();
-      if (jobsData) {
-        jobsData.forEach(job => {
-          jobTitleMap.set(job.id, job.job_title || 'Unknown Job');
-        });
+      if (jobDescriptionIds.length > 0) {
+        const { data: jobsData } = await supabase
+          .from('job_descriptions')
+          .select('id, job_title')
+          .in('id', jobDescriptionIds);
+        
+        // Create a map of job description ID to job title
+        if (jobsData && jobsData.length > 0) {
+          jobsData.forEach(job => {
+            jobTitleMap.set(job.id, job.job_title || 'Unknown Job');
+          });
+        }
       }
 
       return data.map((match) => {
         // Look up job title from the map using job_description_id
-        const jobTitle = match.job_description_id 
-          ? jobTitleMap.get(match.job_description_id) || 'Unknown Job'
+        const jobTitle = match.job_description_id && jobTitleMap.has(match.job_description_id)
+          ? jobTitleMap.get(match.job_description_id)
           : 'Unknown Job';
 
         return {
@@ -137,8 +141,11 @@ export function useShortlists() {
     }
 
     setIsMatching(true);
+    setSelectedJobId(jobDescriptionId);
+    
     try {
       // Pass job description ID if available
+      console.log("Starting match with job ID:", jobDescriptionId);
       const result = await queryBestMatch(jobDescription, jobDescriptionId);
       
       const parsedResults = Array.isArray(result.matches) 
@@ -187,6 +194,8 @@ export function useShortlists() {
     jobDescriptions,
     matchedCandidates,
     handleMatch,
-    handleClearMatches
+    handleClearMatches,
+    selectedJobId,
+    setSelectedJobId
   };
 }

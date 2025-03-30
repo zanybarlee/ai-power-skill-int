@@ -7,71 +7,75 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { EmployerProfileData } from "./types";
 import { toast } from "sonner";
-import { EmployerProfile } from "../employer-profile/types";
 
-const newEmployerProfileSchema = z.object({
-  company_name: z.string().min(2, "Company name must be at least 2 characters"),
-  registration_number: z.string().min(2, "Registration number must be at least 2 characters"),
-  country: z.string().min(2, "Country must be at least 2 characters"),
-  state: z.string().min(2, "State must be at least 2 characters"),
-  industry: z.string().min(2, "Industry must be at least 2 characters"),
-  sub_industry: z.string().min(2, "Sub industry must be at least 2 characters"),
-  sub_sub_industry: z.string().min(2, "Sub sub industry must be at least 2 characters"),
-  contact_person: z.string().min(2, "Contact person must be at least 2 characters"),
-  designation: z.string().min(2, "Designation must be at least 2 characters"),
-  email: z.string().email("Please enter a valid email address"),
-  phone: z.string().min(6, "Phone number must be at least 6 characters"),
-});
-
-type NewEmployerProfileFormValues = z.infer<typeof newEmployerProfileSchema>;
+type EmployerProfile = {
+  id: string;
+} & EmployerProfileData;
 
 interface NewEmployerProfileDialogProps {
-  isOpen: boolean;
+  open: boolean;
   onClose: () => void;
   onProfileCreated: (profile: EmployerProfile) => void;
 }
 
-export const NewEmployerProfileDialog = ({
-  isOpen,
+export const NewEmployerProfileDialog: React.FC<NewEmployerProfileDialogProps> = ({
+  open,
   onClose,
   onProfileCreated,
-}: NewEmployerProfileDialogProps) => {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<NewEmployerProfileFormValues>({
-    resolver: zodResolver(newEmployerProfileSchema),
-    defaultValues: {
-      company_name: "",
-      registration_number: "",
-      country: "",
-      state: "",
-      industry: "",
-      sub_industry: "",
-      sub_sub_industry: "",
-      contact_person: "",
-      designation: "",
-      email: "",
-      phone: "",
-    },
+}) => {
+  const [values, setValues] = useState({
+    company_name: "",
+    contact_person: "",
+    email: "",
+    phone: "",
+    country: "",
+    state: "",
+    industry: "",
+    sub_industry: "",
+    sub_sub_industry: "",
+    designation: "",
+    registration_number: "",
   });
 
-  async function onSubmit(values: NewEmployerProfileFormValues) {
-    setIsSubmitting(true);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setValues((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const isFormValid = () => {
+    // Ensure all required fields are filled
+    return (
+      values.company_name.trim() !== "" &&
+      values.contact_person.trim() !== "" &&
+      values.email.trim() !== "" &&
+      values.phone.trim() !== "" &&
+      values.country.trim() !== "" &&
+      values.state.trim() !== "" &&
+      values.industry.trim() !== "" &&
+      values.registration_number.trim() !== "" &&
+      values.designation.trim() !== "" &&
+      values.sub_industry.trim() !== "" &&
+      values.sub_sub_industry.trim() !== ""
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!isFormValid()) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("employer_profiles")
@@ -102,192 +106,168 @@ export const NewEmployerProfileDialog = ({
     } catch (error) {
       console.error("Error creating employer profile:", error);
       toast.error("Failed to create employer profile");
-    } finally {
-      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>New Employer Profile</DialogTitle>
+          <DialogTitle>Create New Employer Profile</DialogTitle>
           <DialogDescription>
-            Create a new employer profile to associate with the job description.
+            Fill in the information below to create a new employer profile.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="company_name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Company Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter company name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="registration_number"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Registration Number</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter registration number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="company_name" className="text-right">
+                Company Name
+              </Label>
+              <Input
+                type="text"
+                id="company_name"
+                name="company_name"
+                value={values.company_name}
+                onChange={handleChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="registration_number" className="text-right">
+                Registration Number
+              </Label>
+              <Input
+                type="text"
+                id="registration_number"
+                name="registration_number"
+                value={values.registration_number}
+                onChange={handleChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="country" className="text-right">
+                Country
+              </Label>
+              <Input
+                type="text"
+                id="country"
                 name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter country" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                value={values.country}
+                onChange={handleChange}
+                className="col-span-3"
               />
-
-              <FormField
-                control={form.control}
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="state" className="text-right">
+                State
+              </Label>
+              <Input
+                type="text"
+                id="state"
                 name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter state" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                value={values.state}
+                onChange={handleChange}
+                className="col-span-3"
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="industry"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Industry</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter industry" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="industry" className="text-right">
+                Industry
+              </Label>
+              <Input
+                type="text"
+                id="industry"
+                name="industry"
+                value={values.industry}
+                onChange={handleChange}
+                className="col-span-3"
+              />
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="sub_industry" className="text-right">
+                Sub Industry
+              </Label>
+              <Input
+                type="text"
+                id="sub_industry"
                 name="sub_industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sub Industry</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter sub industry" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                value={values.sub_industry}
+                onChange={handleChange}
+                className="col-span-3"
               />
-
-              <FormField
-                control={form.control}
+            </div>
+             <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="sub_sub_industry" className="text-right">
+                Sub Sub Industry
+              </Label>
+              <Input
+                type="text"
+                id="sub_sub_industry"
                 name="sub_sub_industry"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Sub-Sub Industry</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter sub-sub industry" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                value={values.sub_sub_industry}
+                onChange={handleChange}
+                className="col-span-3"
               />
             </div>
-
-            <FormField
-              control={form.control}
-              name="contact_person"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Contact Person</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter contact person name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="designation"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Designation</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter designation" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="contact_person" className="text-right">
+                Contact Person
+              </Label>
+              <Input
+                type="text"
+                id="contact_person"
+                name="contact_person"
+                value={values.contact_person}
+                onChange={handleChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="designation" className="text-right">
+                Designation
+              </Label>
+              <Input
+                type="text"
+                id="designation"
+                name="designation"
+                value={values.designation}
+                onChange={handleChange}
+                className="col-span-3"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="email" className="text-right">
+                Email
+              </Label>
+              <Input
+                type="email"
+                id="email"
                 name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter email" {...field} type="email" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Phone</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter phone number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
+                value={values.email}
+                onChange={handleChange}
+                className="col-span-3"
               />
             </div>
-
-            <DialogFooter>
-              <Button variant="outline" type="button" onClick={onClose} disabled={isSubmitting}>
-                Cancel
-              </Button>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "Creating..." : "Create Employer Profile"}
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="phone" className="text-right">
+                Phone
+              </Label>
+              <Input
+                type="tel"
+                id="phone"
+                name="phone"
+                value={values.phone}
+                onChange={handleChange}
+                className="col-span-3"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="submit">Create profile</Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

@@ -9,6 +9,15 @@ export interface ProcessedData {
   };
 }
 
+export interface EmployerProfileData {
+  company_name: string;
+  contact_person?: string;
+  email?: string;
+  phone?: string;
+  country?: string;
+  state?: string;
+}
+
 export interface JobDescription {
   id: string;
   job_title: string | null;
@@ -25,13 +34,5 @@ export interface JobDescription {
   benefits: string | null;
   employer_profile_id: string | null;
   agent_id: string | null;
-}
-
-export interface EmployerProfileData {
-  company_name: string;
-  contact_person?: string;
-  email?: string;
-  phone?: string;
-  country?: string;
-  state?: string;
+  employer_profiles?: EmployerProfileData;
 }

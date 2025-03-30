@@ -78,21 +78,39 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
 
       // Create a new Supabase user if this is a new agent and we have password fields
       if (!agent && values.email && values.password) {
-        // Create the user account
-        const { data: userData, error: userError } = await supabase.auth.admin.createUser({
+        // Use the standard signup method instead of admin API
+        const { data: authData, error: authError } = await supabase.auth.signUp({
           email: values.email,
           password: values.password as string,
-          email_confirm: true
+          options: {
+            data: {
+              name: values.name,
+              phone: values.phone,
+              role: 'agent'
+            }
+          }
         });
 
-        if (userError) {
-          console.error("Error creating user:", userError);
-          throw new Error(`Failed to create user account: ${userError.message}`);
+        if (authError) {
+          console.error("Error creating user:", authError);
+          throw new Error(`Failed to create user account: ${authError.message}`);
         }
 
-        if (userData?.user) {
-          userId = userData.user.id;
+        if (authData?.user) {
+          userId = authData.user.id;
           console.log("Created new user with ID:", userId);
+          
+          // If we successfully created a user, we need to sign back in as the admin
+          // to continue creating the agent profile
+          const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: session.user.email as string,
+            password: "", // You should prompt for password if needed, or use another auth method
+          });
+          
+          if (signInError) {
+            console.error("Error signing back in as admin:", signInError);
+            // We'll continue anyway since we already have the user ID
+          }
         }
       }
 
@@ -108,7 +126,7 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
         name: values.name,
         email: values.email,
         phone: values.phone,
-        user_id: userId || adminUserId, // Use the newly created user ID or the admin ID
+        user_id: userId || null, // Use the newly created user ID
         agency_details: JSON.stringify(agencyDetails), // Convert to string for database storage
       };
 

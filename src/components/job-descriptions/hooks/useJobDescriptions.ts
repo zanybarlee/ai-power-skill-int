@@ -27,6 +27,31 @@ export const useJobDescriptions = () => {
     fetchUserId();
   }, []);
 
+  // Define a simpler type for database response to avoid deep type instantiation
+  interface JobDescriptionResponse {
+    id: string;
+    job_title: string | null;
+    company_name: string | null;
+    location: string | null;
+    original_text: string;
+    job_requirements: string | null;
+    created_at: string;
+    status: string | null;
+    file_name: string | null;
+    file_type: string | null;
+    file_url: string | null;
+    salary_range: string | null;
+    benefits: string | null;
+    employer_profile_id: string | null;
+    agent_id: string | null;
+    employer_profiles?: {
+      company_name: string;
+      contact_person?: string;
+      email?: string;
+      phone?: string;
+    } | null;
+  }
+
   const { data: jobDescriptions = [], isLoading, isError } = useQuery({
     queryKey: ['jobDescriptions', userId],
     queryFn: async () => {
@@ -51,7 +76,36 @@ export const useJobDescriptions = () => {
       if (error) throw error;
       console.log('Fetched job descriptions for user:', userId, data); // Debug log
       
-      return data as JobDescription[];
+      // Type assertion to match our expected response type
+      const typedData = data as JobDescriptionResponse[];
+      
+      // Transform data to match JobDescription type
+      return typedData.map(item => {
+        const jobDesc: JobDescription = {
+          id: item.id,
+          job_title: item.job_title,
+          company_name: item.company_name,
+          location: item.location,
+          original_text: item.original_text,
+          job_requirements: item.job_requirements,
+          created_at: item.created_at,
+          status: item.status,
+          file_name: item.file_name,
+          file_type: item.file_type,
+          file_url: item.file_url,
+          salary_range: item.salary_range,
+          benefits: item.benefits,
+          employer_profile_id: item.employer_profile_id,
+          agent_id: item.agent_id,
+        };
+        
+        // Add employer_profiles if available
+        if (item.employer_profiles) {
+          jobDesc.employer_profiles = item.employer_profiles;
+        }
+        
+        return jobDesc;
+      });
     },
     enabled: !!userId, // Only run the query when we have a userId
   });

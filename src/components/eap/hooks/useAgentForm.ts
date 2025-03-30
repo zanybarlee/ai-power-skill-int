@@ -45,16 +45,16 @@ export const useAgentForm = (agent: Agent | null, onSubmit: () => void) => {
         throw new Error("User not authenticated");
       }
 
-      // Create a flat structure for agent data to match the database columns
+      // Create a properly structured object for agent data
       const agentData = {
         name: values.name,
         email: values.email,
         phone: values.phone,
         user_id: userId,
         agency_details: {
-          name: values.agency_name,
-          location: values.agency_location,
-          specialization: values.specialization,
+          name: values.agency_name || "",
+          location: values.agency_location || "",
+          specialization: values.specialization || "",
         }
       };
 

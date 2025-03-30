@@ -37,14 +37,16 @@ export const AgentList = ({ onEdit }: AgentListProps) => {
 
       if (error) throw error;
       
-      // Transform the data to match the Agent type
+      // Transform the data to match the Agent type, ensuring agency_details is an object
       const transformedData: Agent[] = data.map(agent => ({
         id: agent.id,
         user_id: agent.user_id,
         name: agent.name,
         email: agent.email || "",
         phone: agent.phone || "",
-        agency_details: agent.agency_details || {},
+        agency_details: typeof agent.agency_details === 'object' && agent.agency_details !== null 
+          ? agent.agency_details 
+          : { name: "", location: "", specialization: "" },
         created_at: agent.created_at,
         updated_at: agent.updated_at
       }));

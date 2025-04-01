@@ -7,7 +7,7 @@ export const CandidateTableColumns = () => {
     <TableHeader className="bg-aptiv/5">
       <TableRow>
         <TableHead className="text-aptiv-gray-700">Name</TableHead>
-        <TableHead className="text-aptiv-gray-700">Job Title</TableHead>
+        <TableHead className="text-aptiv-gray-700">Job Role</TableHead>
         <TableHead className="text-aptiv-gray-700">Location</TableHead>
         <TableHead className="text-aptiv-gray-700">Experience</TableHead>
         <TableHead className="text-aptiv-gray-700">Skills</TableHead>

@@ -42,7 +42,7 @@ export const CandidateTableRow = ({
       <TableCell className="text-aptiv-gray-700 font-medium">
         {candidate.name}
       </TableCell>
-      <TableCell className="text-aptiv-gray-600">{candidate.job_title || "Unknown Job"}</TableCell>
+      <TableCell className="text-aptiv-gray-600">{candidate.job_role || candidate.role || "Unknown Role"}</TableCell>
       <TableCell className="text-aptiv-gray-600">{candidate.location}</TableCell>
       <TableCell className="text-aptiv-gray-600">{candidate.experience}</TableCell>
       <TableCell>

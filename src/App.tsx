@@ -14,6 +14,7 @@ import Shortlists from "./pages/Shortlists";
 import Settings from "./pages/Settings";
 import EmployerProfile from "./pages/EmployerProfile";
 import EAPManagement from "./pages/EAPManagement";
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -22,16 +23,15 @@ function App() {
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/auth" element={<Auth />} />
+      <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/post-job" element={<PostJob />} />
       <Route path="/candidates" element={<Candidates />} />
       <Route path="/shortlists" element={<Shortlists />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/employer-profile" element={<EmployerProfile />} />
       <Route path="/eap-management" element={<EAPManagement />} />
-      {/* Add redirect from /dashboard to /post-job */}
-      <Route path="/dashboard" element={<Navigate to="/post-job" replace />} />
-      {/* Catch all other routes and redirect to /post-job */}
-      <Route path="*" element={<Navigate to="/post-job" replace />} />
+      {/* Redirect default route to dashboard instead of post-job */}
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 }

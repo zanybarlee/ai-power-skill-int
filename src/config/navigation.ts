@@ -1,7 +1,12 @@
 
-import { FileText, Search, Users, Settings, Building, User } from "lucide-react";
+import { FileText, Search, Users, Settings, Building, User, LayoutDashboard } from "lucide-react";
 
 export const navigationItems = [
+  {
+    name: "Dashboard",
+    icon: LayoutDashboard,
+    path: "/dashboard",
+  },
   {
     name: "Job Description (JD)",
     icon: FileText,

@@ -18,7 +18,8 @@ const Shortlists = () => {
     handleClearMatches,
     selectedJobId,
     setSelectedJobId,
-    userId
+    userId,
+    refetchMatchedCandidates
   } = useShortlists();
 
   return (
@@ -53,6 +54,7 @@ const Shortlists = () => {
             <MatchedCandidatesTable 
               candidates={matchedCandidates} 
               onClearMatches={handleClearMatches}
+              onCandidateUpdated={refetchMatchedCandidates}
             />
           </CardContent>
         </Card>

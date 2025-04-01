@@ -71,6 +71,7 @@ export function useShortlists() {
     handleClearMatches,
     selectedJobId,
     setSelectedJobId,
-    userId
+    userId,
+    refetchMatchedCandidates
   };
 }

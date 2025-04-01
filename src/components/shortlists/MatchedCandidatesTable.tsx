@@ -1,6 +1,6 @@
 
 import { Table, TableBody } from "@/components/ui/table";
-// Import directly from the hooks file, not through the re-export
+// Import directly from the hooks file
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateDetailsDialog } from "./CandidateDetailsDialog";
@@ -24,9 +24,14 @@ interface MatchedCandidate {
 interface MatchedCandidatesTableProps {
   candidates: MatchedCandidate[];
   onClearMatches: () => void;
+  onCandidateUpdated?: () => void;
 }
 
-export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCandidatesTableProps) => {
+export const MatchedCandidatesTable = ({ 
+  candidates, 
+  onClearMatches,
+  onCandidateUpdated 
+}: MatchedCandidatesTableProps) => {
   const { toast } = useToast();
   const {
     candidateDetails,
@@ -57,11 +62,13 @@ export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCa
 
       toast({
         title: "Status updated",
-        description: `Candidate status has been updated successfully.`,
+        description: `Candidate status has been updated to ${status.replace('_', ' ')}.`,
       });
       
-      // Note: In a production app, we would refresh the candidates list here
-      // For now, we're relying on the parent component to handle this via refetching
+      // If parent component provided a callback for updates, call it
+      if (onCandidateUpdated) {
+        onCandidateUpdated();
+      }
       
     } catch (error) {
       console.error('Error updating status:', error);

@@ -23,7 +23,7 @@ interface JobDescriptionInputProps {
   setJobDescription: (value: string) => void;
   jobDescriptions?: JobDescription[];
   isMatching: boolean;
-  handleMatch: (jobDescriptionId?: string) => void;
+  handleMatch: (jobDescriptionId?: string, jobRole?: string) => void;
 }
 
 export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
@@ -34,6 +34,7 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
   handleMatch,
 }) => {
   const [selectedJobId, setSelectedJobId] = useState<string | undefined>(undefined);
+  const [selectedJobRole, setSelectedJobRole] = useState<string | undefined>(undefined);
 
   const handleJobDescriptionSelect = (id: string) => {
     const selectedJob = jobDescriptions?.find(job => job.id === id);
@@ -45,7 +46,9 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
       
       setJobDescription(fullDescription);
       setSelectedJobId(id);
+      setSelectedJobRole(selectedJob.job_title || undefined);
       console.log("Selected job ID:", id);
+      console.log("Selected job title:", selectedJob.job_title);
     }
   };
 
@@ -86,7 +89,7 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
         />
         <div className="flex justify-end mt-4">
           <Button
-            onClick={() => handleMatch(selectedJobId)}
+            onClick={() => handleMatch(selectedJobId, selectedJobRole)}
             disabled={isMatching}
             variant="aptiv"
             className="w-fit"

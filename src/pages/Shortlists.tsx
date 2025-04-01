@@ -15,7 +15,10 @@ const Shortlists = () => {
     jobDescriptions,
     matchedCandidates,
     handleMatch,
-    handleClearMatches
+    handleClearMatches,
+    selectedJobId,
+    setSelectedJobId,
+    userId
   } = useShortlists();
 
   return (

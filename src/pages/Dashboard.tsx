@@ -1,14 +1,11 @@
-
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { BarChart, PieChart, LineChart, Activity } from "lucide-react";
-
 const Dashboard = () => {
-  return (
-    <Layout>
+  return <Layout>
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-2xl font-semibold text-aptiv-gray-700">Dashboard Overview</h1>
+          <h1 className="text-2xl font-semibold text-aptiv-gray-700">Dashboard Overview (Work in Progress)</h1>
           <span className="text-aptiv-gray-500">{new Date().toLocaleDateString()}</span>
         </div>
 
@@ -124,8 +121,6 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
-    </Layout>
-  );
+    </Layout>;
 };
-
 export default Dashboard;

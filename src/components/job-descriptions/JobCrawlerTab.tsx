@@ -138,10 +138,10 @@ export const JobCrawlerTab = ({
                 onValueChange={setWebsiteSource}
                 disabled={crawlStatus !== "idle"}
               >
-                <SelectTrigger id="website" className="w-full">
+                <SelectTrigger id="website" className="w-full bg-white">
                   <SelectValue placeholder="Select a job board" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-white">
                   <SelectItem value="https://www.mycareersfuture.gov.sg">MyCareerFuture</SelectItem>
                   <SelectItem value="https://www.jobstreet.com.sg">JobStreet.com</SelectItem>
                   <SelectItem value="https://sg.indeed.com">Indeed</SelectItem>

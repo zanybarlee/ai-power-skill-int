@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
-import { BarChart, PieChart, LineChart, Activity, Loader2 } from "lucide-react";
+import { BarChart, PieChart, LineChart, Activity, Loader2, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSession } from "@/components/job-descriptions/hooks/useUserSession";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface DashboardStats {
   jobPostings: number;
@@ -30,8 +31,26 @@ const Dashboard = () => {
     successRate: 0,
   });
   
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  
   // Get the current user's ID
   const { userId, isLoading: isUserLoading } = useUserSession();
+
+  // Get user details
+  useEffect(() => {
+    const getUserDetails = async () => {
+      if (!userId) return;
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUserEmail(session.user.email);
+        setUserAvatar(session.user.user_metadata?.avatar_url || null);
+      }
+    };
+    
+    getUserDetails();
+  }, [userId]);
 
   const { data: jobDescriptions, isLoading: isJobsLoading } = useQuery({
     queryKey: ['dashboardJobs', userId],
@@ -142,7 +161,20 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-semibold text-aptiv-gray-700">Dashboard Overview</h1>
-          <span className="text-aptiv-gray-500">{new Date().toLocaleDateString()}</span>
+          
+          <div className="flex items-center space-x-4">
+            <div className="text-right text-aptiv-gray-500 text-sm">
+              <div>{new Date().toLocaleDateString()}</div>
+              {userId && <div className="text-aptiv-gray-700 mt-1">User ID: {userId.substring(0, 8)}...</div>}
+            </div>
+            
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={userAvatar || ""} alt="User avatar" />
+              <AvatarFallback className="bg-aptiv text-white">
+                {userEmail ? userEmail[0].toUpperCase() : <User className="h-5 w-5" />}
+              </AvatarFallback>
+            </Avatar>
+          </div>
         </div>
 
         {isLoading ? (

@@ -31,9 +31,10 @@ export function useMatchingLogic(refetchMatchedCandidates: () => Promise<any>) {
     setSelectedJobId(jobDescriptionId);
     
     try {
-      console.log("Starting match with job ID:", jobDescriptionId);
-      console.log("Starting match with job role:", jobRole);
-      console.log("Starting match with user ID:", userId);
+      console.log("useMatchingLogic - Starting match with job ID:", jobDescriptionId);
+      console.log("useMatchingLogic - Starting match with job role:", jobRole);
+      console.log("useMatchingLogic - Starting match with user ID:", userId);
+      
       const result = await queryBestMatch(jobDescription, jobDescriptionId, jobRole, userId);
       
       const parsedResults = Array.isArray(result.matches) 

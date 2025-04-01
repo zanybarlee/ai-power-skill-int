@@ -47,9 +47,9 @@ export const queryBestMatch = async (
   userId?: string
 ): Promise<MatchResponse> => {
   try {
-    console.log("Sending match request with job_description_id:", jobDescriptionId);
-    console.log("Sending match request with job_role:", jobRole);
-    console.log("Sending match request with user_id:", userId);
+    console.log("matchingService - Sending match request with job_description_id:", jobDescriptionId);
+    console.log("matchingService - Sending match request with job_role:", jobRole);
+    console.log("matchingService - Sending match request with user_id:", userId);
     
     const response = await fetch(
       "http://localhost:9000/match-job",
@@ -61,8 +61,8 @@ export const queryBestMatch = async (
         body: JSON.stringify({ 
           job_description: jobDescription,
           job_description_id: jobDescriptionId,
-          job_role: jobRole,
-          user_id: userId
+          job_role: jobRole || undefined, // Ensure job_role is defined or undefined (not null or "")
+          user_id: userId || undefined  // Ensure user_id is defined or undefined (not null or "")
         }),
       }
     );

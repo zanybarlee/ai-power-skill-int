@@ -21,6 +21,9 @@ export function useShortlists() {
   } = useMatchingLogic(refetchMatchedCandidates);
 
   const handleMatch = async (jobDescriptionId?: string, jobRole?: string) => {
+    console.log("useShortlists handleMatch - jobRole:", jobRole);
+    console.log("useShortlists handleMatch - userId:", userId);
+    console.log("useShortlists handleMatch - jobDescriptionId:", jobDescriptionId);
     await handleMatchCore(jobDescription, jobDescriptionId, jobRole, userId);
   };
 

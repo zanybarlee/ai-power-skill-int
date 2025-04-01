@@ -12,6 +12,7 @@ export const CandidateTableColumns = () => {
         <TableHead className="text-aptiv-gray-700">Experience</TableHead>
         <TableHead className="text-aptiv-gray-700">Skills</TableHead>
         <TableHead className="text-aptiv-gray-700">Match Score</TableHead>
+        <TableHead className="text-aptiv-gray-700">Status</TableHead>
         <TableHead className="text-aptiv-gray-700 text-right">Actions</TableHead>
       </TableRow>
     </TableHeader>

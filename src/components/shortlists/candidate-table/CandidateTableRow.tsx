@@ -3,7 +3,13 @@ import React from "react";
 import { TableRow, TableCell } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { BookmarkX, Mail } from "lucide-react";
+import { BookmarkX, Mail, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 interface Candidate {
   id: string;
@@ -18,6 +24,7 @@ interface Candidate {
   job_id?: string;
   job_description?: string;
   job_role?: string;
+  status?: string;
 }
 
 interface CandidateTableRowProps {
@@ -25,13 +32,57 @@ interface CandidateTableRowProps {
   onRowClick: (id: string) => void;
   onContact: (email: string) => void;
   onRemove: (id: string) => void;
+  onStatusChange?: (id: string, status: string) => void;
 }
+
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case 'matched':
+      return "text-blue-700 bg-blue-100 border-blue-200";
+    case 'shortlisted':
+      return "text-purple-700 bg-purple-100 border-purple-200";
+    case 'interview_accepted':
+      return "text-green-700 bg-green-100 border-green-200";
+    case 'interview_rejected':
+      return "text-red-700 bg-red-100 border-red-200";
+    case 'offer_made':
+      return "text-amber-700 bg-amber-100 border-amber-200";
+    case 'offer_accepted':
+      return "text-emerald-700 bg-emerald-100 border-emerald-200";
+    case 'offer_rejected':
+      return "text-rose-700 bg-rose-100 border-rose-200";
+    default:
+      return "text-gray-700 bg-gray-100 border-gray-200";
+  }
+};
+
+const getStatusLabel = (status: string) => {
+  switch (status) {
+    case 'matched':
+      return "Matched";
+    case 'shortlisted':
+      return "Shortlisted";
+    case 'interview_accepted':
+      return "Interview Accepted";
+    case 'interview_rejected':
+      return "Interview Rejected";
+    case 'offer_made':
+      return "Offer Made";
+    case 'offer_accepted':
+      return "Offer Accepted";
+    case 'offer_rejected':
+      return "Offer Rejected";
+    default:
+      return "Unknown";
+  }
+};
 
 export const CandidateTableRow = ({
   candidate,
   onRowClick,
   onContact,
   onRemove,
+  onStatusChange,
 }: CandidateTableRowProps) => {
   return (
     <TableRow
@@ -59,6 +110,48 @@ export const CandidateTableRow = ({
         </div>
       </TableCell>
       <TableCell className="text-aptiv-gray-600">{candidate.match_score}%</TableCell>
+      <TableCell>
+        {onStatusChange ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild onClick={(e) => e.stopPropagation()}>
+              <Button variant="outline" size="sm" className={`${getStatusColor(candidate.status || 'matched')} px-2 py-1 text-xs h-auto`}>
+                {getStatusLabel(candidate.status || 'matched')}
+                <ChevronDown className="ml-1 h-3 w-3" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'matched')}>
+                Matched
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'shortlisted')}>
+                Shortlisted
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'interview_accepted')}>
+                Interview Accepted
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'interview_rejected')}>
+                Interview Rejected
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'offer_made')}>
+                Offer Made
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'offer_accepted')}>
+                Offer Accepted
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'offer_rejected')}>
+                Offer Rejected
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Badge 
+            variant="outline" 
+            className={`${getStatusColor(candidate.status || 'matched')} px-2 py-1 text-xs inline-block`}
+          >
+            {getStatusLabel(candidate.status || 'matched')}
+          </Badge>
+        )}
+      </TableCell>
       <TableCell className="text-right">
         <div className="flex justify-end gap-2" onClick={(e) => e.stopPropagation()}>
           <Button

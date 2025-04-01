@@ -23,4 +23,6 @@ export interface MatchedCandidate {
   job_id?: string;
   job_description?: string;
   job_role?: string;
+  status?: string;
+  user_id?: string;
 }

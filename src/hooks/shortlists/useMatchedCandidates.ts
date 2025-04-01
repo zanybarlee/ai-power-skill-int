@@ -17,6 +17,7 @@ export function useMatchedCandidates(userId?: string | null) {
             job_description_id,
             job_role,
             user_id,
+            status,
             cv_metadata:cv_metadata_id (
               id,
               name,
@@ -76,7 +77,8 @@ export function useMatchedCandidates(userId?: string | null) {
             job_id: match.job_description_id,
             job_description: match.job_description || 'No job description',
             job_role: match.job_role,
-            user_id: match.user_id
+            user_id: match.user_id,
+            status: match.status || 'matched'
           };
         });
       } catch (error) {

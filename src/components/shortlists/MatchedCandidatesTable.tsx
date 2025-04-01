@@ -17,6 +17,7 @@ interface MatchedCandidate {
   skills: string[];
   email: string;
   match_score: number;
+  status?: string;
 }
 
 interface MatchedCandidatesTableProps {
@@ -42,6 +43,33 @@ export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCa
 
   const handleContact = (email: string) => {
     window.location.href = `mailto:${email}`;
+  };
+
+  const handleStatusChange = async (candidateId: string, status: string) => {
+    try {
+      const { error } = await supabase
+        .from('cv_match')
+        .update({ status })
+        .eq('id', candidateId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Status updated",
+        description: `Candidate status has been updated successfully.`,
+      });
+      
+      // Note: In a production app, we would refresh the candidates list here
+      // For now, we're relying on the parent component to handle this via refetching
+      
+    } catch (error) {
+      console.error('Error updating status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update candidate status. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleClearMatches = async () => {
@@ -75,6 +103,7 @@ export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCa
               onRowClick={fetchCandidateDetails}
               onContact={handleContact}
               onRemove={handleRemove}
+              onStatusChange={handleStatusChange}
             />
           ))}
         </TableBody>

@@ -2,25 +2,19 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
-import { Card } from "@/components/ui/card";
-import { BarChart, PieChart, LineChart, Activity, Loader2, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useUserSession } from "@/components/job-descriptions/hooks/useUserSession";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { UserHeader } from "@/components/dashboard/UserHeader";
+import { MetricsGrid } from "@/components/dashboard/MetricsGrid";
+import { RecentActivities } from "@/components/dashboard/RecentActivities";
+import { DashboardLoading } from "@/components/dashboard/DashboardLoading";
+import { RecentActivity } from "@/components/dashboard/ActivityItem";
 
 interface DashboardStats {
   jobPostings: number;
   candidates: number;
   matches: number;
   successRate: number;
-}
-
-interface RecentActivity {
-  id: string;
-  type: 'job' | 'candidate' | 'match';
-  title: string;
-  description: string;
-  timestamp: string;
 }
 
 const Dashboard = () => {
@@ -161,128 +155,18 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-2xl font-semibold text-aptiv-gray-700">Dashboard Overview</h1>
-          
-          <div className="flex items-center space-x-4">
-            <div className="text-right text-aptiv-gray-500 text-sm">
-              <div>{new Date().toLocaleDateString()}</div>
-              {userId && <div className="text-aptiv-gray-700 mt-1">User ID: {userId.substring(0, 8)}...</div>}
-            </div>
-            
-            {userEmail && (
-              <Avatar className="h-10 w-10">
-                <AvatarImage src={userAvatar || ""} alt="User avatar" />
-                <AvatarFallback className="bg-aptiv text-white">
-                  {userEmail ? userEmail[0].toUpperCase() : <User className="h-5 w-5" />}
-                </AvatarFallback>
-              </Avatar>
-            )}
-          </div>
+          <UserHeader userId={userId} userEmail={userEmail} userAvatar={userAvatar} />
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Loader2 className="h-8 w-8 animate-spin text-aptiv" />
-            <span className="ml-2 text-aptiv-gray-600">Loading dashboard data...</span>
-          </div>
+          <DashboardLoading />
         ) : (
           <>
             {/* Key Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="bg-white border-aptiv/10 p-6 shadow-sm">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-aptiv-gray-500 text-sm">Job Postings</p>
-                    <p className="text-3xl font-bold text-aptiv-gray-700 mt-2">{stats.jobPostings}</p>
-                    <p className="text-aptiv text-sm mt-2 flex items-center">
-                      <span className="inline-block mr-1">↑</span>
-                      5% increase
-                    </p>
-                  </div>
-                  <div className="bg-aptiv/10 p-3 rounded-lg">
-                    <BarChart className="w-6 h-6 text-aptiv" />
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="bg-white border-aptiv/10 p-6 shadow-sm">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-aptiv-gray-500 text-sm">Candidates</p>
-                    <p className="text-3xl font-bold text-aptiv-gray-700 mt-2">{stats.candidates}</p>
-                    <p className="text-aptiv text-sm mt-2 flex items-center">
-                      <span className="inline-block mr-1">↑</span>
-                      12% increase
-                    </p>
-                  </div>
-                  <div className="bg-aptiv/10 p-3 rounded-lg">
-                    <PieChart className="w-6 h-6 text-aptiv" />
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="bg-white border-aptiv/10 p-6 shadow-sm">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-aptiv-gray-500 text-sm">Matches</p>
-                    <p className="text-3xl font-bold text-aptiv-gray-700 mt-2">{stats.matches}</p>
-                    <p className="text-aptiv text-sm mt-2 flex items-center">
-                      <span className="inline-block mr-1">↑</span>
-                      15% increase
-                    </p>
-                  </div>
-                  <div className="bg-aptiv/10 p-3 rounded-lg">
-                    <Activity className="w-6 h-6 text-aptiv" />
-                  </div>
-                </div>
-              </Card>
-
-              <Card className="bg-white border-aptiv/10 p-6 shadow-sm">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <p className="text-aptiv-gray-500 text-sm">Success Rate</p>
-                    <p className="text-3xl font-bold text-aptiv-gray-700 mt-2">{stats.successRate}%</p>
-                    <p className="text-aptiv text-sm mt-2 flex items-center">
-                      <span className="inline-block mr-1">↑</span>
-                      3% increase
-                    </p>
-                  </div>
-                  <div className="bg-aptiv/10 p-3 rounded-lg">
-                    <LineChart className="w-6 h-6 text-aptiv" />
-                  </div>
-                </div>
-              </Card>
-            </div>
+            <MetricsGrid stats={stats} />
 
             {/* Recent Activity */}
-            <Card className="bg-white border-aptiv/10 p-6 shadow-sm">
-              <h2 className="text-xl font-semibold text-aptiv-gray-700 mb-4">Recent Activity</h2>
-              {recentActivities.length > 0 ? (
-                <div className="space-y-4">
-                  {recentActivities.map((activity, index) => (
-                    <div key={activity.id} className={`flex items-center justify-between py-3 ${
-                      index < recentActivities.length - 1 ? 'border-b border-aptiv/10' : ''
-                    }`}>
-                      <div className="flex items-center gap-4">
-                        <div className="bg-aptiv/10 p-2 rounded-lg">
-                          {activity.type === 'job' && <BarChart className="w-5 h-5 text-aptiv" />}
-                          {activity.type === 'candidate' && <PieChart className="w-5 h-5 text-aptiv" />}
-                          {activity.type === 'match' && <Activity className="w-5 h-5 text-aptiv" />}
-                        </div>
-                        <div>
-                          <p className="text-aptiv-gray-700 font-medium">{activity.title}</p>
-                          <p className="text-aptiv-gray-500 text-sm">{activity.description}</p>
-                        </div>
-                      </div>
-                      <span className="text-aptiv-gray-500 text-sm">
-                        {new Date(activity.timestamp).toLocaleDateString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-aptiv-gray-500 text-center py-8">No recent activities found</p>
-              )}
-            </Card>
+            <RecentActivities activities={recentActivities} />
           </>
         )}
       </div>

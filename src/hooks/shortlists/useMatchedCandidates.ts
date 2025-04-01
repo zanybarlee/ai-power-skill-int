@@ -30,30 +30,27 @@ export function useMatchedCandidates() {
         throw error;
       }
 
-      const jobDescriptionIds = data
-        .map(match => match.job_description_id)
-        .filter(Boolean) as string[];
-      
-      let jobTitleMap = new Map();
-      
-      if (jobDescriptionIds.length > 0) {
-        const { data: jobsData } = await supabase
-          .from('job_descriptions')
-          .select('id, job_title')
-          .in('id', jobDescriptionIds);
-        
-        if (jobsData && jobsData.length > 0) {
-          jobsData.forEach(job => {
-            jobTitleMap.set(job.id, job.job_title || 'Unknown Job');
-          });
-        }
-      }
-
+      // Process job descriptions to extract title before dash
       return data.map((match) => {
-        const jobTitle = match.job_description_id && jobTitleMap.has(match.job_description_id)
-          ? jobTitleMap.get(match.job_description_id)
-          : 'Unknown Job';
-
+        // Extract job title from job_description (text before the first dash)
+        let jobTitle = 'Unknown Job';
+        
+        if (match.job_description) {
+          // Find the position of the first dash
+          const dashIndex = match.job_description.indexOf('-');
+          
+          if (dashIndex > 0) {
+            // Extract only the text before the dash and trim whitespace
+            jobTitle = match.job_description.substring(0, dashIndex).trim();
+          } else {
+            // If there's no dash, use the whole job description (up to 50 chars)
+            jobTitle = match.job_description.length > 50 
+              ? match.job_description.substring(0, 50) + '...' 
+              : match.job_description;
+          }
+        }
+        
+        // Continue with the existing mapped data structure
         return {
           id: match.id,
           name: match.cv_metadata?.name || 'Unknown',
@@ -66,7 +63,8 @@ export function useMatchedCandidates() {
           email: match.cv_metadata?.email || '',
           match_score: Math.round(match.match_score || 0),
           job_title: jobTitle,
-          job_id: match.job_description_id
+          job_id: match.job_description_id,
+          job_description: match.job_description || 'No job description'
         };
       });
     }

@@ -21,4 +21,5 @@ export interface MatchedCandidate {
   match_score: number;
   job_title?: string;
   job_id?: string;
+  job_description?: string;
 }

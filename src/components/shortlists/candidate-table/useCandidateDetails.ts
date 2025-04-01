@@ -14,14 +14,32 @@ export const useCandidateDetails = () => {
       // First try to get from cv_match table (for shortlisted candidates)
       const { data: matchData, error: matchError } = await supabase
         .from('cv_match')
-        .select('*, cv_metadata(*), job_description_id')
+        .select('*, cv_metadata(*), job_description_id, job_description')
         .eq('id', candidateId)
         .maybeSingle();
 
       if (matchData) {
-        // If we found data in cv_match, process it as before
+        // If we found data in cv_match, process it
+        
+        // Extract job title from job_description (text before the first dash)
         let jobTitle = 'Unknown Job';
         
+        if (matchData.job_description) {
+          // Find the position of the first dash
+          const dashIndex = matchData.job_description.indexOf('-');
+          
+          if (dashIndex > 0) {
+            // Extract only the text before the dash and trim whitespace
+            jobTitle = matchData.job_description.substring(0, dashIndex).trim();
+          } else {
+            // If there's no dash, use up to the first 50 chars
+            jobTitle = matchData.job_description.length > 50 
+              ? matchData.job_description.substring(0, 50) + '...'
+              : matchData.job_description;
+          }
+        }
+        
+        // If we have a job_description_id, try to get a more specific job title from job_descriptions
         if (matchData.job_description_id) {
           console.log("Fetching job title for ID:", matchData.job_description_id);
           const { data: jobData, error: jobError } = await supabase

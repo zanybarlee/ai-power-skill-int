@@ -6,6 +6,7 @@ import { useMatchingLogic } from "./shortlists/useMatchingLogic";
 import { supabase } from "@/integrations/supabase/client";
 // Import directly from the hooks file, not through the re-export
 import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
 
 export function useShortlists() {
   const { toast } = useToast();
@@ -20,6 +21,11 @@ export function useShortlists() {
     handleMatch: handleMatchCore,
     handleClearMatches: handleClearMatchesCore
   } = useMatchingLogic(refetchMatchedCandidates);
+
+  // Clear job description when component mounts
+  useEffect(() => {
+    setJobDescription("");
+  }, [setJobDescription]);
 
   const handleMatch = async (jobDescriptionId?: string, jobRole?: string) => {
     console.log("useShortlists handleMatch - jobRole:", jobRole);

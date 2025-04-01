@@ -4,14 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 export function useJobDescriptionData(userId: string | null) {
-  const [jobDescription, setJobDescription] = useState(() => {
-    return localStorage.getItem("jobDescription") || "";
-  });
+  // Start with an empty job description instead of loading from localStorage
+  const [jobDescription, setJobDescription] = useState("");
 
-  useEffect(() => {
-    localStorage.setItem("jobDescription", jobDescription);
-  }, [jobDescription]);
-
+  // Remove the useEffect that saves to localStorage - we don't want to persist this value
+  
   const { data: jobDescriptions } = useQuery({
     queryKey: ['jobDescriptions', userId],
     queryFn: async () => {

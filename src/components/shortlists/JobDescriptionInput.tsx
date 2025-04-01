@@ -35,6 +35,12 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
 }) => {
   const [selectedJobId, setSelectedJobId] = useState<string | undefined>(undefined);
   const [selectedJobRole, setSelectedJobRole] = useState<string | undefined>(undefined);
+  
+  // Reset selected job when component mounts
+  useEffect(() => {
+    setSelectedJobId(undefined);
+    setSelectedJobRole(undefined);
+  }, []);
 
   const handleJobDescriptionSelect = (id: string) => {
     const selectedJob = jobDescriptions?.find(job => job.id === id);
@@ -59,7 +65,7 @@ export const JobDescriptionInput: React.FC<JobDescriptionInputProps> = ({
           <label className="text-aptiv-gray-600 text-sm font-medium">
             From Job Descriptions
           </label>
-          <Select onValueChange={handleJobDescriptionSelect}>
+          <Select onValueChange={handleJobDescriptionSelect} value={selectedJobId}>
             <SelectTrigger className="w-full bg-white border-aptiv/20">
               <SelectValue placeholder="Select from existing job descriptions" />
             </SelectTrigger>

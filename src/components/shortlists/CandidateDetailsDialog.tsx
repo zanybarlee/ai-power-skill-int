@@ -27,6 +27,7 @@ interface CandidateDetails {
   match_score: number;
   job_description: string;
   job_title?: string;
+  job_id?: string;
   matched_at: string;
   nationality?: string;
   current_salary?: number;
@@ -57,6 +58,7 @@ export const CandidateDetailsDialog = ({
           <DialogDescription className="text-aptiv-gray-500 space-y-1">
             <div>Match Score: {candidate.match_score}%</div>
             {candidate.job_title && <div>Job: {candidate.job_title}</div>}
+            {candidate.job_id && <div>Job ID: {candidate.job_id}</div>}
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="h-full max-h-[calc(80vh-140px)] pr-4">

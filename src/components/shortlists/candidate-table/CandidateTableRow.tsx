@@ -71,13 +71,14 @@ export const CandidateTableRow = ({
             onClick={(e) => e.stopPropagation()}
           />
         ) : (
-          <StatusBadge status={candidate.status || 'matched'} />
+          <StatusBadge status={candidate.status || 'matched'} jobDescriptionId={candidate.job_id} />
         )}
       </TableCell>
       <TableCell className="text-right">
         <CandidateActions 
           email={candidate.email}
           candidateId={candidate.id}
+          jobDescriptionId={candidate.job_id}
           onContact={onContact}
           onRemove={onRemove}
           onClick={(e) => e.stopPropagation()}

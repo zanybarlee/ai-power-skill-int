@@ -39,16 +39,37 @@ export function useDashboardStats() {
   });
 
   const { data: cvMetadata, isLoading: isCandidatesLoading } = useQuery({
-    queryKey: ['dashboardCandidates'],
+    queryKey: ['dashboardCandidates', userId],
     queryFn: async () => {
+      if (!userId) return [];
+      
+      // Get matches for this user first
+      const { data: matches, error: matchesError } = await supabase
+        .from('cv_match')
+        .select('cv_metadata_id')
+        .eq('user_id', userId);
+      
+      if (matchesError) throw matchesError;
+      
+      // If no matches, return empty array
+      if (!matches || matches.length === 0) return [];
+      
+      // Extract CV metadata IDs from matches
+      const cvMetadataIds = matches.map(match => match.cv_metadata_id).filter(Boolean);
+      
+      // If no valid IDs, return empty array
+      if (cvMetadataIds.length === 0) return [];
+      
+      // Get CV metadata for matched candidates
       const { data, error } = await supabase
         .from('cv_metadata')
         .select('*')
-        .limit(100);
+        .in('id', cvMetadataIds);
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!userId,
   });
 
   const { data: matches, isLoading: isMatchesLoading } = useQuery({

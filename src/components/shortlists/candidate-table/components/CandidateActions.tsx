@@ -6,6 +6,7 @@ import { Mail, BookmarkX } from "lucide-react";
 interface CandidateActionsProps {
   email: string;
   candidateId: string;
+  jobDescriptionId?: string;
   onContact: (email: string) => void;
   onRemove: (id: string) => void;
   onClick?: (e: React.MouseEvent) => void;
@@ -14,6 +15,7 @@ interface CandidateActionsProps {
 export const CandidateActions = ({
   email,
   candidateId,
+  jobDescriptionId,
   onContact,
   onRemove,
   onClick,
@@ -25,6 +27,7 @@ export const CandidateActions = ({
         size="icon"
         onClick={() => onContact(email)}
         className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
+        title="Contact candidate"
       >
         <Mail className="h-4 w-4" />
       </Button>
@@ -33,6 +36,7 @@ export const CandidateActions = ({
         size="icon"
         onClick={() => onRemove(candidateId)}
         className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
+        title="Remove from shortlist"
       >
         <BookmarkX className="h-4 w-4" />
       </Button>

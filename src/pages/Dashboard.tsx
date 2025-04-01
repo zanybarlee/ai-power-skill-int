@@ -5,6 +5,7 @@ import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { BarChart, PieChart, LineChart, Activity, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useUserSession } from "@/components/job-descriptions/hooks/useUserSession";
 
 interface DashboardStats {
   jobPostings: number;
@@ -28,17 +29,25 @@ const Dashboard = () => {
     matches: 0,
     successRate: 0,
   });
+  
+  // Get the current user's ID
+  const { userId, isLoading: isUserLoading } = useUserSession();
 
   const { data: jobDescriptions, isLoading: isJobsLoading } = useQuery({
-    queryKey: ['dashboardJobs'],
+    queryKey: ['dashboardJobs', userId],
     queryFn: async () => {
+      // Only query if we have a userId
+      if (!userId) return [];
+      
       const { data, error } = await supabase
         .from('job_descriptions')
-        .select('*');
+        .select('*')
+        .eq('user_id', userId);
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!userId, // Only run the query if userId is available
   });
 
   const { data: cvMetadata, isLoading: isCandidatesLoading } = useQuery({
@@ -55,15 +64,20 @@ const Dashboard = () => {
   });
 
   const { data: matches, isLoading: isMatchesLoading } = useQuery({
-    queryKey: ['dashboardMatches'],
+    queryKey: ['dashboardMatches', userId],
     queryFn: async () => {
+      // Only query if we have a userId
+      if (!userId) return [];
+      
       const { data, error } = await supabase
         .from('cv_match')
-        .select('*');
+        .select('*')
+        .eq('user_id', userId);
       
       if (error) throw error;
       return data || [];
-    }
+    },
+    enabled: !!userId, // Only run the query if userId is available
   });
 
   // Generate recent activities from the fetched data
@@ -120,7 +134,7 @@ const Dashboard = () => {
     }
   }, [jobDescriptions, cvMetadata, matches]);
 
-  const isLoading = isJobsLoading || isCandidatesLoading || isMatchesLoading;
+  const isLoading = isUserLoading || isJobsLoading || isCandidatesLoading || isMatchesLoading;
   const recentActivities = getRecentActivities();
 
   return (

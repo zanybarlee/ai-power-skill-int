@@ -168,12 +168,14 @@ const Dashboard = () => {
               {userId && <div className="text-aptiv-gray-700 mt-1">User ID: {userId.substring(0, 8)}...</div>}
             </div>
             
-            <Avatar className="h-10 w-10">
-              <AvatarImage src={userAvatar || ""} alt="User avatar" />
-              <AvatarFallback className="bg-aptiv text-white">
-                {userEmail ? userEmail[0].toUpperCase() : <User className="h-5 w-5" />}
-              </AvatarFallback>
-            </Avatar>
+            {userEmail && (
+              <Avatar className="h-10 w-10">
+                <AvatarImage src={userAvatar || ""} alt="User avatar" />
+                <AvatarFallback className="bg-aptiv text-white">
+                  {userEmail ? userEmail[0].toUpperCase() : <User className="h-5 w-5" />}
+                </AvatarFallback>
+              </Avatar>
+            )}
           </div>
         </div>
 

@@ -18,6 +18,10 @@ export const useCandidateDetails = () => {
         .eq('id', candidateId)
         .maybeSingle();
 
+      if (matchError) {
+        throw matchError;
+      }
+
       if (matchData) {
         // If we found data in cv_match, process it
         

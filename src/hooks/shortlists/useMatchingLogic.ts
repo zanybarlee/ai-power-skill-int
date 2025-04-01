@@ -12,7 +12,12 @@ export function useMatchingLogic(refetchMatchedCandidates: () => Promise<any>) {
   const [matchingResults, setMatchingResults] = useState<MatchResult[]>([]);
   const [selectedJobId, setSelectedJobId] = useState<string | undefined>(undefined);
 
-  const handleMatch = async (jobDescription: string, jobDescriptionId?: string) => {
+  const handleMatch = async (
+    jobDescription: string, 
+    jobDescriptionId?: string,
+    jobRole?: string,
+    userId?: string
+  ) => {
     if (!jobDescription.trim()) {
       toast({
         title: "Error",
@@ -27,7 +32,9 @@ export function useMatchingLogic(refetchMatchedCandidates: () => Promise<any>) {
     
     try {
       console.log("Starting match with job ID:", jobDescriptionId);
-      const result = await queryBestMatch(jobDescription, jobDescriptionId);
+      console.log("Starting match with job role:", jobRole);
+      console.log("Starting match with user ID:", userId);
+      const result = await queryBestMatch(jobDescription, jobDescriptionId, jobRole, userId);
       
       const parsedResults = Array.isArray(result.matches) 
         ? result.matches.map((match) => ({

@@ -1,6 +1,5 @@
 
 import { useState } from "react";
-// Import directly from the hooks file, not through the re-export
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -68,8 +67,9 @@ export const useCandidateDetails = () => {
           match_score: matchData.match_score,
           job_description: matchData.job_description,
           job_title: jobTitle,
+          job_id: matchData.job_description_id,
           matched_at: matchData.matched_at,
-          job_description_id: matchData.job_description_id,
+          job_description_id: matchData.job_description_id, // Ensure we have this field
           job_role: matchData.job_role,
           user_id: matchData.user_id,
           status: matchData.status || 'matched'
@@ -97,6 +97,7 @@ export const useCandidateDetails = () => {
           match_score: null,
           job_description: null,
           job_title: null,
+          job_id: null,
           matched_at: null,
           job_role: null,
           user_id: null,

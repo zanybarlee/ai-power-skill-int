@@ -57,7 +57,7 @@ export const CandidateDetailsDialog = ({
           </DialogTitle>
           <DialogDescription className="text-aptiv-gray-500 space-y-1">
             <div>Match Score: {candidate.match_score}%</div>
-            {candidate.job_title && <div>Job: {candidate.job_title}</div>}
+            {candidate.job_title && <div>Job Title: {candidate.job_title}</div>}
             {candidate.job_id && <div>Job ID: {candidate.job_id}</div>}
           </DialogDescription>
         </DialogHeader>

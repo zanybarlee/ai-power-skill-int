@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, Globe } from "lucide-react";
+import { Loader2, Globe, Briefcase } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { processJobDescription } from "@/services/jobDescriptionService";
@@ -20,6 +20,7 @@ export const JobCrawlerTab = ({
   onJobsImport,
 }: JobCrawlerTabProps) => {
   const [url, setUrl] = useState("");
+  const [industry, setIndustry] = useState("");
   const [crawlStatus, setCrawlStatus] = useState<"idle" | "crawling" | "processing" | "complete">("idle");
   const [progress, setProgress] = useState(0);
   const [crawledJobs, setCrawledJobs] = useState<any[]>([]);
@@ -37,19 +38,21 @@ export const JobCrawlerTab = ({
       // Simulate crawling for now - in a real implementation, this would call a crawler service
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Mock crawled data
+      // Mock crawled data - now including industry information
       const mockCrawledData = [
         {
           title: "Software Engineer",
           description: "We are looking for a software engineer with 5+ years of experience in React and Node.js.",
           company: "Tech Solutions Inc",
           location: "Remote",
+          industry: industry || "Technology",
         },
         {
           title: "Product Manager",
           description: "Experienced product manager needed to lead our SaaS platform development.",
           company: "Product Innovations",
           location: "New York, NY",
+          industry: industry || "Technology",
         }
       ];
       
@@ -62,12 +65,13 @@ export const JobCrawlerTab = ({
         const job = mockCrawledData[i];
         const processedData = await processJobDescription(job.description);
         
-        // Insert into database
+        // Insert into database with industry information
         const { error } = await supabase.from('job_descriptions').insert({
           original_text: job.description,
           job_title: job.title || processedData?.extractedRole?.title,
           company_name: job.company,
           location: job.location,
+          industry: industry || job.industry,  // Use the specified industry or default
           status: 'processed'
         });
         
@@ -86,6 +90,7 @@ export const JobCrawlerTab = ({
       // Reset the form
       setTimeout(() => {
         setUrl("");
+        setIndustry("");
         setCrawledJobs([]);
         setCrawlStatus("idle");
         setProgress(0);
@@ -111,9 +116,13 @@ export const JobCrawlerTab = ({
         </p>
         
         <div className="space-y-4">
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-end">
             <div className="flex-1">
+              <label htmlFor="url" className="block text-sm font-medium text-gray-600 mb-1">
+                Website URL
+              </label>
               <Input
+                id="url"
                 type="url"
                 placeholder="https://example.com/careers"
                 value={url}
@@ -121,6 +130,23 @@ export const JobCrawlerTab = ({
                 disabled={crawlStatus !== "idle"}
                 className="w-full"
               />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="industry" className="block text-sm font-medium text-gray-600 mb-1">
+                Industry Field
+              </label>
+              <div className="relative">
+                <Input
+                  id="industry"
+                  type="text"
+                  placeholder="e.g. Technology, Healthcare"
+                  value={industry}
+                  onChange={(e) => setIndustry(e.target.value)}
+                  disabled={crawlStatus !== "idle"}
+                  className="w-full pl-9"
+                />
+                <Briefcase className="absolute left-2.5 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              </div>
             </div>
             <Button 
               onClick={handleCrawlWebsite}
@@ -164,6 +190,9 @@ export const JobCrawlerTab = ({
             <Card key={index} className="p-4">
               <h4 className="font-medium">{job.title}</h4>
               <p className="text-sm text-gray-500">{job.company} • {job.location}</p>
+              {job.industry && (
+                <p className="text-sm text-gray-500"><span className="font-medium">Industry:</span> {job.industry}</p>
+              )}
               <p className="text-sm mt-2 line-clamp-2">{job.description}</p>
             </Card>
           ))}

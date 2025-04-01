@@ -9,6 +9,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { processJobDescription } from "@/services/jobDescriptionService";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface JobCrawlerTabProps {
   isProcessing: boolean;
@@ -19,21 +26,25 @@ export const JobCrawlerTab = ({
   isProcessing,
   onJobsImport,
 }: JobCrawlerTabProps) => {
-  const [url, setUrl] = useState("");
+  const [websiteSource, setWebsiteSource] = useState("");
+  const [customUrl, setCustomUrl] = useState("");
   const [industry, setIndustry] = useState("");
   const [crawlStatus, setCrawlStatus] = useState<"idle" | "crawling" | "processing" | "complete">("idle");
   const [progress, setProgress] = useState(0);
   const [crawledJobs, setCrawledJobs] = useState<any[]>([]);
 
   const handleCrawlWebsite = async () => {
-    if (!url) {
-      toast.error("Please enter a website URL to crawl");
+    if (!websiteSource) {
+      toast.error("Please select a website source to crawl");
       return;
     }
 
     try {
       setCrawlStatus("crawling");
       setProgress(25);
+      
+      // Get the URL to crawl
+      const url = websiteSource === "other" ? customUrl : websiteSource;
       
       // Simulate crawling for now - in a real implementation, this would call a crawler service
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -89,7 +100,8 @@ export const JobCrawlerTab = ({
       
       // Reset the form
       setTimeout(() => {
-        setUrl("");
+        setWebsiteSource("");
+        setCustomUrl("");
         setIndustry("");
         setCrawledJobs([]);
         setCrawlStatus("idle");
@@ -112,25 +124,49 @@ export const JobCrawlerTab = ({
       <div className="bg-white p-6 rounded-lg border border-gray-200">
         <h2 className="text-xl font-semibold mb-4">Job Description Crawler</h2>
         <p className="text-gray-600 mb-4">
-          Enter a website URL to crawl for job descriptions. The system will automatically extract job details and import them.
+          Select a job board website to crawl for job descriptions. The system will automatically extract job details and import them.
         </p>
         
         <div className="space-y-4">
           <div className="flex gap-4 items-end">
             <div className="flex-1">
-              <label htmlFor="url" className="block text-sm font-medium text-gray-600 mb-1">
-                Website URL
+              <label htmlFor="website" className="block text-sm font-medium text-gray-600 mb-1">
+                Website
               </label>
-              <Input
-                id="url"
-                type="url"
-                placeholder="https://example.com/careers"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
+              <Select 
+                value={websiteSource} 
+                onValueChange={setWebsiteSource}
                 disabled={crawlStatus !== "idle"}
-                className="w-full"
-              />
+              >
+                <SelectTrigger id="website" className="w-full">
+                  <SelectValue placeholder="Select a job board" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="https://www.mycareersfuture.gov.sg">MyCareerFuture</SelectItem>
+                  <SelectItem value="https://www.jobstreet.com.sg">JobStreet.com</SelectItem>
+                  <SelectItem value="https://sg.indeed.com">Indeed</SelectItem>
+                  <SelectItem value="other">Other (specify URL)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+            
+            {websiteSource === "other" && (
+              <div className="flex-1">
+                <label htmlFor="customUrl" className="block text-sm font-medium text-gray-600 mb-1">
+                  Custom URL
+                </label>
+                <Input
+                  id="customUrl"
+                  type="url"
+                  placeholder="https://example.com/careers"
+                  value={customUrl}
+                  onChange={(e) => setCustomUrl(e.target.value)}
+                  disabled={crawlStatus !== "idle"}
+                  className="w-full"
+                />
+              </div>
+            )}
+            
             <div className="flex-1">
               <label htmlFor="industry" className="block text-sm font-medium text-gray-600 mb-1">
                 Industry Field
@@ -150,7 +186,7 @@ export const JobCrawlerTab = ({
             </div>
             <Button 
               onClick={handleCrawlWebsite}
-              disabled={crawlStatus !== "idle" || !url}
+              disabled={crawlStatus !== "idle" || !websiteSource || (websiteSource === "other" && !customUrl)}
               className="whitespace-nowrap"
             >
               {crawlStatus === "idle" ? (

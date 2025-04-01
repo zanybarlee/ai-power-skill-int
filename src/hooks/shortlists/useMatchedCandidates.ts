@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { normalizeSkills } from "@/utils/candidateUtils";
 
-export function useMatchedCandidates() {
+export function useMatchedCandidates(userId?: string | null) {
   const { data: matchedCandidates = [], refetch: refetchMatchedCandidates } = useQuery({
-    queryKey: ['matchedCandidates'],
+    queryKey: ['matchedCandidates', userId],
     queryFn: async () => {
       try {
-        const { data, error } = await supabase
+        let query = supabase
           .from('cv_match')
           .select(`
             id,
@@ -27,6 +27,13 @@ export function useMatchedCandidates() {
             )
           `)
           .order('match_score', { ascending: false });
+          
+        // Filter by user_id if provided
+        if (userId) {
+          query = query.eq('user_id', userId);
+        }
+
+        const { data, error } = await query;
 
         if (error) {
           console.error('Error fetching matched candidates:', error);
@@ -68,14 +75,16 @@ export function useMatchedCandidates() {
             job_title: jobTitle,
             job_id: match.job_description_id,
             job_description: match.job_description || 'No job description',
-            job_role: match.job_role
+            job_role: match.job_role,
+            user_id: match.user_id
           };
         });
       } catch (error) {
         console.error('Error in useMatchedCandidates:', error);
         return [];
       }
-    }
+    },
+    enabled: true // Always enable the query, even if userId is null
   });
 
   return {

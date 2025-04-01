@@ -46,20 +46,8 @@ export const MatchedCandidatesTable = ({ candidates, onClearMatches }: MatchedCa
 
   const handleClearMatches = async () => {
     try {
-      const { error } = await supabase
-        .from('cv_match')
-        .delete()
-        .not('id', 'is', null);
-
-      if (error) throw error;
-
-      // Clear UI state
+      // This function now just calls the prop function
       onClearMatches();
-      
-      toast({
-        title: "Matches cleared",
-        description: "All matches have been cleared from the table and database.",
-      });
     } catch (error) {
       console.error('Error clearing matches:', error);
       toast({

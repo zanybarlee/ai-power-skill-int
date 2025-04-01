@@ -10,7 +10,7 @@ export function useShortlists() {
   const { toast } = useToast();
   const { userId } = useShortlistsAuth();
   const { jobDescription, setJobDescription, jobDescriptions } = useJobDescriptionData(userId);
-  const { matchedCandidates, refetchMatchedCandidates } = useMatchedCandidates();
+  const { matchedCandidates, refetchMatchedCandidates } = useMatchedCandidates(userId);
   const { 
     isMatching, 
     matchingResults, 
@@ -36,11 +36,17 @@ export function useShortlists() {
 
   const handleClearMatches = async () => {
     try {
-      const { error } = await supabase
-        .from('cv_match')
-        .delete()
-        .not('id', 'is', null);
-
+      let query = supabase.from('cv_match').delete();
+      
+      // If userId is available, only delete the user's matches
+      if (userId) {
+        query = query.eq('user_id', userId);
+      } else {
+        query = query.not('id', 'is', null);
+      }
+      
+      const { error } = await query;
+      
       if (error) throw error;
 
       // Clear UI state
@@ -48,7 +54,7 @@ export function useShortlists() {
       
       toast({
         title: "Matches cleared",
-        description: "All matches have been cleared from the table and database.",
+        description: "All your matches have been cleared from the table and database.",
       });
     } catch (error) {
       console.error('Error clearing matches:', error);

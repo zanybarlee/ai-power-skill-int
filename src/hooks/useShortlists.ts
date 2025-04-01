@@ -4,7 +4,8 @@ import { useJobDescriptionData } from "./shortlists/useJobDescriptionData";
 import { useMatchedCandidates } from "./shortlists/useMatchedCandidates";
 import { useMatchingLogic } from "./shortlists/useMatchingLogic";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "./use-toast";
+// Import directly from the hooks file, not through the re-export
+import { useToast } from "@/hooks/use-toast";
 
 export function useShortlists() {
   const { toast } = useToast();

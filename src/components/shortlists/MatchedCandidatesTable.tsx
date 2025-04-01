@@ -1,5 +1,6 @@
 
 import { Table, TableBody } from "@/components/ui/table";
+// Import directly from the hooks file, not through the re-export
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateDetailsDialog } from "./CandidateDetailsDialog";

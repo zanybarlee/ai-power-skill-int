@@ -119,26 +119,50 @@ export const CandidateTableRow = ({
                 <ChevronDown className="ml-1 h-3 w-3" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56" onClick={(e) => e.stopPropagation()}>
-              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'matched')}>
+            <DropdownMenuContent 
+              className="w-56 bg-white shadow-md border border-gray-200" 
+              onClick={(e) => e.stopPropagation()}
+            >
+              <DropdownMenuItem 
+                className="hover:bg-gray-100" 
+                onClick={() => onStatusChange(candidate.id, 'matched')}
+              >
                 Matched
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'shortlisted')}>
+              <DropdownMenuItem 
+                className="hover:bg-gray-100" 
+                onClick={() => onStatusChange(candidate.id, 'shortlisted')}
+              >
                 Shortlisted
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'interview_accepted')}>
+              <DropdownMenuItem 
+                className="hover:bg-gray-100" 
+                onClick={() => onStatusChange(candidate.id, 'interview_accepted')}
+              >
                 Interview Accepted
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'interview_rejected')}>
+              <DropdownMenuItem 
+                className="hover:bg-gray-100" 
+                onClick={() => onStatusChange(candidate.id, 'interview_rejected')}
+              >
                 Interview Rejected
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'offer_made')}>
+              <DropdownMenuItem 
+                className="hover:bg-gray-100" 
+                onClick={() => onStatusChange(candidate.id, 'offer_made')}
+              >
                 Offer Made
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'offer_accepted')}>
+              <DropdownMenuItem 
+                className="hover:bg-gray-100" 
+                onClick={() => onStatusChange(candidate.id, 'offer_accepted')}
+              >
                 Offer Accepted
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => onStatusChange(candidate.id, 'offer_rejected')}>
+              <DropdownMenuItem 
+                className="hover:bg-gray-100" 
+                onClick={() => onStatusChange(candidate.id, 'offer_rejected')}
+              >
                 Offer Rejected
               </DropdownMenuItem>
             </DropdownMenuContent>

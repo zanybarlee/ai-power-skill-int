@@ -8,7 +8,7 @@ interface CandidateActionsProps {
   candidateId: string;
   jobDescriptionId?: string;
   onContact: (email: string) => void;
-  onRemove: (id: string) => void;
+  onRemove: (candidateId: string, jobDescriptionId?: string) => void;
   onClick?: (e: React.MouseEvent) => void;
 }
 
@@ -25,7 +25,10 @@ export const CandidateActions = ({
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => onContact(email)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onContact(email);
+        }}
         className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
         title="Contact candidate"
       >
@@ -34,7 +37,10 @@ export const CandidateActions = ({
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => onRemove(candidateId)}
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove(candidateId, jobDescriptionId);
+        }}
         className="text-aptiv-gray-600 hover:text-aptiv hover:bg-aptiv/5"
         title="Remove from shortlist"
       >

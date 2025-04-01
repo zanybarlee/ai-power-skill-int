@@ -26,7 +26,7 @@ interface CandidateTableRowProps {
   candidate: Candidate;
   onRowClick: (id: string) => void;
   onContact: (email: string) => void;
-  onRemove: (id: string) => void;
+  onRemove: (id: string, jobDescriptionId?: string) => void;
   onStatusChange?: (id: string, status: string) => void;
 }
 

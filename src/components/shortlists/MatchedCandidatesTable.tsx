@@ -1,6 +1,5 @@
 
 import { Table, TableBody } from "@/components/ui/table";
-// Import directly from the hooks file
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateDetailsDialog } from "./CandidateDetailsDialog";
@@ -44,11 +43,33 @@ export const MatchedCandidatesTable = ({
     handleCloseDialog
   } = useCandidateDetails();
 
-  const handleRemove = (candidateId: string) => {
-    toast({
-      title: "Candidate removed",
-      description: "The candidate has been removed from your shortlist.",
-    });
+  const handleRemove = async (candidateId: string, jobDescriptionId?: string) => {
+    try {
+      const { error } = await supabase
+        .from('cv_match')
+        .delete()
+        .eq('id', candidateId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Candidate removed",
+        description: "The candidate has been removed from your shortlist.",
+      });
+      
+      // If parent component provided a callback for updates, call it
+      if (onCandidateUpdated) {
+        onCandidateUpdated();
+      }
+      
+    } catch (error) {
+      console.error('Error removing candidate:', error);
+      toast({
+        title: "Error",
+        description: "Failed to remove candidate from shortlist. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleContact = (email: string) => {

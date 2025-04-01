@@ -14,7 +14,7 @@ export const useCandidateDetails = () => {
       // First try to get from cv_match table (for shortlisted candidates)
       const { data: matchData, error: matchError } = await supabase
         .from('cv_match')
-        .select('*, cv_metadata(*), job_description_id, job_description')
+        .select('*, cv_metadata(*), job_description_id, job_description, job_role, user_id')
         .eq('id', candidateId)
         .maybeSingle();
 
@@ -65,6 +65,8 @@ export const useCandidateDetails = () => {
           job_title: jobTitle,
           matched_at: matchData.matched_at,
           job_description_id: matchData.job_description_id,
+          job_role: matchData.job_role,
+          user_id: matchData.user_id
         };
         
         console.log("Candidate details prepared from cv_match:", details);
@@ -90,6 +92,8 @@ export const useCandidateDetails = () => {
           job_description: null,
           job_title: null,
           matched_at: null,
+          job_role: null,
+          user_id: null
         };
         
         console.log("Candidate details prepared from cv_metadata:", details);

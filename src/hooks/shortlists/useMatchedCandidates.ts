@@ -14,6 +14,8 @@ export function useMatchedCandidates() {
           match_score,
           job_description,
           job_description_id,
+          job_role,
+          user_id,
           cv_metadata:cv_metadata_id (
             id,
             name,
@@ -54,7 +56,7 @@ export function useMatchedCandidates() {
         return {
           id: match.id,
           name: match.cv_metadata?.name || 'Unknown',
-          role: 'Not specified',
+          role: match.job_role || 'Not specified', // Use job_role if available
           location: match.cv_metadata?.location || 'Not specified',
           experience: match.cv_metadata?.experience 
             ? `${match.cv_metadata.experience} years` 
@@ -64,7 +66,8 @@ export function useMatchedCandidates() {
           match_score: Math.round(match.match_score || 0),
           job_title: jobTitle,
           job_id: match.job_description_id,
-          job_description: match.job_description || 'No job description'
+          job_description: match.job_description || 'No job description',
+          job_role: match.job_role
         };
       });
     }

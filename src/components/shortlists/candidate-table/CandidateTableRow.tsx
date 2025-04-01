@@ -17,6 +17,7 @@ interface Candidate {
   job_title?: string;
   job_id?: string;
   job_description?: string;
+  job_role?: string;
 }
 
 interface CandidateTableRowProps {

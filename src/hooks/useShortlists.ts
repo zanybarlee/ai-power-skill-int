@@ -21,7 +21,17 @@ export function useShortlists() {
   } = useMatchingLogic(refetchMatchedCandidates);
 
   const handleMatch = async (jobDescriptionId?: string) => {
-    await handleMatchCore(jobDescription, jobDescriptionId);
+    // Extract job role from job description text (before the dash if present)
+    let jobRole = undefined;
+    
+    if (jobDescription) {
+      const dashIndex = jobDescription.indexOf('-');
+      if (dashIndex > 0) {
+        jobRole = jobDescription.substring(0, dashIndex).trim();
+      }
+    }
+    
+    await handleMatchCore(jobDescription, jobDescriptionId, jobRole, userId);
   };
 
   const handleClearMatches = async () => {

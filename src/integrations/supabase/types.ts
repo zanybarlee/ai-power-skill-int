@@ -224,9 +224,11 @@ export type Database = {
           id: string
           job_description: string
           job_description_id: string | null
+          job_role: string | null
           match_score: number | null
           matched_at: string | null
           status: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -234,9 +236,11 @@ export type Database = {
           id?: string
           job_description: string
           job_description_id?: string | null
+          job_role?: string | null
           match_score?: number | null
           matched_at?: string | null
           status?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -244,9 +248,11 @@ export type Database = {
           id?: string
           job_description?: string
           job_description_id?: string | null
+          job_role?: string | null
           match_score?: number | null
           matched_at?: string | null
           status?: string | null
+          user_id?: string | null
         }
         Relationships: [
           {

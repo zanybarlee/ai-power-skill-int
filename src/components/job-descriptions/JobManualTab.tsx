@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ManualJobForm } from "@/components/job-descriptions/ManualJobForm";
+import { ManualJobForm } from "@/components/job-descriptions/manual-job-form/ManualJobForm";
 
 export const JobManualTab = () => {
   return (

@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { TextInput } from "@/components/job-descriptions/TextInput";
+import { TextInput } from "@/components/job-descriptions/text-input/TextInput";
 
 interface JobTextTabProps {
   isProcessing: boolean;

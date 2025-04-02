@@ -1,5 +1,5 @@
 
-import { FileText, Search, Users, Settings, Building, User, LayoutDashboard, Lightbulb } from "lucide-react";
+import { FileText, Search, Users, Settings, Building, User, LayoutDashboard, Lightbulb, Book, Brain, Briefcase } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -9,12 +9,12 @@ export const navigationItems = [
   },
   {
     name: "Job Description (JD)",
-    icon: FileText,
+    icon: Briefcase,
     path: "/post-job",
   },
   {
     name: "Candidate Search (CV)",
-    icon: Search,
+    icon: FileText,
     path: "/candidates",
   },
   {
@@ -24,7 +24,7 @@ export const navigationItems = [
   },
   {
     name: "Skills Intelligence",
-    icon: Lightbulb,
+    icon: Brain,
     path: "/skills-intelligence",
   },
   {

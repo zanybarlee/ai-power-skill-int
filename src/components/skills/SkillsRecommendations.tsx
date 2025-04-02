@@ -1,10 +1,10 @@
-
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BookOpen, Users, GraduationCap, ExternalLink, Clock, Calendar } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { CourseDetailsDialog } from "./recommendations/CourseDetailsDialog";
 
 interface SkillsRecommendationsProps {
   userId?: string;
@@ -13,12 +13,19 @@ interface SkillsRecommendationsProps {
 export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) => {
   const { toast } = useToast();
   const [courseTab, setCourseTab] = useState("individual");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState<any>(null);
 
   const handleEnroll = (courseName: string) => {
     toast({
       title: "Enrollment Successful",
       description: `You've enrolled in ${courseName}. Check your email for details.`,
     });
+  };
+
+  const handleViewDetails = (course: any) => {
+    setSelectedCourse(course);
+    setDialogOpen(true);
   };
 
   const individualCourses = [
@@ -30,7 +37,26 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
       level: "Intermediate",
       format: "Online, self-paced",
       tags: ["Technical", "Cloud", "Architecture"],
-      description: "Learn the fundamental principles and best practices for designing scalable and reliable cloud solutions."
+      description: "Learn the fundamental principles and best practices for designing scalable and reliable cloud solutions.",
+      startDates: ["June 15, 2024", "July 1, 2024", "August 15, 2024"],
+      prerequisites: [
+        "Basic understanding of cloud computing concepts",
+        "Familiarity with IT infrastructure components"
+      ],
+      syllabus: [
+        "Introduction to Cloud Architecture",
+        "AWS Core Services and Infrastructure",
+        "Designing for High Availability",
+        "Security Best Practices",
+        "Cost Optimization Strategies",
+        "Scalability and Performance"
+      ],
+      learningOutcomes: [
+        "Design resilient and cost-effective cloud architectures",
+        "Implement security controls for cloud deployments",
+        "Optimize cloud resources for performance and cost",
+        "Apply architectural patterns for common use cases"
+      ]
     },
     {
       id: "course-2",
@@ -40,7 +66,28 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
       level: "Advanced",
       format: "Online with labs",
       tags: ["Technical", "DevOps", "Kubernetes"],
-      description: "Prepare for the Certified Kubernetes Administrator (CKA) exam with hands-on labs and expert guidance."
+      description: "Prepare for the Certified Kubernetes Administrator (CKA) exam with hands-on labs and expert guidance.",
+      startDates: ["July 10, 2024", "August 5, 2024"],
+      prerequisites: [
+        "Experience with Linux command line",
+        "Basic understanding of containerization",
+        "Familiarity with YAML and networking concepts"
+      ],
+      syllabus: [
+        "Kubernetes Architecture",
+        "Cluster Installation and Configuration",
+        "Workloads & Scheduling",
+        "Services & Networking",
+        "Storage",
+        "Security",
+        "Troubleshooting"
+      ],
+      learningOutcomes: [
+        "Deploy and manage production-ready Kubernetes clusters",
+        "Troubleshoot common cluster issues",
+        "Implement security best practices",
+        "Pass the CKA certification exam"
+      ]
     },
     {
       id: "course-3",
@@ -50,7 +97,26 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
       level: "Intermediate to Advanced",
       format: "Blended learning",
       tags: ["Leadership", "Strategy", "Management"],
-      description: "Develop the strategic thinking skills needed to lead teams effectively and drive organizational success."
+      description: "Develop the strategic thinking skills needed to lead teams effectively and drive organizational success.",
+      startDates: ["June 20, 2024", "September 1, 2024"],
+      prerequisites: [
+        "3+ years of management experience",
+        "Basic understanding of organizational behavior"
+      ],
+      syllabus: [
+        "Strategic Thinking Fundamentals",
+        "Decision Making Under Uncertainty",
+        "Leading Change and Innovation",
+        "Building High-Performance Teams",
+        "Effective Communication Strategies",
+        "Organizational Alignment"
+      ],
+      learningOutcomes: [
+        "Develop and implement organizational strategies",
+        "Lead teams through change and uncertainty",
+        "Make data-driven decisions for business growth",
+        "Communicate vision effectively across the organization"
+      ]
     }
   ];
 
@@ -63,7 +129,22 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
       participants: "5-15 team members",
       format: "In-person or virtual",
       tags: ["Team", "Agile", "Collaboration"],
-      description: "A collaborative workshop designed to enhance team dynamics and implement agile methodologies effectively."
+      description: "A collaborative workshop designed to enhance team dynamics and implement agile methodologies effectively.",
+      startDates: ["July 25-26, 2024", "August 15-16, 2024"],
+      syllabus: [
+        "Agile Principles and Mindset",
+        "Team Roles and Responsibilities",
+        "Sprint Planning and Execution",
+        "Retrospectives and Continuous Improvement",
+        "Conflict Resolution in Agile Teams",
+        "Measuring Team Performance"
+      ],
+      learningOutcomes: [
+        "Implement Agile methodologies effectively as a team",
+        "Improve team collaboration and communication",
+        "Establish consistent sprint processes",
+        "Develop a continuous improvement culture"
+      ]
     },
     {
       id: "team-2",
@@ -73,7 +154,26 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
       participants: "Engineering teams",
       format: "Virtual classroom",
       tags: ["Technical", "Cloud", "Team"],
-      description: "A comprehensive program to upskill entire engineering teams on cloud migration strategies and best practices."
+      description: "A comprehensive program to upskill entire engineering teams on cloud migration strategies and best practices.",
+      startDates: ["August 1, 2024", "September 15, 2024"],
+      prerequisites: [
+        "Basic cloud computing knowledge",
+        "Experience with current system architecture"
+      ],
+      syllabus: [
+        "Assessing Migration Readiness",
+        "Planning the Migration Process",
+        "Cloud Infrastructure Design",
+        "Application Modernization",
+        "Data Migration Strategies",
+        "Post-Migration Optimization"
+      ],
+      learningOutcomes: [
+        "Create comprehensive cloud migration plans",
+        "Implement effective migration strategies",
+        "Modernize applications for cloud environments",
+        "Optimize post-migration performance and cost"
+      ]
     }
   ];
 
@@ -151,7 +251,10 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
                     >
                       Enroll Now
                     </Button>
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline"
+                      onClick={() => handleViewDetails(course)}
+                    >
                       Learn More <ExternalLink className="w-3.5 h-3.5 ml-1" />
                     </Button>
                   </div>
@@ -194,7 +297,10 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
                     <Button className="bg-aptiv hover:bg-aptiv-dark">
                       Request for Team
                     </Button>
-                    <Button variant="outline">
+                    <Button 
+                      variant="outline"
+                      onClick={() => handleViewDetails(course)}
+                    >
                       Learn More <ExternalLink className="w-3.5 h-3.5 ml-1" />
                     </Button>
                   </div>
@@ -277,6 +383,14 @@ export const SkillsRecommendations = ({ userId }: SkillsRecommendationsProps) =>
           </div>
         </div>
       </Card>
+      
+      {/* Course Details Dialog */}
+      <CourseDetailsDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        course={selectedCourse}
+        onEnroll={handleEnroll}
+      />
     </div>
   );
 };

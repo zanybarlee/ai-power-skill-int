@@ -12,7 +12,7 @@ export const SidebarHeader = ({ isSidebarOpen, onToggleSidebar }: SidebarHeaderP
     <div className="h-16 flex items-center justify-between px-4 border-b border-aptiv/10">
       <div className="flex items-center">
         <img 
-          src="/lovable-uploads/cens2021.png" 
+          src="/lovable-uploads/54b4b57c-dd47-4a8d-9d91-f39d95bddd82.png" 
           alt="CENS Logo" 
           className={cn(
             "h-8",

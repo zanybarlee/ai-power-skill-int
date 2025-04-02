@@ -79,6 +79,23 @@ export function ShareCVsDialog({ open, onOpenChange, candidates }: ShareCVsDialo
     }
   }, [job, jobId, jobRole, candidates.length]);
   
+  const updateCandidateStatus = async (candidateIds: string[]) => {
+    try {
+      // Update all candidates to "shortlisted" status
+      const { error } = await supabase
+        .from('cv_match')
+        .update({ status: 'shortlisted' })
+        .in('id', candidateIds);
+      
+      if (error) throw error;
+      
+      return true;
+    } catch (error) {
+      console.error("Error updating candidate statuses:", error);
+      return false;
+    }
+  };
+
   const handleShare = async () => {
     if (!recipientEmail) {
       toast({
@@ -96,12 +113,15 @@ export function ShareCVsDialog({ open, onOpenChange, candidates }: ShareCVsDialo
       // For now we'll just simulate a successful share
       await new Promise(resolve => setTimeout(resolve, 1500));
       
-      // Update status of shared candidates in the database (mock for now)
-      // In a real implementation, you would update the status in your database
+      // Get all candidate IDs for status update
+      const candidateIds = candidates.map(candidate => candidate.id);
+      
+      // Update status of shared candidates to "shortlisted"
+      const statusUpdated = await updateCandidateStatus(candidateIds);
       
       toast({
         title: "CVs shared successfully",
-        description: `${candidates.length} candidate CVs have been shared with ${recipientEmail}.`,
+        description: `${candidates.length} candidate CVs have been shared with ${recipientEmail} and ${statusUpdated ? 'updated to shortlisted status' : 'status update failed'}.`,
       });
       
       // Close the dialog

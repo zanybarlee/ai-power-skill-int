@@ -2,7 +2,6 @@
 import { blindCV } from "../services/blindingService";
 import { formatAsMarkdown } from "./formatUtils";
 import { CacheStore } from "../hooks/types";
-import { useToast } from "@/hooks/use-toast";
 
 /**
  * Blinds all unprocessed CVs in the cart
@@ -61,28 +60,21 @@ export const blindAllCandidateCVs = async (
   return successfullyBlinded;
 };
 
-export const useBlindAllToast = () => {
-  const { toast } = useToast();
-  
-  const showBlindAllResults = (successful: number, total: number) => {
-    if (successful === 0) {
-      toast({
-        title: "No CVs to blind",
-        description: "All CVs are already blinded or no content available.",
-      });
-    } else if (successful === total) {
-      toast({
-        title: "All CVs blinded",
-        description: `Successfully blinded ${successful} candidate CVs.`,
-      });
-    } else {
-      toast({
-        title: "CVs blinded with issues",
-        description: `Blinded ${successful} out of ${total} candidate CVs.`,
-        variant: "destructive",
-      });
-    }
-  };
-  
-  return { showBlindAllResults };
+/**
+ * Toast message templates for blind operations results
+ */
+export const blindAllToastMessages = {
+  noBlindingNeeded: {
+    title: "No CVs to blind",
+    description: "All CVs are already blinded or no content available."
+  },
+  blindingSuccess: (successful: number) => ({
+    title: "All CVs blinded",
+    description: `Successfully blinded ${successful} candidate CVs.`
+  }),
+  blindingPartial: (successful: number, total: number) => ({
+    title: "CVs blinded with issues",
+    description: `Blinded ${successful} out of ${total} candidate CVs.`,
+    variant: "destructive" as const
+  })
 };

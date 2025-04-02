@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -24,7 +23,8 @@ import { BlindedPreview } from "./BlindedPreview";
 import { CartItem } from "./CartItem";
 import { ShareCVsDialog } from "./ShareCVsDialog";
 import { fetchCandidateDetails } from "./services/candidateService";
-import { blindAllCandidateCVs, useBlindAllToast } from "./utils/batchBlindingUtils";
+import { blindAllCandidateCVs } from "./utils/batchBlindingUtils";
+import { useBlindingToast } from "./hooks/useBlindingToast";
 
 import { blindedContentCache } from "./BlindedPreview";
 
@@ -34,7 +34,7 @@ export function CartDrawer() {
   const [blindPreviewOpen, setBlindPreviewOpen] = useState(false);
   const [blindPreviewCandidateId, setBlindPreviewCandidateId] = useState<string | null>(null);
   const [isBlindingAll, setIsBlindingAll] = useState(false);
-  const { showBlindAllResults } = useBlindAllToast();
+  const { showBlindAllResults } = useBlindingToast();
 
   const handleBlindPreview = (candidateId: string) => {
     setBlindPreviewCandidateId(candidateId);

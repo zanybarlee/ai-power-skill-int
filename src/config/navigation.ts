@@ -23,11 +23,6 @@ export const navigationItems = [
     path: "/shortlists",
   },
   {
-    name: "Skills Intelligence",
-    icon: Brain,
-    path: "/skills-intelligence",
-  },
-  {
     name: "Employer Profile",
     icon: Building,
     path: "/employer-profile",
@@ -36,6 +31,11 @@ export const navigationItems = [
     name: "EAP Management",
     icon: User,
     path: "/eap-management",
+  },
+  {
+    name: "Skills Intelligence",
+    icon: Brain,
+    path: "/skills-intelligence",
   },
   {
     name: "Settings",

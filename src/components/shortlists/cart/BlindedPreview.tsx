@@ -5,8 +5,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Eye, EyeOff } from "lucide-react";
+import { BasicInformation } from "./preview/BasicInformation";
+import { ContactInformation } from "./preview/ContactInformation";
+import { SkillsSection } from "./preview/SkillsSection";
+import { CVContent } from "./preview/CVContent";
+import { MatchInformation } from "./preview/MatchInformation";
+import { extractJobTitle } from "./utils/blindingUtils";
 
 interface BlindedPreviewProps {
   open: boolean;
@@ -66,47 +71,6 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
     }
   };
 
-  const extractJobTitle = (jobDescription?: string): string => {
-    if (!jobDescription) return 'Unknown Job';
-    
-    const dashIndex = jobDescription.indexOf('-');
-    if (dashIndex > 0) {
-      return jobDescription.substring(0, dashIndex).trim();
-    } else {
-      return jobDescription.length > 50 
-        ? jobDescription.substring(0, 50) + '...' 
-        : jobDescription;
-    }
-  };
-
-  // Function to blind sensitive information
-  const blindText = (text: string) => {
-    if (!text) return '';
-    
-    // Blind email addresses
-    let blinded = text.replace(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g, '[EMAIL REDACTED]');
-    
-    // Blind phone numbers (various formats)
-    blinded = blinded.replace(/(\+\d{1,3}[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}/g, '[PHONE REDACTED]');
-    blinded = blinded.replace(/(\+\d{1,3}[ -]?)?\d{5,}/g, '[PHONE REDACTED]');
-    
-    // Blind addresses (simplistic approach)
-    blinded = blinded.replace(/\d+\s+[A-Za-z]+\s+(Avenue|Ave|Street|St|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Plaza|Plz|Terrace|Ter|Way)\b/gi, '[ADDRESS REDACTED]');
-    
-    // Blind names (this assumes the candidate's name is already known and is passed to this function)
-    if (candidateDetails && candidateDetails.name) {
-      const nameParts = candidateDetails.name.split(' ');
-      for (const part of nameParts) {
-        if (part.length > 2) { // Avoid replacing very short words that might be common
-          const nameRegex = new RegExp(`\\b${part}\\b`, 'gi');
-          blinded = blinded.replace(nameRegex, '[NAME REDACTED]');
-        }
-      }
-    }
-    
-    return blinded;
-  };
-
   if (isLoading) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
@@ -162,115 +126,41 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
         <ScrollArea className="h-[calc(80vh-150px)] pr-4">
           <div className="space-y-6">
             {/* Basic Information */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Basic Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Name:</p>
-                  <p className="font-medium">
-                    {showContact ? candidateDetails.name || 'Unknown' : '[NAME REDACTED]'}
-                  </p>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-600">Role:</p>
-                  <p className="font-medium">{candidateDetails.job_role || candidateDetails.role || 'Not specified'}</p>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-600">Location:</p>
-                  <p className="font-medium">
-                    {showContact ? candidateDetails.location || 'Not specified' : '[LOCATION REDACTED]'}
-                  </p>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-600">Experience:</p>
-                  <p className="font-medium">{candidateDetails.experience ? `${candidateDetails.experience} years` : 'Not specified'}</p>
-                </div>
-              </div>
-            </div>
+            <BasicInformation 
+              name={candidateDetails.name}
+              role={candidateDetails.job_role || candidateDetails.role || 'Not specified'}
+              location={candidateDetails.location}
+              experience={candidateDetails.experience}
+              showContact={showContact}
+            />
             
-            {/* Contact Information - conditionally displayed */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Contact Information</h3>
-              {showContact ? (
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Email:</p>
-                    <p className="font-medium">{candidateDetails.email || 'Not provided'}</p>
-                  </div>
-                  
-                  <div>
-                    <p className="text-sm text-gray-600">Phone:</p>
-                    <p className="font-medium">{candidateDetails.phone || 'Not provided'}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="text-center py-2 bg-yellow-50 border border-yellow-200 rounded">
-                  <p className="text-yellow-700">
-                    <EyeOff className="h-4 w-4 inline-block mr-2" />
-                    Contact information is hidden for candidate privacy
-                  </p>
-                </div>
-              )}
-            </div>
+            {/* Contact Information */}
+            <ContactInformation 
+              email={candidateDetails.email}
+              phone={candidateDetails.phone}
+              showContact={showContact}
+            />
             
             {/* Skills */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Skills</h3>
-              <div className="flex flex-wrap gap-2">
-                {candidateDetails.skills && Array.isArray(candidateDetails.skills) ? 
-                  candidateDetails.skills.map((skill: string, i: number) => (
-                    <Badge 
-                      key={i} 
-                      variant="outline" 
-                      className="bg-aptiv/5 text-aptiv border-aptiv/20"
-                    >
-                      {skill}
-                    </Badge>
-                  )) : 
-                  <p className="text-gray-500">No skills listed</p>
-                }
-              </div>
-            </div>
+            <SkillsSection 
+              skills={candidateDetails.skills && Array.isArray(candidateDetails.skills) 
+                ? candidateDetails.skills 
+                : []}
+            />
             
             {/* CV Content */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">CV Content</h3>
-              <div className="whitespace-pre-wrap text-gray-700 text-sm">
-                {showContact ? 
-                  candidateDetails.cv_content || 'No CV content available' : 
-                  blindText(candidateDetails.cv_content) || 'No CV content available'
-                }
-              </div>
-            </div>
+            <CVContent 
+              content={candidateDetails.cv_content}
+              showContact={showContact}
+              candidateName={candidateDetails.name}
+            />
             
             {/* Match Information */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <h3 className="font-medium text-gray-900 mb-2">Match Information</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Match Score:</p>
-                  <p className="font-medium text-aptiv">{Math.round(candidateDetails.match_score || 0)}%</p>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-600">Job Title:</p>
-                  <p className="font-medium">{candidateDetails.job_title || 'Not specified'}</p>
-                </div>
-                
-                <div>
-                  <p className="text-sm text-gray-600">Matched At:</p>
-                  <p className="font-medium">
-                    {candidateDetails.matched_at ? 
-                      new Date(candidateDetails.matched_at).toLocaleDateString() : 
-                      'Unknown'
-                    }
-                  </p>
-                </div>
-              </div>
-            </div>
+            <MatchInformation 
+              matchScore={candidateDetails.match_score}
+              jobTitle={candidateDetails.job_title}
+              matchedAt={candidateDetails.matched_at}
+            />
           </div>
         </ScrollArea>
       </DialogContent>

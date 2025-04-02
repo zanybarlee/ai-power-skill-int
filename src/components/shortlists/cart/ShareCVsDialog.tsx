@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { 
@@ -17,6 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Send, Loader2, Shield } from "lucide-react";
 import { MatchedCandidate } from "@/hooks/shortlists/types";
+import { useJobDetails } from "@/components/job-descriptions/job-details/hooks/useJobDetails";
+import { supabase } from "@/integrations/supabase/client";
 
 interface ShareCVsDialogProps {
   open: boolean;
@@ -29,9 +31,53 @@ export function ShareCVsDialog({ open, onOpenChange, candidates }: ShareCVsDialo
   const { clearCart } = useCart();
   const [isSharing, setIsSharing] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState("");
-  const [subject, setSubject] = useState("Candidate CVs for your review");
-  const [message, setMessage] = useState(`Hello,\n\nI'm sharing ${candidates.length} candidate CVs for your consideration.\n\nBest regards,`);
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
   const [blindContactInfo, setBlindContactInfo] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  
+  // Get job details if all candidates have the same job
+  const jobId = candidates.length > 0 ? candidates[0].job_id : null;
+  const jobRole = candidates.length > 0 ? candidates[0].job_role || candidates[0].role : null;
+  const sameJob = candidates.every(c => c.job_id === jobId);
+  
+  // Get current user ID for job details lookup
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUserId(data.user?.id || null);
+    };
+    getCurrentUser();
+  }, []);
+  
+  const { job } = useJobDetails(jobId || "", open && sameJob, userId);
+  
+  // Populate form fields when job data is available
+  useEffect(() => {
+    if (job && job.employer_profiles) {
+      // Use employer email if available
+      if (job.employer_profiles.email) {
+        setRecipientEmail(job.employer_profiles.email);
+      }
+      
+      // Set subject with job role
+      const roleText = jobRole || job.job_title || "position";
+      setSubject(`Candidate CVs for ${roleText}`);
+      
+      // Set message with job details
+      const jobInfo = job.job_title ? `job "${job.job_title}" (ID: ${jobId})` : `job (ID: ${jobId})`;
+      const companyName = job.employer_profiles.company_name || "your company";
+      
+      setMessage(`Hello ${job.employer_profiles.contact_person || ""},\n\nI'm sharing ${candidates.length} candidate CVs for the ${jobInfo} at ${companyName}.\n\nBest regards,`);
+    } else if (candidates.length > 0) {
+      // Fallback if job details are not available
+      const roleText = jobRole || "your position";
+      setSubject(`Candidate CVs for ${roleText}`);
+      
+      const jobIdText = jobId ? ` (ID: ${jobId})` : "";
+      setMessage(`Hello,\n\nI'm sharing ${candidates.length} candidate CVs for ${roleText}${jobIdText}.\n\nBest regards,`);
+    }
+  }, [job, jobId, jobRole, candidates.length]);
   
   const handleShare = async () => {
     if (!recipientEmail) {

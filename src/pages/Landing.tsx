@@ -2,10 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { Globe } from "@/components/ui/globe";
 import { Bot, Filter, Clock } from "lucide-react";
-
 const Landing = () => {
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       {/* Hero Section */}
       <div className="relative overflow-visible">
         {/* Navigation */}
@@ -13,11 +11,7 @@ const Landing = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center py-6">
               <div className="flex items-center">
-                <img 
-                  src="/lovable-uploads/5d0792c7-11b1-4e59-af76-3c687201c682.png" 
-                  alt="Aptiv8 Logo" 
-                  className="h-8 w-auto"
-                />
+                <img alt="Aptiv8 Logo" className="h-8 w-auto" src="/lovable-uploads/3d6038db-5a1b-48aa-ac7a-215dd0e521b8.png" />
               </div>
               <div className="flex items-center space-x-4">
                 <Link to="/auth" className="text-aptiv-gray-600 hover:text-aptiv transition-colors">
@@ -54,7 +48,10 @@ const Landing = () => {
       </div>
 
       {/* Globe Section - As background */}
-      <div className="fixed left-0 right-0 w-full h-screen" style={{ top: '25vh', zIndex: 0 }}>
+      <div className="fixed left-0 right-0 w-full h-screen" style={{
+      top: '25vh',
+      zIndex: 0
+    }}>
         <div className="relative w-full h-full">
           <Globe className="opacity-100 scale-[1.3]" />
           <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white pointer-events-none" />
@@ -75,27 +72,19 @@ const Landing = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                title: "AI Matching",
-                description: "Advanced algorithms match candidates to your job requirements with high accuracy",
-                icon: <Bot className="w-6 h-6 text-aptiv" />
-              },
-              {
-                title: "Automated Screening",
-                description: "Pre-screen candidates automatically based on your specific criteria",
-                icon: <Filter className="w-6 h-6 text-aptiv" />
-              },
-              {
-                title: "Quick Hiring",
-                description: "Reduce time-to-hire with our streamlined recruitment process",
-                icon: <Clock className="w-6 h-6 text-aptiv" />
-              }
-            ].map((feature, index) => (
-              <div 
-                key={index}
-                className="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-sm border border-aptiv/10"
-              >
+            {[{
+            title: "AI Matching",
+            description: "Advanced algorithms match candidates to your job requirements with high accuracy",
+            icon: <Bot className="w-6 h-6 text-aptiv" />
+          }, {
+            title: "Automated Screening",
+            description: "Pre-screen candidates automatically based on your specific criteria",
+            icon: <Filter className="w-6 h-6 text-aptiv" />
+          }, {
+            title: "Quick Hiring",
+            description: "Reduce time-to-hire with our streamlined recruitment process",
+            icon: <Clock className="w-6 h-6 text-aptiv" />
+          }].map((feature, index) => <div key={index} className="bg-white/90 backdrop-blur-sm p-6 rounded-lg shadow-sm border border-aptiv/10">
                 <div className="w-12 h-12 bg-aptiv/10 rounded-lg flex items-center justify-center mb-4 mx-auto">
                   {feature.icon}
                 </div>
@@ -105,8 +94,7 @@ const Landing = () => {
                 <p className="text-aptiv-gray-500">
                   {feature.description}
                 </p>
-              </div>
-            ))}
+              </div>)}
           </div>
         </div>
       </div>
@@ -127,8 +115,6 @@ const Landing = () => {
           </Link>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Landing;

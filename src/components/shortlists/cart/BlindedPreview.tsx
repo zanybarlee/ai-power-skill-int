@@ -11,6 +11,7 @@ import { LoadingState } from "./components/LoadingState";
 import { ErrorState } from "./components/ErrorState";
 import { CVContentWithLoading } from "./components/CVContentWithLoading";
 import { useBlindedCandidate } from "./hooks/useBlindedCandidate";
+import { CacheStore } from "./hooks/types";
 
 interface BlindedPreviewProps {
   open: boolean;
@@ -19,10 +20,7 @@ interface BlindedPreviewProps {
 }
 
 // Store blinded content per candidate - export it so it can be cleared from CartDrawer
-export const blindedContentCache: Record<string, {
-  original: string | null;
-  blinded: string | null;
-}> = {};
+export const blindedContentCache: CacheStore = {};
 
 export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPreviewProps) {
   const [showContact, setShowContact] = useState(false);

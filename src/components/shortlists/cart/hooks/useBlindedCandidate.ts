@@ -1,24 +1,19 @@
 
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { extractJobTitle } from "../utils/blindingUtils";
-
-interface CacheItem {
-  original: string | null;
-  blinded: string | null;
-}
-
-type CacheStore = Record<string, CacheItem>;
+import { formatAsMarkdown } from "../utils/formatUtils";
+import { blindCV } from "../services/blindingService";
+import { fetchCandidateDetails } from "../services/candidateService";
+import { CandidateDetails, CacheStore, BlindedCandidateResult } from "./types";
 
 export function useBlindedCandidate(
   candidateId: string, 
   open: boolean, 
   showContact: boolean,
   cacheStore: CacheStore = {}
-) {
+): BlindedCandidateResult {
   const { toast } = useToast();
-  const [candidateDetails, setCandidateDetails] = useState<any>(null);
+  const [candidateDetails, setCandidateDetails] = useState<CandidateDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [processedCVContent, setProcessedCVContent] = useState<string>('');
   const [isBlindingCV, setIsBlindingCV] = useState(false);
@@ -35,7 +30,7 @@ export function useBlindedCandidate(
 
   useEffect(() => {
     if (open && candidateId) {
-      fetchCandidateDetails();
+      fetchCandidate();
     }
   }, [open, candidateId]);
 
@@ -45,45 +40,24 @@ export function useBlindedCandidate(
     }
   }, [candidateDetails, showContact]);
 
-  const fetchCandidateDetails = async () => {
+  const fetchCandidate = async () => {
     try {
       setIsLoading(true);
-      const { data: matchData, error: matchError } = await supabase
-        .from('cv_match')
-        .select('*, cv_metadata(*), job_description_id, job_description, job_role, user_id, status')
-        .eq('id', candidateId)
-        .maybeSingle();
-
-      if (matchError) {
-        throw matchError;
-      }
-
-      if (matchData) {
-        const details = {
-          ...matchData.cv_metadata,
-          match_score: matchData.match_score,
-          job_description: matchData.job_description,
-          job_title: extractJobTitle(matchData.job_description),
-          job_id: matchData.job_description_id,
-          matched_at: matchData.matched_at,
-          job_role: matchData.job_role,
-          status: matchData.status || 'matched'
-        };
+      const details = await fetchCandidateDetails(candidateId);
+      
+      setCandidateDetails(details);
+      if (details.cv_content) {
+        // Initialize cache if needed
+        if (!cacheStore[candidateId]) {
+          cacheStore[candidateId] = {
+            original: null,
+            blinded: null
+          };
+        }
         
-        setCandidateDetails(details);
-        if (details.cv_content) {
-          // Initialize cache if needed
-          if (!cacheStore[candidateId]) {
-            cacheStore[candidateId] = {
-              original: null,
-              blinded: null
-            };
-          }
-          
-          // Store formatted original content
-          if (!cacheStore[candidateId].original) {
-            cacheStore[candidateId].original = formatAsMarkdown(details.cv_content);
-          }
+        // Store formatted original content
+        if (!cacheStore[candidateId].original) {
+          cacheStore[candidateId].original = formatAsMarkdown(details.cv_content);
         }
       }
     } catch (error) {
@@ -98,39 +72,8 @@ export function useBlindedCandidate(
     }
   };
 
-  const formatAsMarkdown = (text: string): string => {
-    if (!text) return '';
-    
-    const paragraphs = text.split(/\n\s*\n/);
-    
-    const markdownText = paragraphs.map(para => {
-      if (para.trim().startsWith('#')) {
-        return para;
-      } else if (para.trim().length <= 50 && para.trim() === para.trim().toUpperCase()) {
-        return `## ${para.trim()}`;
-      }
-      
-      if (para.includes('\n')) {
-        const lines = para.split('\n');
-        return lines.map(line => {
-          if (line.trim().match(/^[*\-•]\s+/)) {
-            return line;
-          } 
-          else if (line.trim().match(/^\d+\.\s+/)) {
-            return line;
-          }
-          return line;
-        }).join('\n');
-      }
-      
-      return para;
-    }).join('\n\n');
-    
-    return markdownText;
-  };
-
   const processCV = async () => {
-    if (!candidateDetails.cv_content) {
+    if (!candidateDetails?.cv_content) {
       setProcessedCVContent('No CV content available');
       return;
     }
@@ -154,23 +97,8 @@ export function useBlindedCandidate(
     try {
       setIsBlindingCV(true);
       
-      const response = await fetch('http://localhost:9000/blind-cv', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          cv_content: candidateDetails.cv_content
-        }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to blind CV content');
-      }
-      
-      const data = await response.json();
-      
-      const formattedBlindedContent = formatAsMarkdown(data.blind_cv_content);
+      const blindedContent = await blindCV(candidateDetails.cv_content);
+      const formattedBlindedContent = formatAsMarkdown(blindedContent);
       
       // Store in cache for this candidate
       cacheStore[candidateId] = {

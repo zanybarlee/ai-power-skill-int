@@ -7,9 +7,10 @@ import { useSkillsData } from "@/hooks/skills/useSkillsData";
 
 interface SkillsGapAnalysisProps {
   userId?: string;
+  onViewRecommendations?: () => void;
 }
 
-export const SkillsGapAnalysis = ({ userId }: SkillsGapAnalysisProps) => {
+export const SkillsGapAnalysis = ({ userId, onViewRecommendations }: SkillsGapAnalysisProps) => {
   const { skillGaps, isLoading } = useSkillsData(userId);
 
   if (isLoading) {
@@ -102,7 +103,10 @@ export const SkillsGapAnalysis = ({ userId }: SkillsGapAnalysisProps) => {
           </div>
           
           <div className="mt-6 flex justify-end">
-            <Button className="bg-aptiv hover:bg-aptiv-dark">
+            <Button 
+              className="bg-aptiv hover:bg-aptiv-dark"
+              onClick={onViewRecommendations}
+            >
               View Training Recommendations
               <ArrowRight className="w-4 h-4 ml-2" />
             </Button>

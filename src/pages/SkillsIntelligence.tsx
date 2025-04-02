@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/Layout";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BrainCircuit, BookOpen, BarChart2, Users, TrendingUp, Filter } from "lucide-react";
+import { BrainCircuit, BookOpen, BarChart2, Users, TrendingUp } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SkillsOverview } from "@/components/skills/SkillsOverview";
 import { SkillsAssessment } from "@/components/skills/assessment";
@@ -21,6 +21,10 @@ const SkillsIntelligence = () => {
       return user;
     },
   });
+
+  const handleViewRecommendations = () => {
+    setActiveTab("recommendations");
+  };
 
   return (
     <Layout>
@@ -67,7 +71,10 @@ const SkillsIntelligence = () => {
             </TabsContent>
             
             <TabsContent value="gap-analysis">
-              <SkillsGapAnalysis userId={userData?.id} />
+              <SkillsGapAnalysis 
+                userId={userData?.id} 
+                onViewRecommendations={handleViewRecommendations}
+              />
             </TabsContent>
             
             <TabsContent value="recommendations">

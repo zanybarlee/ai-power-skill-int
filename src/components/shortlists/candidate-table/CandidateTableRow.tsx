@@ -78,6 +78,7 @@ export const CandidateTableRow = ({
         <CandidateActions 
           email={candidate.email}
           candidateId={candidate.id}
+          candidate={candidate}
           jobDescriptionId={candidate.job_id}
           onContact={onContact}
           onRemove={onRemove}

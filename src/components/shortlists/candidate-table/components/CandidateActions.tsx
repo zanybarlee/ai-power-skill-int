@@ -1,11 +1,13 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Mail, BookmarkX } from "lucide-react";
+import { Mail, BookmarkX, ShoppingCartPlus } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
 
 interface CandidateActionsProps {
   email: string;
   candidateId: string;
+  candidate: any;
   jobDescriptionId?: string;
   onContact: (email: string) => void;
   onRemove: (candidateId: string, jobDescriptionId?: string) => void;
@@ -15,11 +17,19 @@ interface CandidateActionsProps {
 export const CandidateActions = ({
   email,
   candidateId,
+  candidate,
   jobDescriptionId,
   onContact,
   onRemove,
   onClick,
 }: CandidateActionsProps) => {
+  const { addToCart, isInCart } = useCart();
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    addToCart(candidate);
+  };
+
   return (
     <div className="flex justify-end gap-2" onClick={onClick}>
       <Button
@@ -33,6 +43,20 @@ export const CandidateActions = ({
         title="Contact candidate"
       >
         <Mail className="h-4 w-4" />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        onClick={handleAddToCart}
+        className={`hover:bg-aptiv/5 ${
+          isInCart(candidateId) 
+            ? "text-aptiv" 
+            : "text-aptiv-gray-600 hover:text-aptiv"
+        }`}
+        title={isInCart(candidateId) ? "Already in cart" : "Add to cart"}
+        disabled={isInCart(candidateId)}
+      >
+        <ShoppingCartPlus className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"

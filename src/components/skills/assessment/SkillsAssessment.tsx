@@ -7,6 +7,7 @@ import { AssessmentQuestions } from "./questions";
 import { AssessmentCard } from "./AssessmentCard";
 import { CompletedAssessmentCard } from "./CompletedAssessmentCard";
 import { useAssessmentData } from "./hooks/useAssessmentData";
+import { CompletedAssessment } from "./types/assessmentTypes";
 
 interface SkillsAssessmentProps {
   userId?: string;
@@ -16,7 +17,7 @@ export const SkillsAssessment = ({ userId }: SkillsAssessmentProps) => {
   const { toast } = useToast();
   const [activeAssessment, setActiveAssessment] = useState<string | null>(null);
   const [activeAssessmentTitle, setActiveAssessmentTitle] = useState<string>("");
-  const [completedAssessments, setCompletedAssessments] = useState([
+  const [completedAssessments, setCompletedAssessments] = useState<CompletedAssessment[]>([
     {
       id: "proj-1",
       title: "Project Management Skills",
@@ -108,13 +109,20 @@ export const SkillsAssessment = ({ userId }: SkillsAssessmentProps) => {
 
   const handleCompleteAssessment = (results: any) => {
     // In a real app, you would save these results to the database
-    const newCompletedAssessment = {
+    const newCompletedAssessment: CompletedAssessment = {
       id: results.assessmentId,
       title: activeAssessmentTitle,
       completedDate: results.completedDate,
       score: results.score,
       strengths: ["Skill area identified as strength", "Another strength area"],
-      improvements: ["Area for improvement", "Another improvement opportunity"]
+      improvements: ["Area for improvement", "Another improvement opportunity"],
+      // Add the required properties to match the CompletedAssessment type
+      performanceBreakdown: [
+        { name: "Area 1", score: 85 },
+        { name: "Area 2", score: 70 }
+      ],
+      recommendations: ["Complete additional training", "Practice regularly"],
+      detailedQuestions: []
     };
 
     setCompletedAssessments(prev => [newCompletedAssessment, ...prev]);

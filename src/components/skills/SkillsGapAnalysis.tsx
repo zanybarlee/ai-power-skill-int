@@ -3,37 +3,22 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowRight, AlertTriangle, CheckCircle } from "lucide-react";
+import { useSkillsData } from "@/hooks/skills/useSkillsData";
 
 interface SkillsGapAnalysisProps {
   userId?: string;
 }
 
 export const SkillsGapAnalysis = ({ userId }: SkillsGapAnalysisProps) => {
-  // This would typically come from a database or API
-  const skillGaps = [
-    { 
-      category: "Technical",
-      skills: [
-        { name: "Cloud Architecture", current: 65, required: 85, priority: "high" },
-        { name: "Kubernetes", current: 45, required: 80, priority: "high" },
-        { name: "GraphQL", current: 50, required: 75, priority: "medium" },
-      ]
-    },
-    { 
-      category: "Soft Skills",
-      skills: [
-        { name: "Conflict Resolution", current: 70, required: 85, priority: "medium" },
-        { name: "Public Speaking", current: 60, required: 80, priority: "low" },
-      ]
-    },
-    { 
-      category: "Leadership",
-      skills: [
-        { name: "Strategic Planning", current: 75, required: 90, priority: "high" },
-        { name: "Team Development", current: 80, required: 90, priority: "medium" },
-      ]
-    }
-  ];
+  const { skillGaps, isLoading } = useSkillsData(userId);
+
+  if (isLoading) {
+    return (
+      <div className="p-8 flex justify-center">
+        <div className="h-8 w-8 border-t-2 border-b-2 border-aptiv rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const getPriorityColor = (priority: string) => {
     switch (priority) {
@@ -58,7 +43,7 @@ export const SkillsGapAnalysis = ({ userId }: SkillsGapAnalysisProps) => {
             <AlertTriangle className="text-red-500 w-8 h-8 mr-3" />
             <div>
               <p className="text-sm font-medium text-aptiv-gray-700">Critical Gaps</p>
-              <p className="text-2xl font-semibold text-red-500">3</p>
+              <p className="text-2xl font-semibold text-red-500">5</p>
             </div>
           </div>
           
@@ -66,7 +51,7 @@ export const SkillsGapAnalysis = ({ userId }: SkillsGapAnalysisProps) => {
             <AlertTriangle className="text-amber-500 w-8 h-8 mr-3" />
             <div>
               <p className="text-sm font-medium text-aptiv-gray-700">Moderate Gaps</p>
-              <p className="text-2xl font-semibold text-amber-500">4</p>
+              <p className="text-2xl font-semibold text-amber-500">8</p>
             </div>
           </div>
           

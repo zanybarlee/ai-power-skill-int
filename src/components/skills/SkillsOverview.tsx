@@ -4,13 +4,31 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { BrainCircuit, Users, BookOpen, BarChart2 } from "lucide-react";
 import { useSkillsData } from "@/hooks/skills/useSkillsData";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from "recharts";
 
 interface SkillsOverviewProps {
   userId?: string;
 }
 
 export const SkillsOverview = ({ userId }: SkillsOverviewProps) => {
-  const { organizationSkills, isLoading } = useSkillsData(userId);
+  const { 
+    organizationSkills, 
+    departmentSkills, 
+    skillTrends, 
+    topSkills,
+    isLoading 
+  } = useSkillsData(userId);
 
   if (isLoading) {
     return (
@@ -19,14 +37,6 @@ export const SkillsOverview = ({ userId }: SkillsOverviewProps) => {
       </div>
     );
   }
-
-  const topSkills = [
-    { name: "Project Management", proficiency: 87 },
-    { name: "React Development", proficiency: 92 },
-    { name: "Data Analysis", proficiency: 78 },
-    { name: "UI/UX Design", proficiency: 81 },
-    { name: "Cloud Architecture", proficiency: 75 },
-  ];
 
   const metrics = [
     { 
@@ -95,15 +105,43 @@ export const SkillsOverview = ({ userId }: SkillsOverviewProps) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card className="p-6 bg-white border-aptiv/10">
           <h3 className="text-lg font-medium text-aptiv-gray-700 mb-4">Skills by Department</h3>
-          <div className="h-64 flex items-center justify-center text-aptiv-gray-500">
-            Chart visualization would be displayed here
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={departmentSkills}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="department" />
+                <YAxis yAxisId="left" orientation="left" stroke="#8884d8" />
+                <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                <Tooltip />
+                <Legend />
+                <Bar yAxisId="left" dataKey="skillCount" name="Skill Count" fill="#8884d8" />
+                <Bar yAxisId="right" dataKey="averageProficiency" name="Avg. Proficiency %" fill="#82ca9d" />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </Card>
 
         <Card className="p-6 bg-white border-aptiv/10">
           <h3 className="text-lg font-medium text-aptiv-gray-700 mb-4">Skills Growth Trends</h3>
-          <div className="h-64 flex items-center justify-center text-aptiv-gray-500">
-            Line chart visualization would be displayed here
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart
+                data={skillTrends}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="technicalAvg" name="Technical Skills" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="softSkillsAvg" name="Soft Skills" stroke="#82ca9d" />
+                <Line type="monotone" dataKey="leadershipAvg" name="Leadership Skills" stroke="#ffc658" />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </Card>
       </div>

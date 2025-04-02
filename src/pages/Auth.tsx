@@ -74,9 +74,7 @@ const Auth = () => {
   return <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <img alt="Logo" className="mx-auto h-12 w-auto" src="/lovable-uploads/54b4b57c-dd47-4a8d-9d91-f39d95bddd82.png" />
-        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-          Welcome to Aptiv8
-        </h2>
+        <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">Welcome to AI Power Talent Management</h2>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">

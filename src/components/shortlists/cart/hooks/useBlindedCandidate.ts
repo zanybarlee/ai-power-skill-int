@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,9 +50,8 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
         };
         
         setCandidateDetails(details);
-        // Store the original content when first fetched
         if (details.cv_content) {
-          setOriginalContent(details.cv_content);
+          setOriginalContent(formatAsMarkdown(details.cv_content));
         }
       }
     } catch (error) {
@@ -68,6 +66,37 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
     }
   };
 
+  const formatAsMarkdown = (text: string): string => {
+    if (!text) return '';
+    
+    const paragraphs = text.split(/\n\s*\n/);
+    
+    const markdownText = paragraphs.map(para => {
+      if (para.trim().startsWith('#')) {
+        return para;
+      } else if (para.trim().length <= 50 && para.trim() === para.trim().toUpperCase()) {
+        return `## ${para.trim()}`;
+      }
+      
+      if (para.includes('\n')) {
+        const lines = para.split('\n');
+        return lines.map(line => {
+          if (line.trim().match(/^[*\-•]\s+/)) {
+            return line;
+          } 
+          else if (line.trim().match(/^\d+\.\s+/)) {
+            return line;
+          }
+          return line;
+        }).join('\n');
+      }
+      
+      return para;
+    }).join('\n\n');
+    
+    return markdownText;
+  };
+
   const processCV = async () => {
     if (!candidateDetails.cv_content) {
       setProcessedCVContent('No CV content available');
@@ -75,12 +104,10 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
     }
     
     if (showContact) {
-      // If showing contact info, use the original content
-      setProcessedCVContent(originalContent || candidateDetails.cv_content);
+      setProcessedCVContent(originalContent || formatAsMarkdown(candidateDetails.cv_content));
       return;
     }
     
-    // Check if we already have the blinded content cached
     if (cachedBlindedContent) {
       setProcessedCVContent(cachedBlindedContent);
       return;
@@ -89,7 +116,6 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
     try {
       setIsBlindingCV(true);
       
-      // Call the blind-cv API endpoint with the updated URL
       const response = await fetch('http://localhost:9000/blind-cv', {
         method: 'POST',
         headers: {
@@ -106,12 +132,12 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
       
       const data = await response.json();
       
-      // Cache the blinded content
-      setCachedBlindedContent(data.blind_cv_content);
-      setProcessedCVContent(data.blind_cv_content);
+      const formattedBlindedContent = formatAsMarkdown(data.blind_cv_content);
+      
+      setCachedBlindedContent(formattedBlindedContent);
+      setProcessedCVContent(formattedBlindedContent);
     } catch (error) {
       console.error('Error blinding CV content:', error);
-      // Fallback message if API fails
       setProcessedCVContent('Error processing CV content. Some personal information may be visible.');
       toast({
         title: "Warning",

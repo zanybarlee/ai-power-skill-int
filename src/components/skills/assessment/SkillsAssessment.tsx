@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { AssessmentQuestions } from "../AssessmentQuestions";
+import { AssessmentQuestions } from "./questions";
 import { AssessmentCard } from "./AssessmentCard";
 import { CompletedAssessmentCard } from "./CompletedAssessmentCard";
 import { useAssessmentData } from "./hooks/useAssessmentData";

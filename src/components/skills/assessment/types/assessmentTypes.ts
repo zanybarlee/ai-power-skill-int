@@ -15,4 +15,16 @@ export interface CompletedAssessment {
   score: number;
   strengths: string[];
   improvements: string[];
+  performanceBreakdown?: {
+    name: string;
+    score: number;
+  }[];
+  recommendations?: string[];
+  detailedQuestions?: {
+    question: string;
+    userAnswer: string;
+    isCorrect: boolean;
+    correctAnswer?: string;
+    explanation?: string;
+  }[];
 }

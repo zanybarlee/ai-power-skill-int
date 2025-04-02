@@ -23,7 +23,40 @@ export const SkillsAssessment = ({ userId }: SkillsAssessmentProps) => {
       completedDate: "2024-05-15",
       score: 87,
       strengths: ["Resource allocation", "Timeline management", "Risk assessment"],
-      improvements: ["Stakeholder communication", "Budget planning"]
+      improvements: ["Stakeholder communication", "Budget planning"],
+      performanceBreakdown: [
+        { name: "Planning & Organization", score: 92 },
+        { name: "Team Management", score: 85 },
+        { name: "Risk Assessment", score: 90 },
+        { name: "Communication", score: 76 },
+        { name: "Budget Management", score: 79 }
+      ],
+      recommendations: [
+        "Consider advanced training in stakeholder communication techniques",
+        "Explore budget planning methodologies for large-scale projects",
+        "Join the project management community of practice"
+      ],
+      detailedQuestions: [
+        {
+          question: "What is the primary purpose of a project charter?",
+          userAnswer: "To formally authorize the project and document initial requirements",
+          isCorrect: true,
+          explanation: "The project charter formally authorizes the existence of the project and provides the project manager with the authority to apply resources to project activities."
+        },
+        {
+          question: "Which of the following is NOT typically included in a risk management plan?",
+          userAnswer: "Detailed financial forecasts for the next fiscal year",
+          isCorrect: true,
+          explanation: "Financial forecasts are part of financial planning, not specifically the risk management plan."
+        },
+        {
+          question: "What is the best way to handle stakeholders who have high influence but low interest in the project?",
+          userAnswer: "Monitor them with minimum effort",
+          isCorrect: false,
+          correctAnswer: "Keep them satisfied",
+          explanation: "High influence stakeholders should be kept satisfied even if they have low interest, as they can significantly impact the project if they become dissatisfied."
+        }
+      ]
     },
     {
       id: "lead-1",
@@ -31,7 +64,34 @@ export const SkillsAssessment = ({ userId }: SkillsAssessmentProps) => {
       completedDate: "2024-04-02",
       score: 92,
       strengths: ["Team motivation", "Conflict resolution", "Strategic vision"],
-      improvements: ["Delegation", "Work-life balance promotion"]
+      improvements: ["Delegation", "Work-life balance promotion"],
+      performanceBreakdown: [
+        { name: "Strategic Thinking", score: 95 },
+        { name: "Team Building", score: 93 },
+        { name: "Conflict Resolution", score: 94 },
+        { name: "Delegation", score: 82 },
+        { name: "Emotional Intelligence", score: 91 }
+      ],
+      recommendations: [
+        "Practice delegating more significant tasks to team members",
+        "Implement work-life balance initiatives for your team",
+        "Join a leadership mentorship program"
+      ],
+      detailedQuestions: [
+        {
+          question: "What leadership style emphasizes collaboration and team input in decision-making?",
+          userAnswer: "Democratic leadership",
+          isCorrect: true,
+          explanation: "Democratic leadership involves team members in decision-making processes and encourages collaboration."
+        },
+        {
+          question: "What is the primary benefit of delegation for a leader?",
+          userAnswer: "It reduces the leader's workload",
+          isCorrect: false,
+          correctAnswer: "It develops team members' skills and builds trust",
+          explanation: "While reducing workload is a benefit, the primary benefit of delegation is developing team members and building trust and capability within the team."
+        }
+      ]
     }
   ]);
 

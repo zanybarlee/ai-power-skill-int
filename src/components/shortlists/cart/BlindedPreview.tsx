@@ -93,8 +93,8 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
     try {
       setIsBlindingCV(true);
       
-      // Call the blind-cv API endpoint
-      const response = await fetch('/blind-cv', {
+      // Call the blind-cv API endpoint with the updated URL
+      const response = await fetch('http://localhost:9000/blind-cv', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

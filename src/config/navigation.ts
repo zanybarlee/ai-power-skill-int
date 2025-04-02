@@ -1,5 +1,5 @@
 
-import { FileText, Search, Users, Settings, Building, User, LayoutDashboard, BrainCircuit } from "lucide-react";
+import { FileText, Search, Users, Settings, Building, User, LayoutDashboard, Lightbulb } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -24,7 +24,7 @@ export const navigationItems = [
   },
   {
     name: "Skills Intelligence",
-    icon: BrainCircuit,
+    icon: Lightbulb,
     path: "/skills-intelligence",
   },
   {

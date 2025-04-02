@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -24,6 +23,8 @@ import { BlindedPreview } from "./BlindedPreview";
 import { CartItem } from "./CartItem";
 import { ShareCVsDialog } from "./ShareCVsDialog";
 
+import { blindedContentCache } from "./BlindedPreview";
+
 export function CartDrawer() {
   const { cartItems, clearCart, cartCount } = useCart();
   const [openShare, setOpenShare] = useState(false);
@@ -33,6 +34,13 @@ export function CartDrawer() {
   const handleBlindPreview = (candidateId: string) => {
     setBlindPreviewCandidateId(candidateId);
     setBlindPreviewOpen(true);
+  };
+
+  const handleClearAll = () => {
+    clearCart();
+    Object.keys(blindedContentCache).forEach(key => {
+      delete blindedContentCache[key];
+    });
   };
 
   if (cartCount === 0) {
@@ -77,7 +85,7 @@ export function CartDrawer() {
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={clearCart}
+                onClick={handleClearAll}
                 className="text-red-500 hover:text-red-700 hover:bg-red-50"
               >
                 <Trash2 className="h-4 w-4 mr-2" />

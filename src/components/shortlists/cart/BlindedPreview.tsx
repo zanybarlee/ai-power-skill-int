@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -19,8 +18,8 @@ interface BlindedPreviewProps {
   candidateId: string;
 }
 
-// Store blinded content per candidate
-const blindedContentCache: Record<string, {
+// Store blinded content per candidate - export it so it can be cleared from CartDrawer
+export const blindedContentCache: Record<string, {
   original: string | null;
   blinded: string | null;
 }> = {};

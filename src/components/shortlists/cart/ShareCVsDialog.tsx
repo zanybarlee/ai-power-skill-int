@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Shield } from "lucide-react";
 import { MatchedCandidate } from "@/hooks/shortlists/types";
 
 interface ShareCVsDialogProps {
@@ -124,9 +124,10 @@ export function ShareCVsDialog({ open, onOpenChange, candidates }: ShareCVsDialo
             />
             <Label 
               htmlFor="blindContactInfo" 
-              className="text-sm font-normal cursor-pointer"
+              className="text-sm font-normal cursor-pointer flex items-center"
             >
-              Blind candidate contact information
+              <Shield className="h-4 w-4 mr-2 text-amber-500" />
+              Blind candidate personal information (name, address, phone, email)
             </Label>
           </div>
           

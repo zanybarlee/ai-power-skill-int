@@ -90,6 +90,20 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
     blinded = blinded.replace(/(\+\d{1,3}[ -]?)?\(?\d{3}\)?[ -]?\d{3}[ -]?\d{4}/g, '[PHONE REDACTED]');
     blinded = blinded.replace(/(\+\d{1,3}[ -]?)?\d{5,}/g, '[PHONE REDACTED]');
     
+    // Blind addresses (simplistic approach)
+    blinded = blinded.replace(/\d+\s+[A-Za-z]+\s+(Avenue|Ave|Street|St|Road|Rd|Boulevard|Blvd|Lane|Ln|Drive|Dr|Court|Ct|Plaza|Plz|Terrace|Ter|Way)\b/gi, '[ADDRESS REDACTED]');
+    
+    // Blind names (this assumes the candidate's name is already known and is passed to this function)
+    if (candidateDetails && candidateDetails.name) {
+      const nameParts = candidateDetails.name.split(' ');
+      for (const part of nameParts) {
+        if (part.length > 2) { // Avoid replacing very short words that might be common
+          const nameRegex = new RegExp(`\\b${part}\\b`, 'gi');
+          blinded = blinded.replace(nameRegex, '[NAME REDACTED]');
+        }
+      }
+    }
+    
     return blinded;
   };
 
@@ -123,7 +137,7 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
         <DialogHeader className="flex flex-row items-center justify-between">
           <DialogTitle className="text-xl">
-            Blinded CV Preview: {candidateDetails.name || 'Unknown'}
+            Blinded CV Preview: {showContact ? candidateDetails.name : '[NAME REDACTED]'}
           </DialogTitle>
           <Button 
             variant="outline" 
@@ -153,7 +167,9 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Name:</p>
-                  <p className="font-medium">{candidateDetails.name || 'Unknown'}</p>
+                  <p className="font-medium">
+                    {showContact ? candidateDetails.name || 'Unknown' : '[NAME REDACTED]'}
+                  </p>
                 </div>
                 
                 <div>
@@ -163,7 +179,9 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
                 
                 <div>
                   <p className="text-sm text-gray-600">Location:</p>
-                  <p className="font-medium">{candidateDetails.location || 'Not specified'}</p>
+                  <p className="font-medium">
+                    {showContact ? candidateDetails.location || 'Not specified' : '[LOCATION REDACTED]'}
+                  </p>
                 </div>
                 
                 <div>

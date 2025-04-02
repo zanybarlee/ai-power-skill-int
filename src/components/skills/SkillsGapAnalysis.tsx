@@ -1,9 +1,11 @@
 
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowRight, AlertTriangle, CheckCircle } from "lucide-react";
 import { useSkillsData } from "@/hooks/skills/useSkillsData";
+import { GapAnalysisDetailDialog } from "./gap-analysis/GapAnalysisDetailDialog";
 
 interface SkillsGapAnalysisProps {
   userId?: string;
@@ -12,6 +14,16 @@ interface SkillsGapAnalysisProps {
 
 export const SkillsGapAnalysis = ({ userId, onViewRecommendations }: SkillsGapAnalysisProps) => {
   const { skillGaps, isLoading } = useSkillsData(userId);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedReport, setSelectedReport] = useState<{
+    title: string;
+    type: "cloud" | "leadership" | "technical" | "other";
+  }>({ title: "", type: "other" });
+
+  const handleViewReport = (title: string, type: "cloud" | "leadership" | "technical" | "other") => {
+    setSelectedReport({ title, type });
+    setDialogOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -127,7 +139,11 @@ export const SkillsGapAnalysis = ({ userId, onViewRecommendations }: SkillsGapAn
             Current skill gaps in cloud architecture are limiting your organization's ability to migrate legacy systems 
             and implement scalable solutions, potentially increasing operational costs by 15-20%.
           </p>
-          <Button variant="link" className="text-aptiv p-0 h-auto mt-2">
+          <Button 
+            variant="link" 
+            className="text-aptiv p-0 h-auto mt-2"
+            onClick={() => handleViewReport("Cloud Architecture Gap", "cloud")}
+          >
             View detailed report <ExternalLink className="w-3.5 h-3.5 ml-1" />
           </Button>
         </div>
@@ -138,11 +154,23 @@ export const SkillsGapAnalysis = ({ userId, onViewRecommendations }: SkillsGapAn
             Gaps in strategic planning skills among mid-level managers may be contributing to project delays 
             and reduced team productivity, with an estimated 8% efficiency loss.
           </p>
-          <Button variant="link" className="text-aptiv p-0 h-auto mt-2">
+          <Button 
+            variant="link" 
+            className="text-aptiv p-0 h-auto mt-2"
+            onClick={() => handleViewReport("Leadership Skills Gap", "leadership")}
+          >
             View detailed report <ExternalLink className="w-3.5 h-3.5 ml-1" />
           </Button>
         </div>
       </Card>
+
+      {/* Detail Dialog */}
+      <GapAnalysisDetailDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        reportTitle={selectedReport.title}
+        reportType={selectedReport.type}
+      />
     </div>
   );
 };

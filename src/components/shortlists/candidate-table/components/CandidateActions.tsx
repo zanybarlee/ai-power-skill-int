@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Mail, BookmarkX, ShoppingCartPlus } from "lucide-react";
+import { Mail, BookmarkX, ShoppingCart } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 
 interface CandidateActionsProps {
@@ -56,7 +56,7 @@ export const CandidateActions = ({
         title={isInCart(candidateId) ? "Already in cart" : "Add to cart"}
         disabled={isInCart(candidateId)}
       >
-        <ShoppingCartPlus className="h-4 w-4" />
+        <ShoppingCart className="h-4 w-4" />
       </Button>
       <Button
         variant="ghost"

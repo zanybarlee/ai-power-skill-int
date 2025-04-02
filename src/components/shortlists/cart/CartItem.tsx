@@ -2,7 +2,7 @@
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ShoppingCartX, Eye } from "lucide-react";
+import { ShoppingCart, Eye } from "lucide-react";
 import { MatchedCandidate } from "@/hooks/shortlists/types";
 import { getStatusColor, getStatusLabel } from "../candidate-table/utils/statusUtils";
 
@@ -78,7 +78,7 @@ export function CartItem({ candidate, onPreviewBlind }: CartItemProps) {
             onClick={() => removeFromCart(candidate.id)}
             className="text-red-500 hover:text-red-700 hover:bg-red-50"
           >
-            <ShoppingCartX className="h-4 w-4 mr-1" />
+            <ShoppingCart className="h-4 w-4 mr-1" />
             Remove
           </Button>
         </div>

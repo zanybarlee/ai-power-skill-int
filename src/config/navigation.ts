@@ -1,5 +1,5 @@
 
-import { FileText, Search, Users, Settings, Building, User, LayoutDashboard, Lightbulb, Book, Brain, Briefcase } from "lucide-react";
+import { FileText, Search, Users, Settings, Building, User, LayoutDashboard, Briefcase } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -31,11 +31,6 @@ export const navigationItems = [
     name: "EAP Management",
     icon: User,
     path: "/eap-management",
-  },
-  {
-    name: "Skills Intelligence",
-    icon: Brain,
-    path: "/skills-intelligence",
   },
   {
     name: "Settings",

@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -11,7 +10,7 @@ import { ContactInformation } from "./preview/ContactInformation";
 import { SkillsSection } from "./preview/SkillsSection";
 import { CVContent } from "./preview/CVContent";
 import { MatchInformation } from "./preview/MatchInformation";
-import { extractJobTitle } from "./utils/blindingUtils";
+import { extractJobTitle, blindText } from "./utils/blindingUtils";
 
 interface BlindedPreviewProps {
   open: boolean;
@@ -34,7 +33,6 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
   const fetchCandidateDetails = async () => {
     try {
       setIsLoading(true);
-      // First try to get from cv_match table (for shortlisted candidates)
       const { data: matchData, error: matchError } = await supabase
         .from('cv_match')
         .select('*, cv_metadata(*), job_description_id, job_description, job_role, user_id, status')
@@ -96,6 +94,10 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
     );
   }
 
+  const processedCVContent = showContact
+    ? candidateDetails.cv_content || 'No CV content available'
+    : blindText(candidateDetails.cv_content, candidateDetails.name) || 'No CV content available';
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl max-h-[80vh] overflow-hidden">
@@ -125,7 +127,6 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
 
         <ScrollArea className="h-[calc(80vh-150px)] pr-4">
           <div className="space-y-6">
-            {/* Basic Information */}
             <BasicInformation 
               name={candidateDetails.name}
               role={candidateDetails.job_role || candidateDetails.role || 'Not specified'}
@@ -134,28 +135,22 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
               showContact={showContact}
             />
             
-            {/* Contact Information */}
             <ContactInformation 
               email={candidateDetails.email}
               phone={candidateDetails.phone}
               showContact={showContact}
             />
             
-            {/* Skills */}
             <SkillsSection 
               skills={candidateDetails.skills && Array.isArray(candidateDetails.skills) 
                 ? candidateDetails.skills 
                 : []}
             />
             
-            {/* CV Content */}
             <CVContent 
-              content={candidateDetails.cv_content}
-              showContact={showContact}
-              candidateName={candidateDetails.name}
+              content={processedCVContent}
             />
             
-            {/* Match Information */}
             <MatchInformation 
               matchScore={candidateDetails.match_score}
               jobTitle={candidateDetails.job_title}

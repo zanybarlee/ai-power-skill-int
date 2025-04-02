@@ -5,6 +5,7 @@
 import { supabase } from "@/integrations/supabase/client";
 import { CandidateDetails } from "../hooks/types";
 import { extractJobTitle } from "../utils/blindingUtils";
+import { normalizeSkills } from "@/utils/candidateUtils";
 
 /**
  * Fetches candidate details from the database
@@ -26,8 +27,12 @@ export const fetchCandidateDetails = async (candidateId: string): Promise<Candid
     throw new Error('Candidate not found');
   }
 
+  // Process the skills to ensure they're always a string array
+  const skills = normalizeSkills(matchData.cv_metadata?.skills);
+
   const details: CandidateDetails = {
     ...matchData.cv_metadata,
+    skills: skills,
     match_score: matchData.match_score,
     job_description: matchData.job_description,
     job_title: extractJobTitle(matchData.job_description),

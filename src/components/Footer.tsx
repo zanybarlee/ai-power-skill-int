@@ -20,7 +20,7 @@ const Footer = ({
           <div className="space-y-3">
             <h3 className="text-aptiv font-semibold text-lg mb-4">Connect With Us</h3>
             <div className="space-y-2 text-aptiv-gray-200 text-sm">
-              <p>#04-01 Paya Lepar Square, 1 Paya Lepay Link, Singapore 408355</p>
+              <p>#04-01 Paya Lepar Square, 1 Paya Lepar Link, Singapore 408355</p>
               <p>Tel: +65 6908 0277</p>
               <p>Email: enquiry@cens.com.sg</p>
             </div>

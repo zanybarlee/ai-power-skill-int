@@ -10,6 +10,8 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
   const [isLoading, setIsLoading] = useState(true);
   const [processedCVContent, setProcessedCVContent] = useState<string>('');
   const [isBlindingCV, setIsBlindingCV] = useState(false);
+  const [cachedBlindedContent, setCachedBlindedContent] = useState<string | null>(null);
+  const [originalContent, setOriginalContent] = useState<string | null>(null);
 
   useEffect(() => {
     if (open && candidateId) {
@@ -49,6 +51,10 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
         };
         
         setCandidateDetails(details);
+        // Store the original content when first fetched
+        if (details.cv_content) {
+          setOriginalContent(details.cv_content);
+        }
       }
     } catch (error) {
       console.error('Error fetching candidate details:', error);
@@ -69,8 +75,14 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
     }
     
     if (showContact) {
-      // If showing contact info, don't blind the CV
-      setProcessedCVContent(candidateDetails.cv_content);
+      // If showing contact info, use the original content
+      setProcessedCVContent(originalContent || candidateDetails.cv_content);
+      return;
+    }
+    
+    // Check if we already have the blinded content cached
+    if (cachedBlindedContent) {
+      setProcessedCVContent(cachedBlindedContent);
       return;
     }
     
@@ -93,6 +105,9 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
       }
       
       const data = await response.json();
+      
+      // Cache the blinded content
+      setCachedBlindedContent(data.blind_cv_content);
       setProcessedCVContent(data.blind_cv_content);
     } catch (error) {
       console.error('Error blinding CV content:', error);

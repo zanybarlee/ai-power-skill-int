@@ -1,5 +1,5 @@
 
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 interface ErrorStateProps {
   open: boolean;
@@ -12,8 +12,10 @@ export function ErrorState({ open, onOpenChange }: ErrorStateProps) {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Error</DialogTitle>
+          <DialogDescription>
+            Could not load candidate details. Please try again.
+          </DialogDescription>
         </DialogHeader>
-        <p>Could not load candidate details. Please try again.</p>
       </DialogContent>
     </Dialog>
   );

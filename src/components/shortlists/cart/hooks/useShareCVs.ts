@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from "react";
-import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MatchedCandidate } from "@/hooks/shortlists/types";
@@ -8,7 +7,6 @@ import { useJobDetails } from "@/components/job-descriptions/job-details/hooks/u
 
 export function useShareCVs(candidates: MatchedCandidate[], onOpenChange: (open: boolean) => void) {
   const { toast } = useToast();
-  const { clearCart } = useCart();
   const [isSharing, setIsSharing] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [subject, setSubject] = useState("");
@@ -107,8 +105,7 @@ export function useShareCVs(candidates: MatchedCandidate[], onOpenChange: (open:
       // Close the dialog
       onOpenChange(false);
       
-      // Clear the cart
-      clearCart();
+      // Note: We've removed the clearCart() call here to prevent auto-clearing the cart
       
     } catch (error) {
       console.error("Error sharing CVs:", error);

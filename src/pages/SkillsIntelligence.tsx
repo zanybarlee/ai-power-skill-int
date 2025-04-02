@@ -7,7 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { BrainCircuit, BookOpen, BarChart2, Users, TrendingUp, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SkillsOverview } from "@/components/skills/SkillsOverview";
-import { SkillsAssessment } from "@/components/skills/SkillsAssessment";
+import { SkillsAssessment } from "@/components/skills/assessment";
 import { SkillsGapAnalysis } from "@/components/skills/SkillsGapAnalysis";
 import { SkillsRecommendations } from "@/components/skills/SkillsRecommendations";
 

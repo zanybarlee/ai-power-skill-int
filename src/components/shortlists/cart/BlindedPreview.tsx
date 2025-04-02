@@ -19,6 +19,12 @@ interface BlindedPreviewProps {
   candidateId: string;
 }
 
+// Store blinded content per candidate
+const blindedContentCache: Record<string, {
+  original: string | null;
+  blinded: string | null;
+}> = {};
+
 export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPreviewProps) {
   const [showContact, setShowContact] = useState(false);
   
@@ -26,8 +32,10 @@ export function BlindedPreview({ open, onOpenChange, candidateId }: BlindedPrevi
     candidateDetails,
     isLoading,
     processedCVContent,
-    isBlindingCV
-  } = useBlindedCandidate(candidateId, open, showContact);
+    isBlindingCV,
+    setCache,
+    hasCache
+  } = useBlindedCandidate(candidateId, open, showContact, blindedContentCache);
 
   if (isLoading) {
     return <LoadingState open={open} onOpenChange={onOpenChange} />;

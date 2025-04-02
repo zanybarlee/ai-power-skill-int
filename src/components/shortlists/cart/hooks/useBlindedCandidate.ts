@@ -1,16 +1,37 @@
+
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { extractJobTitle } from "../utils/blindingUtils";
 
-export function useBlindedCandidate(candidateId: string, open: boolean, showContact: boolean) {
+interface CacheItem {
+  original: string | null;
+  blinded: string | null;
+}
+
+type CacheStore = Record<string, CacheItem>;
+
+export function useBlindedCandidate(
+  candidateId: string, 
+  open: boolean, 
+  showContact: boolean,
+  cacheStore: CacheStore = {}
+) {
   const { toast } = useToast();
   const [candidateDetails, setCandidateDetails] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [processedCVContent, setProcessedCVContent] = useState<string>('');
   const [isBlindingCV, setIsBlindingCV] = useState(false);
-  const [cachedBlindedContent, setCachedBlindedContent] = useState<string | null>(null);
-  const [originalContent, setOriginalContent] = useState<string | null>(null);
+  const [hasCache, setHasCache] = useState<boolean>(false);
+
+  // Check if we have cache for this candidate on mount
+  useEffect(() => {
+    if (candidateId && cacheStore[candidateId]) {
+      setHasCache(true);
+    } else {
+      setHasCache(false);
+    }
+  }, [candidateId, cacheStore]);
 
   useEffect(() => {
     if (open && candidateId) {
@@ -51,7 +72,18 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
         
         setCandidateDetails(details);
         if (details.cv_content) {
-          setOriginalContent(formatAsMarkdown(details.cv_content));
+          // Initialize cache if needed
+          if (!cacheStore[candidateId]) {
+            cacheStore[candidateId] = {
+              original: null,
+              blinded: null
+            };
+          }
+          
+          // Store formatted original content
+          if (!cacheStore[candidateId].original) {
+            cacheStore[candidateId].original = formatAsMarkdown(details.cv_content);
+          }
         }
       }
     } catch (error) {
@@ -103,13 +135,19 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
       return;
     }
     
+    // Get cache for this candidate
+    const candidateCache = cacheStore[candidateId] || { original: null, blinded: null };
+    
     if (showContact) {
-      setProcessedCVContent(originalContent || formatAsMarkdown(candidateDetails.cv_content));
+      // Use original content from cache or generate it
+      const original = candidateCache.original || formatAsMarkdown(candidateDetails.cv_content);
+      setProcessedCVContent(original);
       return;
     }
     
-    if (cachedBlindedContent) {
-      setProcessedCVContent(cachedBlindedContent);
+    // Check if we have blinded content cached for this candidate
+    if (candidateCache.blinded) {
+      setProcessedCVContent(candidateCache.blinded);
       return;
     }
     
@@ -134,7 +172,12 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
       
       const formattedBlindedContent = formatAsMarkdown(data.blind_cv_content);
       
-      setCachedBlindedContent(formattedBlindedContent);
+      // Store in cache for this candidate
+      cacheStore[candidateId] = {
+        ...candidateCache,
+        blinded: formattedBlindedContent
+      };
+      
       setProcessedCVContent(formattedBlindedContent);
     } catch (error) {
       console.error('Error blinding CV content:', error);
@@ -149,10 +192,22 @@ export function useBlindedCandidate(candidateId: string, open: boolean, showCont
     }
   };
 
+  // Function to manually set values in cache
+  const setCache = (original: string | null, blinded: string | null) => {
+    if (candidateId) {
+      cacheStore[candidateId] = {
+        original,
+        blinded
+      };
+    }
+  };
+
   return {
     candidateDetails,
     isLoading,
     processedCVContent,
-    isBlindingCV
+    isBlindingCV,
+    setCache,
+    hasCache
   };
 }

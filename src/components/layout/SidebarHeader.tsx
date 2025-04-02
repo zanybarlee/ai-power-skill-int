@@ -12,8 +12,8 @@ export const SidebarHeader = ({ isSidebarOpen, onToggleSidebar }: SidebarHeaderP
     <div className="h-16 flex items-center justify-between px-4 border-b border-aptiv/10">
       <div className="flex items-center">
         <img 
-          src="/lovable-uploads/5d0792c7-11b1-4e59-af76-3c687201c682.png" 
-          alt="Aptiv8 Logo" 
+          src="/lovable-uploads/b704481d-f77d-4afa-9e3f-249a3adc666f.png" 
+          alt="CENS Logo" 
           className={cn(
             "h-8",
             isSidebarOpen ? "w-32" : "w-12 lg:w-12"

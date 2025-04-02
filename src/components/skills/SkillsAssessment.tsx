@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { BookOpen, CheckCircle, Clock, Filter } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AssessmentQuestions } from "./AssessmentQuestions";
 
 interface SkillsAssessmentProps {
   userId?: string;
@@ -12,12 +13,55 @@ interface SkillsAssessmentProps {
 export const SkillsAssessment = ({ userId }: SkillsAssessmentProps) => {
   const { toast } = useToast();
   const [activeAssessment, setActiveAssessment] = useState<string | null>(null);
+  const [activeAssessmentTitle, setActiveAssessmentTitle] = useState<string>("");
+  const [completedAssessments, setCompletedAssessments] = useState([
+    {
+      id: "proj-1",
+      title: "Project Management Skills",
+      completedDate: "2024-05-15",
+      score: 87,
+      strengths: ["Resource allocation", "Timeline management", "Risk assessment"],
+      improvements: ["Stakeholder communication", "Budget planning"]
+    },
+    {
+      id: "lead-1",
+      title: "Leadership Assessment",
+      completedDate: "2024-04-02",
+      score: 92,
+      strengths: ["Team motivation", "Conflict resolution", "Strategic vision"],
+      improvements: ["Delegation", "Work-life balance promotion"]
+    }
+  ]);
 
-  const handleStartAssessment = (id: string) => {
+  const handleStartAssessment = (id: string, title: string) => {
     setActiveAssessment(id);
+    setActiveAssessmentTitle(title);
     toast({
       title: "Assessment Started",
       description: "You've started the assessment. Complete all questions to receive your results.",
+    });
+  };
+
+  const handleCompleteAssessment = (results: any) => {
+    // In a real app, you would save these results to the database
+    const newCompletedAssessment = {
+      id: results.assessmentId,
+      title: activeAssessmentTitle,
+      completedDate: results.completedDate,
+      score: results.score,
+      strengths: ["Skill area identified as strength", "Another strength area"],
+      improvements: ["Area for improvement", "Another improvement opportunity"]
+    };
+
+    setCompletedAssessments(prev => [newCompletedAssessment, ...prev]);
+    setActiveAssessment(null);
+  };
+
+  const handleCancelAssessment = () => {
+    setActiveAssessment(null);
+    toast({
+      title: "Assessment Cancelled",
+      description: "You've cancelled the assessment. Your progress has not been saved.",
     });
   };
 
@@ -56,24 +100,17 @@ export const SkillsAssessment = ({ userId }: SkillsAssessmentProps) => {
     }
   ];
 
-  const completedAssessments = [
-    {
-      id: "proj-1",
-      title: "Project Management Skills",
-      completedDate: "2024-05-15",
-      score: 87,
-      strengths: ["Resource allocation", "Timeline management", "Risk assessment"],
-      improvements: ["Stakeholder communication", "Budget planning"]
-    },
-    {
-      id: "lead-1",
-      title: "Leadership Assessment",
-      completedDate: "2024-04-02",
-      score: 92,
-      strengths: ["Team motivation", "Conflict resolution", "Strategic vision"],
-      improvements: ["Delegation", "Work-life balance promotion"]
-    }
-  ];
+  // If there's an active assessment, show the assessment questions
+  if (activeAssessment) {
+    return (
+      <AssessmentQuestions 
+        assessmentId={activeAssessment}
+        assessmentTitle={activeAssessmentTitle}
+        onComplete={handleCompleteAssessment}
+        onCancel={handleCancelAssessment}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -106,7 +143,7 @@ export const SkillsAssessment = ({ userId }: SkillsAssessmentProps) => {
               
               <Button 
                 className="w-full bg-aptiv hover:bg-aptiv-dark"
-                onClick={() => handleStartAssessment(assessment.id)}
+                onClick={() => handleStartAssessment(assessment.id, assessment.title)}
               >
                 Start Assessment
               </Button>

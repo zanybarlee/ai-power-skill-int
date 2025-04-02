@@ -15,6 +15,7 @@ import Settings from "./pages/Settings";
 import EmployerProfile from "./pages/EmployerProfile";
 import EAPManagement from "./pages/EAPManagement";
 import Dashboard from "./pages/Dashboard";
+import SkillsIntelligence from "./pages/SkillsIntelligence";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
       <Route path="/post-job" element={<PostJob />} />
       <Route path="/candidates" element={<Candidates />} />
       <Route path="/shortlists" element={<Shortlists />} />
+      <Route path="/skills-intelligence" element={<SkillsIntelligence />} />
       <Route path="/settings" element={<Settings />} />
       <Route path="/employer-profile" element={<EmployerProfile />} />
       <Route path="/eap-management" element={<EAPManagement />} />

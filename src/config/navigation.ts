@@ -1,5 +1,5 @@
 
-import { FileText, Search, Users, Settings, Building, User, LayoutDashboard } from "lucide-react";
+import { FileText, Search, Users, Settings, Building, User, LayoutDashboard, BrainCircuit } from "lucide-react";
 
 export const navigationItems = [
   {
@@ -21,6 +21,11 @@ export const navigationItems = [
     name: "Shortlists",
     icon: Users,
     path: "/shortlists",
+  },
+  {
+    name: "Skills Intelligence",
+    icon: BrainCircuit,
+    path: "/skills-intelligence",
   },
   {
     name: "Employer Profile",

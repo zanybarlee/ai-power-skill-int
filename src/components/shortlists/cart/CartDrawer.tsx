@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,8 @@ import { Badge } from "@/components/ui/badge";
 import { BlindedPreview } from "./BlindedPreview";
 import { CartItem } from "./CartItem";
 import { ShareCVsDialog } from "./ShareCVsDialog";
+import { fetchCandidateDetails } from "./services/candidateService";
+import { blindAllCandidateCVs, useBlindAllToast } from "./utils/batchBlindingUtils";
 
 import { blindedContentCache } from "./BlindedPreview";
 
@@ -30,6 +33,8 @@ export function CartDrawer() {
   const [openShare, setOpenShare] = useState(false);
   const [blindPreviewOpen, setBlindPreviewOpen] = useState(false);
   const [blindPreviewCandidateId, setBlindPreviewCandidateId] = useState<string | null>(null);
+  const [isBlindingAll, setIsBlindingAll] = useState(false);
+  const { showBlindAllResults } = useBlindAllToast();
 
   const handleBlindPreview = (candidateId: string) => {
     setBlindPreviewCandidateId(candidateId);
@@ -41,6 +46,45 @@ export function CartDrawer() {
     Object.keys(blindedContentCache).forEach(key => {
       delete blindedContentCache[key];
     });
+  };
+
+  const handleBlindAll = async () => {
+    if (cartItems.length === 0 || isBlindingAll) return;
+    
+    setIsBlindingAll(true);
+    
+    try {
+      // First, collect all candidate CVs
+      const candidateContents: Record<string, string> = {};
+      const candidatesToBlind: string[] = [];
+      
+      // Fetch details and collect content for each candidate
+      for (const candidate of cartItems) {
+        try {
+          const details = await fetchCandidateDetails(candidate.id);
+          if (details.cv_content) {
+            candidateContents[candidate.id] = details.cv_content;
+            candidatesToBlind.push(candidate.id);
+          }
+        } catch (error) {
+          console.error(`Error fetching details for candidate ${candidate.id}:`, error);
+        }
+      }
+      
+      // Blind all candidate CVs
+      const blindedIds = await blindAllCandidateCVs(
+        candidatesToBlind, 
+        candidateContents, 
+        blindedContentCache
+      );
+      
+      // Show results to user
+      showBlindAllResults(blindedIds.length, candidatesToBlind.length);
+    } catch (error) {
+      console.error('Error in blind all operation:', error);
+    } finally {
+      setIsBlindingAll(false);
+    }
   };
 
   if (cartCount === 0) {
@@ -82,15 +126,27 @@ export function CartDrawer() {
           <SheetHeader className="border-b pb-4">
             <div className="flex justify-between items-center">
               <SheetTitle>Candidate Cart ({cartCount})</SheetTitle>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleClearAll}
-                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Clear All
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={handleBlindAll}
+                  disabled={isBlindingAll}
+                  className="text-gray-600 hover:text-gray-800"
+                >
+                  <EyeOff className="h-4 w-4 mr-2" />
+                  {isBlindingAll ? 'Blinding...' : 'Blind All'}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={handleClearAll}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4 mr-2" />
+                  Clear All
+                </Button>
+              </div>
             </div>
           </SheetHeader>
 
